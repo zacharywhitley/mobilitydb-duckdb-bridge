@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Formatting check — the codegen pipes every emitted .rs
+  # through rustfmt at write time, so any drift means someone
+  # edited the generated source out-of-band from the codegen.
+  # Scoped to this crate (`-p`) because `--all` would
+  # transitively walk into the path-dep'd datafission workspace,
+  # which has its own fmt state.
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: cargo fmt --check
+        run: cargo fmt -p ${{ github.event.repository.name }} -- --check
