@@ -51,38 +51,14 @@ use crate::registry;
 /// not yet implemented are emitted as comments (with their
 /// signature) so a future phase can wire them in.
 pub fn register_all(conn: &Connection) -> Result<()> {
-    if let Err(e) = register_blob_to_f64(conn, "acceleration") {
-        eprintln!("[shim-scalars] skipping `acceleration`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "angle") {
-        eprintln!("[shim-scalars] skipping `angle`: {e}");
-    }
     if let Err(e) = register_f64_f64_to_f64(conn, "angular_diff") {
         eprintln!("[shim-scalars] skipping `angular_diff`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "area") {
-        eprintln!("[shim-scalars] skipping `area`: {e}");
     }
     if let Err(e) = register_blob_blob_to_f64(conn, "average_frechet_distance") {
         eprintln!("[shim-scalars] skipping `average_frechet_distance`: {e}");
     }
-    if let Err(e) = register_blob_to_blob(conn, "avg_position") {
-        eprintln!("[shim-scalars] skipping `avg_position`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "avg_sampling_rate_us") {
-        eprintln!("[shim-scalars] skipping `avg_sampling_rate_us`: {e}");
-    }
     if let Err(e) = register_f64_f64_f64_f64_to_f64(conn, "bearing") {
         eprintln!("[shim-scalars] skipping `bearing`: {e}");
-    }
-    if let Err(e) = register_blob_to_blob(conn, "bearing_after") {
-        eprintln!("[shim-scalars] skipping `bearing_after`: {e}");
-    }
-    if let Err(e) = register_blob_to_blob(conn, "bearing_before") {
-        eprintln!("[shim-scalars] skipping `bearing_before`: {e}");
-    }
-    if let Err(e) = register_blob_to_bool(conn, "bidirectional") {
-        eprintln!("[shim-scalars] skipping `bidirectional`: {e}");
     }
     if let Err(e) = register_blob_i64_i64_to_bool(conn, "bitemporal_bool_as_of") {
         eprintln!("[shim-scalars] skipping `bitemporal_bool_as_of`: {e}");
@@ -288,24 +264,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_valid_extent") {
         eprintln!("[shim-scalars] skipping `bitemporal_text_valid_extent`: {e}");
     }
-    if let Err(e) = register_blob_to_f64(conn, "center_x") {
-        eprintln!("[shim-scalars] skipping `center_x`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "center_y") {
-        eprintln!("[shim-scalars] skipping `center_y`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "centroid_x") {
-        eprintln!("[shim-scalars] skipping `centroid_x`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "centroid_y") {
-        eprintln!("[shim-scalars] skipping `centroid_y`: {e}");
-    }
-    if let Err(e) = register_blob_to_i32(conn, "cluster_count") {
-        eprintln!("[shim-scalars] skipping `cluster_count`: {e}");
-    }
-    if let Err(e) = register_blob_to_i32(conn, "cluster_id") {
-        eprintln!("[shim-scalars] skipping `cluster_id`: {e}");
-    }
     if let Err(e) = register_blob_blob_to_bool(conn, "date_span_adjacent") {
         eprintln!("[shim-scalars] skipping `date_span_adjacent`: {e}");
     }
@@ -492,23 +450,8 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_blob_to_f64(conn, "dtw_distance_normalized") {
         eprintln!("[shim-scalars] skipping `dtw_distance_normalized`: {e}");
     }
-    if let Err(e) = register_blob_to_i64(conn, "duration_us") {
-        eprintln!("[shim-scalars] skipping `duration_us`: {e}");
-    }
     if let Err(e) = register_blob_blob_f64_to_f64(conn, "edr_distance") {
         eprintln!("[shim-scalars] skipping `edr_distance`: {e}");
-    }
-    if let Err(e) = register_u64_to_i64(conn, "end") {
-        eprintln!("[shim-scalars] skipping `end`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "end_ts") {
-        eprintln!("[shim-scalars] skipping `end_ts`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "end_x") {
-        eprintln!("[shim-scalars] skipping `end_x`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "end_y") {
-        eprintln!("[shim-scalars] skipping `end_y`: {e}");
     }
     if let Err(e) = register_blob_blob_to_bool(conn, "float_span_adjacent") {
         eprintln!("[shim-scalars] skipping `float_span_adjacent`: {e}");
@@ -699,14 +642,8 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_blob_to_f64(conn, "frechet_distance") {
         eprintln!("[shim-scalars] skipping `frechet_distance`: {e}");
     }
-    if let Err(e) = register_blob_to_i32(conn, "gap_count") {
-        eprintln!("[shim-scalars] skipping `gap_count`: {e}");
-    }
     if let Err(e) = register_blob_to_f64(conn, "geodetic_distance") {
         eprintln!("[shim-scalars] skipping `geodetic_distance`: {e}");
-    }
-    if let Err(e) = register_blob_to_blob(conn, "geometry") {
-        eprintln!("[shim-scalars] skipping `geometry`: {e}");
     }
     if let Err(e) = register_blob_blob_to_f64(conn, "hausdorff_distance") {
         eprintln!("[shim-scalars] skipping `hausdorff_distance`: {e}");
@@ -912,41 +849,14 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_i64(conn, "intspanset_width") {
         eprintln!("[shim-scalars] skipping `intspanset_width`: {e}");
     }
-    if let Err(e) = register_blob_to_blob(conn, "item") {
-        eprintln!("[shim-scalars] skipping `item`: {e}");
-    }
     if let Err(e) = register_blob_to_blob(conn, "kmeans_cluster_points") {
         eprintln!("[shim-scalars] skipping `kmeans_cluster_points`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "latitude") {
-        eprintln!("[shim-scalars] skipping `latitude`: {e}");
     }
     if let Err(e) = register_blob_blob_f64_u32_to_f64(conn, "lcss_distance") {
         eprintln!("[shim-scalars] skipping `lcss_distance`: {e}");
     }
     if let Err(e) = register_blob_blob_f64_u32_to_f64(conn, "lcss_similarity") {
         eprintln!("[shim-scalars] skipping `lcss_similarity`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "length") {
-        eprintln!("[shim-scalars] skipping `length`: {e}");
-    }
-    if let Err(e) = register_blob_to_bool(conn, "linear") {
-        eprintln!("[shim-scalars] skipping `linear`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "longitude") {
-        eprintln!("[shim-scalars] skipping `longitude`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "lower") {
-        eprintln!("[shim-scalars] skipping `lower`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "max") {
-        eprintln!("[shim-scalars] skipping `max`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "max_gap_us") {
-        eprintln!("[shim-scalars] skipping `max_gap_us`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "min") {
-        eprintln!("[shim-scalars] skipping `min`: {e}");
     }
     if let Err(e) = register_blob_to_i32(conn, "mobilitydb_blob_cmp") {
         eprintln!("[shim-scalars] skipping `mobilitydb_blob_cmp`: {e}");
@@ -989,9 +899,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     }
     if let Err(e) = register_blob_i64_i64_to_blob(conn, "network_shortest_path_via_graph") {
         eprintln!("[shim-scalars] skipping `network_shortest_path_via_graph`: {e}");
-    }
-    if let Err(e) = register_blob_to_i32(conn, "nodes") {
-        eprintln!("[shim-scalars] skipping `nodes`: {e}");
     }
     if let Err(e) = register_blob_blob_to_f64(conn, "npoint_distance") {
         eprintln!("[shim-scalars] skipping `npoint_distance`: {e}");
@@ -1053,15 +960,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_blob(conn, "nsegment_union") {
         eprintln!("[shim-scalars] skipping `nsegment_union`: {e}");
     }
-    if let Err(e) = register_blob_to_f64(conn, "orientation") {
-        eprintln!("[shim-scalars] skipping `orientation`: {e}");
-    }
-    if let Err(e) = register_blob_to_i32(conn, "pair_count") {
-        eprintln!("[shim-scalars] skipping `pair_count`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "perimeter") {
-        eprintln!("[shim-scalars] skipping `perimeter`: {e}");
-    }
     if let Err(e) = register_blob_to_blob(conn, "period_bucket_list") {
         eprintln!("[shim-scalars] skipping `period_bucket_list`: {e}");
     }
@@ -1095,15 +993,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_blob(conn, "periodset_union") {
         eprintln!("[shim-scalars] skipping `periodset_union`: {e}");
     }
-    if let Err(e) = register_blob_to_i32(conn, "point_count") {
-        eprintln!("[shim-scalars] skipping `point_count`: {e}");
-    }
-    if let Err(e) = register_blob_to_blob(conn, "point_transform") {
-        eprintln!("[shim-scalars] skipping `point_transform`: {e}");
-    }
-    if let Err(e) = register_blob_to_i32(conn, "proj") {
-        eprintln!("[shim-scalars] skipping `proj`: {e}");
-    }
     if let Err(e) = register_blob_to_bool(conn, "proj_is_valid_crs") {
         eprintln!("[shim-scalars] skipping `proj_is_valid_crs`: {e}");
     }
@@ -1112,51 +1001,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     }
     if let Err(e) = register_blob_to_blob(conn, "proj_transform_sequence") {
         eprintln!("[shim-scalars] skipping `proj_transform_sequence`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "quality_score") {
-        eprintln!("[shim-scalars] skipping `quality_score`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "radius") {
-        eprintln!("[shim-scalars] skipping `radius`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "route_id") {
-        eprintln!("[shim-scalars] skipping `route_id`: {e}");
-    }
-    if let Err(e) = register_blob_to_blob(conn, "routes") {
-        eprintln!("[shim-scalars] skipping `routes`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "score") {
-        eprintln!("[shim-scalars] skipping `score`: {e}");
-    }
-    if let Err(e) = register_blob_to_bool(conn, "significant") {
-        eprintln!("[shim-scalars] skipping `significant`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "source") {
-        eprintln!("[shim-scalars] skipping `source`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "source_x") {
-        eprintln!("[shim-scalars] skipping `source_x`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "source_y") {
-        eprintln!("[shim-scalars] skipping `source_y`: {e}");
-    }
-    if let Err(e) = register_blob_to_blob(conn, "speed_after") {
-        eprintln!("[shim-scalars] skipping `speed_after`: {e}");
-    }
-    if let Err(e) = register_blob_to_blob(conn, "speed_before") {
-        eprintln!("[shim-scalars] skipping `speed_before`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "start") {
-        eprintln!("[shim-scalars] skipping `start`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "start_ts") {
-        eprintln!("[shim-scalars] skipping `start_ts`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "start_x") {
-        eprintln!("[shim-scalars] skipping `start_x`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "start_y") {
-        eprintln!("[shim-scalars] skipping `start_y`: {e}");
     }
     if let Err(e) = register_blob_blob_to_bool(conn, "stbox_adjacent") {
         eprintln!("[shim-scalars] skipping `stbox_adjacent`: {e}");
@@ -1272,9 +1116,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_f64(conn, "stbox_ymin") {
         eprintln!("[shim-scalars] skipping `stbox_ymin`: {e}");
     }
-    if let Err(e) = register_blob_to_bool(conn, "stepwise") {
-        eprintln!("[shim-scalars] skipping `stepwise`: {e}");
-    }
     if let Err(e) = register_blob_blob_to_u32(conn, "stindex_count_in_stbox") {
         eprintln!("[shim-scalars] skipping `stindex_count_in_stbox`: {e}");
     }
@@ -1283,15 +1124,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     }
     if let Err(e) = register_blob_to_blob(conn, "stindex_entry_make") {
         eprintln!("[shim-scalars] skipping `stindex_entry_make`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "target") {
-        eprintln!("[shim-scalars] skipping `target`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "target_x") {
-        eprintln!("[shim-scalars] skipping `target_x`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "target_y") {
-        eprintln!("[shim-scalars] skipping `target_y`: {e}");
     }
     if let Err(e) = register_blob_to_bool(conn, "tbool_always_false") {
         eprintln!("[shim-scalars] skipping `tbool_always_false`: {e}");
@@ -3509,9 +3341,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_blob(conn, "timeset_to_span") {
         eprintln!("[shim-scalars] skipping `timeset_to_span`: {e}");
     }
-    if let Err(e) = register_blob_to_blob(conn, "timestamps") {
-        eprintln!("[shim-scalars] skipping `timestamps`: {e}");
-    }
     if let Err(e) = register_blob_to_blob(conn, "tint_abs") {
         eprintln!("[shim-scalars] skipping `tint_abs`: {e}");
     }
@@ -4097,12 +3926,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_i64(conn, "tintrange_width") {
         eprintln!("[shim-scalars] skipping `tintrange_width`: {e}");
     }
-    if let Err(e) = register_blob_to_i64(conn, "tmax") {
-        eprintln!("[shim-scalars] skipping `tmax`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "tmin") {
-        eprintln!("[shim-scalars] skipping `tmin`: {e}");
-    }
     if let Err(e) = register_blob_i64_i64_to_blob(conn, "tnpoint_at_period") {
         eprintln!("[shim-scalars] skipping `tnpoint_at_period`: {e}");
     }
@@ -4235,9 +4058,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_blob(conn, "tnpoint_to_geometry") {
         eprintln!("[shim-scalars] skipping `tnpoint_to_geometry`: {e}");
     }
-    if let Err(e) = register_blob_to_f64(conn, "total_cost") {
-        eprintln!("[shim-scalars] skipping `total_cost`: {e}");
-    }
     if let Err(e) = register_blob_to_blob(conn, "tpose_angular_acceleration") {
         eprintln!("[shim-scalars] skipping `tpose_angular_acceleration`: {e}");
     }
@@ -4351,12 +4171,6 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     }
     if let Err(e) = register_blob_to_blob(conn, "tpose_value_at") {
         eprintln!("[shim-scalars] skipping `tpose_value_at`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "traj1_id") {
-        eprintln!("[shim-scalars] skipping `traj1_id`: {e}");
-    }
-    if let Err(e) = register_blob_to_i64(conn, "traj2_id") {
-        eprintln!("[shim-scalars] skipping `traj2_id`: {e}");
     }
     if let Err(e) = register_blob_to_blob(conn, "trajectory_ids") {
         eprintln!("[shim-scalars] skipping `trajectory_ids`: {e}");
@@ -4670,23 +4484,11 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_blob_f64_f64_to_f64(conn, "twed_distance_normalized") {
         eprintln!("[shim-scalars] skipping `twed_distance_normalized`: {e}");
     }
-    if let Err(e) = register_blob_to_f64(conn, "upper") {
-        eprintln!("[shim-scalars] skipping `upper`: {e}");
-    }
     if let Err(e) = register_blob_to_i32(conn, "utm_epsg_for_point") {
         eprintln!("[shim-scalars] skipping `utm_epsg_for_point`: {e}");
     }
     if let Err(e) = register_blob_to_i32(conn, "utm_zone_for_point") {
         eprintln!("[shim-scalars] skipping `utm_zone_for_point`: {e}");
-    }
-    if let Err(e) = register_blob_to_blob(conn, "values") {
-        eprintln!("[shim-scalars] skipping `values`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "vmax") {
-        eprintln!("[shim-scalars] skipping `vmax`: {e}");
-    }
-    if let Err(e) = register_blob_to_f64(conn, "vmin") {
-        eprintln!("[shim-scalars] skipping `vmin`: {e}");
     }
     if let Err(e) = register_blob_to_f64(conn, "web_mercator_to_wgs84_lat") {
         eprintln!("[shim-scalars] skipping `web_mercator_to_wgs84_lat`: {e}");
@@ -4700,7 +4502,7 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_f64(conn, "wgs84_to_web_mercator_y") {
         eprintln!("[shim-scalars] skipping `wgs84_to_web_mercator_y`: {e}");
     }
-    // Phase 2: 1548 names registered (70 shapes), 0 scalars deferred to Phase 3+ (0 unique shapes).
+    // Phase 2: 1482 names registered (69 shapes), 0 scalars deferred to Phase 3+ (0 unique shapes).
     Ok(())
 }
 
