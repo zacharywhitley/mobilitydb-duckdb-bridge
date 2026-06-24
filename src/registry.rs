@@ -29,7 +29,7 @@ use datafission_functions::traits::{
 static SHIM: OnceCell<ShimRegistry> = OnceCell::new();
 
 struct ShimRegistry {
-    _ext: RuntimeWasmExtension,  // keep the wasm Store alive
+    _ext: RuntimeWasmExtension, // keep the wasm Store alive
     scalars: RwLock<HashMap<String, Arc<dyn ScalarFunctionDef>>>,
     aggregates: RwLock<HashMap<String, Arc<dyn AggregateFunctionDef>>>,
 }
@@ -38,12 +38,11 @@ pub fn load_shim() -> Result<()> {
     if SHIM.get().is_some() {
         return Ok(());
     }
-    let path = std::env::var("MOBILITYDB_SHIM_WASM")
-        .with_context(|| format!(
-            "Set MOBILITYDB_SHIM_WASM=/path/to/composed-shim.wasm before LOAD"
-        ))?;
-    let ext = RuntimeWasmExtension::from_file(&path)
-        .with_context(|| format!("loading shim {path}"))?;
+    let path = std::env::var("MOBILITYDB_SHIM_WASM").with_context(|| {
+        format!("Set MOBILITYDB_SHIM_WASM=/path/to/composed-shim.wasm before LOAD")
+    })?;
+    let ext =
+        RuntimeWasmExtension::from_file(&path).with_context(|| format!("loading shim {path}"))?;
 
     let mut capture = CapturingTarget {
         scalars: Vec::new(),
@@ -73,7 +72,8 @@ pub fn load_shim() -> Result<()> {
         _ext: ext,
         scalars: RwLock::new(scalars),
         aggregates: RwLock::new(aggregates),
-    }).map_err(|_| anyhow::anyhow!("ShimRegistry already initialised"))?;
+    })
+    .map_err(|_| anyhow::anyhow!("ShimRegistry already initialised"))?;
 
     Ok(())
 }
@@ -117,19 +117,29 @@ impl ExtensionTarget for CapturingTarget {
         &mut self,
         _namespace: &str,
         _def: Arc<dyn TableFunctionDef>,
-    ) -> std::result::Result<(), ExtensionError> { Ok(()) }
+    ) -> std::result::Result<(), ExtensionError> {
+        Ok(())
+    }
     fn register_window_function(
         &mut self,
         _namespace: &str,
         _def: Arc<dyn WindowFunctionDef>,
-    ) -> std::result::Result<(), ExtensionError> { Ok(()) }
+    ) -> std::result::Result<(), ExtensionError> {
+        Ok(())
+    }
     fn register_data_type(
         &mut self,
         _plugin: Arc<dyn DataTypePlugin>,
-    ) -> std::result::Result<(), ExtensionError> { Ok(()) }
+    ) -> std::result::Result<(), ExtensionError> {
+        Ok(())
+    }
     fn register_system_catalog_provider(
         &mut self,
         _provider: Arc<dyn SystemCatalogProvider>,
-    ) -> std::result::Result<(), ExtensionError> { Ok(()) }
-    fn as_any_mut(&mut self) -> &mut dyn std::any::Any { self }
+    ) -> std::result::Result<(), ExtensionError> {
+        Ok(())
+    }
+    fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
+        self
+    }
 }

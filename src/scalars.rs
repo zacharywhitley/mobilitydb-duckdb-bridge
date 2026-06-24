@@ -33,11 +33,11 @@
 use std::sync::Arc;
 
 use duckdb::{
-    Connection, Result,
     core::{DataChunkHandle, Inserter, LogicalTypeHandle, LogicalTypeId},
     types::DuckString,
     vscalar::{ScalarFunctionSignature, VScalar},
     vtab::arrow::WritableVector,
+    Connection, Result,
 };
 use libduckdb_sys::duckdb_string_t;
 
@@ -51,1450 +51,4338 @@ use crate::registry;
 /// not yet implemented are emitted as comments (with their
 /// signature) so a future phase can wire them in.
 pub fn register_all(conn: &Connection) -> Result<()> {
-    if let Err(e) = register_blob_to_f64(conn, "acceleration") { eprintln!("[shim-scalars] skipping `acceleration`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "angle") { eprintln!("[shim-scalars] skipping `angle`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "area") { eprintln!("[shim-scalars] skipping `area`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "average_frechet_distance") { eprintln!("[shim-scalars] skipping `average_frechet_distance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "avg_position") { eprintln!("[shim-scalars] skipping `avg_position`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "avg_sampling_rate_us") { eprintln!("[shim-scalars] skipping `avg_sampling_rate_us`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bearing_after") { eprintln!("[shim-scalars] skipping `bearing_after`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bearing_before") { eprintln!("[shim-scalars] skipping `bearing_before`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "bidirectional") { eprintln!("[shim-scalars] skipping `bidirectional`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_bool_count_current") { eprintln!("[shim-scalars] skipping `bitemporal_bool_count_current`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_bool_count_superseded") { eprintln!("[shim-scalars] skipping `bitemporal_bool_count_superseded`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_bool_current") { eprintln!("[shim-scalars] skipping `bitemporal_bool_current`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "bitemporal_bool_from_ewkt") { eprintln!("[shim-scalars] skipping `bitemporal_bool_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_from_text") { eprintln!("[shim-scalars] skipping `bitemporal_bool_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_inst_new") { eprintln!("[shim-scalars] skipping `bitemporal_bool_inst_new`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_bool_len") { eprintln!("[shim-scalars] skipping `bitemporal_bool_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_seq_from_inst") { eprintln!("[shim-scalars] skipping `bitemporal_bool_seq_from_inst`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "bitemporal_bool_to_ewkt") { eprintln!("[shim-scalars] skipping `bitemporal_bool_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "bitemporal_bool_to_text") { eprintln!("[shim-scalars] skipping `bitemporal_bool_to_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_transaction_extent") { eprintln!("[shim-scalars] skipping `bitemporal_bool_transaction_extent`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "bitemporal_bool_valid_at") { eprintln!("[shim-scalars] skipping `bitemporal_bool_valid_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_valid_extent") { eprintln!("[shim-scalars] skipping `bitemporal_bool_valid_extent`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_float_count_current") { eprintln!("[shim-scalars] skipping `bitemporal_float_count_current`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_float_count_superseded") { eprintln!("[shim-scalars] skipping `bitemporal_float_count_superseded`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_float_current") { eprintln!("[shim-scalars] skipping `bitemporal_float_current`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "bitemporal_float_from_ewkt") { eprintln!("[shim-scalars] skipping `bitemporal_float_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_from_text") { eprintln!("[shim-scalars] skipping `bitemporal_float_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_inst_new") { eprintln!("[shim-scalars] skipping `bitemporal_float_inst_new`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_float_len") { eprintln!("[shim-scalars] skipping `bitemporal_float_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_seq_from_inst") { eprintln!("[shim-scalars] skipping `bitemporal_float_seq_from_inst`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "bitemporal_float_to_ewkt") { eprintln!("[shim-scalars] skipping `bitemporal_float_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "bitemporal_float_to_text") { eprintln!("[shim-scalars] skipping `bitemporal_float_to_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_transaction_extent") { eprintln!("[shim-scalars] skipping `bitemporal_float_transaction_extent`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "bitemporal_float_valid_at") { eprintln!("[shim-scalars] skipping `bitemporal_float_valid_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_valid_extent") { eprintln!("[shim-scalars] skipping `bitemporal_float_valid_extent`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_int_count_current") { eprintln!("[shim-scalars] skipping `bitemporal_int_count_current`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_int_count_superseded") { eprintln!("[shim-scalars] skipping `bitemporal_int_count_superseded`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_int_current") { eprintln!("[shim-scalars] skipping `bitemporal_int_current`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "bitemporal_int_from_ewkt") { eprintln!("[shim-scalars] skipping `bitemporal_int_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_from_text") { eprintln!("[shim-scalars] skipping `bitemporal_int_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_inst_new") { eprintln!("[shim-scalars] skipping `bitemporal_int_inst_new`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_int_len") { eprintln!("[shim-scalars] skipping `bitemporal_int_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_seq_from_inst") { eprintln!("[shim-scalars] skipping `bitemporal_int_seq_from_inst`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "bitemporal_int_to_ewkt") { eprintln!("[shim-scalars] skipping `bitemporal_int_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "bitemporal_int_to_text") { eprintln!("[shim-scalars] skipping `bitemporal_int_to_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_transaction_extent") { eprintln!("[shim-scalars] skipping `bitemporal_int_transaction_extent`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_valid_extent") { eprintln!("[shim-scalars] skipping `bitemporal_int_valid_extent`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_text_count_current") { eprintln!("[shim-scalars] skipping `bitemporal_text_count_current`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_text_count_superseded") { eprintln!("[shim-scalars] skipping `bitemporal_text_count_superseded`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_text_current") { eprintln!("[shim-scalars] skipping `bitemporal_text_current`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "bitemporal_text_from_ewkt") { eprintln!("[shim-scalars] skipping `bitemporal_text_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_from_text") { eprintln!("[shim-scalars] skipping `bitemporal_text_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_inst_new") { eprintln!("[shim-scalars] skipping `bitemporal_text_inst_new`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "bitemporal_text_len") { eprintln!("[shim-scalars] skipping `bitemporal_text_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_seq_from_inst") { eprintln!("[shim-scalars] skipping `bitemporal_text_seq_from_inst`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "bitemporal_text_to_ewkt") { eprintln!("[shim-scalars] skipping `bitemporal_text_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "bitemporal_text_to_text") { eprintln!("[shim-scalars] skipping `bitemporal_text_to_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_transaction_extent") { eprintln!("[shim-scalars] skipping `bitemporal_text_transaction_extent`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_valid_extent") { eprintln!("[shim-scalars] skipping `bitemporal_text_valid_extent`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "center_x") { eprintln!("[shim-scalars] skipping `center_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "center_y") { eprintln!("[shim-scalars] skipping `center_y`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "centroid_x") { eprintln!("[shim-scalars] skipping `centroid_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "centroid_y") { eprintln!("[shim-scalars] skipping `centroid_y`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "cluster_count") { eprintln!("[shim-scalars] skipping `cluster_count`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "cluster_id") { eprintln!("[shim-scalars] skipping `cluster_id`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "date_span_adjacent") { eprintln!("[shim-scalars] skipping `date_span_adjacent`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "date_span_contains_span") { eprintln!("[shim-scalars] skipping `date_span_contains_span`: {e}"); }
-    if let Err(e) = register_blob_i32_to_blob(conn, "date_span_expand") { eprintln!("[shim-scalars] skipping `date_span_expand`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "date_span_intersection") { eprintln!("[shim-scalars] skipping `date_span_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "date_span_overlaps") { eprintln!("[shim-scalars] skipping `date_span_overlaps`: {e}"); }
-    if let Err(e) = register_blob_i32_to_blob(conn, "date_span_shift") { eprintln!("[shim-scalars] skipping `date_span_shift`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "date_span_union") { eprintln!("[shim-scalars] skipping `date_span_union`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "date_span_width") { eprintln!("[shim-scalars] skipping `date_span_width`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "date_spanset_intersection") { eprintln!("[shim-scalars] skipping `date_spanset_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "date_spanset_minus") { eprintln!("[shim-scalars] skipping `date_spanset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "date_spanset_num_spans") { eprintln!("[shim-scalars] skipping `date_spanset_num_spans`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "date_spanset_overlaps") { eprintln!("[shim-scalars] skipping `date_spanset_overlaps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "date_spanset_union") { eprintln!("[shim-scalars] skipping `date_spanset_union`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "date_spanset_width") { eprintln!("[shim-scalars] skipping `date_spanset_width`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "dateset_from_int") { eprintln!("[shim-scalars] skipping `dateset_from_int`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "dateset_from_text") { eprintln!("[shim-scalars] skipping `dateset_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "dateset_gaps") { eprintln!("[shim-scalars] skipping `dateset_gaps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "dateset_intersection") { eprintln!("[shim-scalars] skipping `dateset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "dateset_len") { eprintln!("[shim-scalars] skipping `dateset_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "dateset_make") { eprintln!("[shim-scalars] skipping `dateset_make`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "dateset_minus") { eprintln!("[shim-scalars] skipping `dateset_minus`: {e}"); }
-    if let Err(e) = register_blob_i32_to_blob(conn, "dateset_shift") { eprintln!("[shim-scalars] skipping `dateset_shift`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "dateset_successor") { eprintln!("[shim-scalars] skipping `dateset_successor`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "dateset_to_span") { eprintln!("[shim-scalars] skipping `dateset_to_span`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "dateset_to_text") { eprintln!("[shim-scalars] skipping `dateset_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "dateset_union") { eprintln!("[shim-scalars] skipping `dateset_union`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "datespan_adjacent") { eprintln!("[shim-scalars] skipping `datespan_adjacent`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "datespan_contains_span") { eprintln!("[shim-scalars] skipping `datespan_contains_span`: {e}"); }
-    if let Err(e) = register_blob_i32_to_blob(conn, "datespan_expand") { eprintln!("[shim-scalars] skipping `datespan_expand`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "datespan_from_text") { eprintln!("[shim-scalars] skipping `datespan_from_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "datespan_intersection") { eprintln!("[shim-scalars] skipping `datespan_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "datespan_lower") { eprintln!("[shim-scalars] skipping `datespan_lower`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "datespan_overlaps") { eprintln!("[shim-scalars] skipping `datespan_overlaps`: {e}"); }
-    if let Err(e) = register_blob_i32_to_blob(conn, "datespan_shift") { eprintln!("[shim-scalars] skipping `datespan_shift`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "datespan_to_text") { eprintln!("[shim-scalars] skipping `datespan_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "datespan_union") { eprintln!("[shim-scalars] skipping `datespan_union`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "datespan_upper") { eprintln!("[shim-scalars] skipping `datespan_upper`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "datespan_width") { eprintln!("[shim-scalars] skipping `datespan_width`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "datespanset_from_span") { eprintln!("[shim-scalars] skipping `datespanset_from_span`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "datespanset_from_text") { eprintln!("[shim-scalars] skipping `datespanset_from_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "datespanset_intersection") { eprintln!("[shim-scalars] skipping `datespanset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "datespanset_lower") { eprintln!("[shim-scalars] skipping `datespanset_lower`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "datespanset_make") { eprintln!("[shim-scalars] skipping `datespanset_make`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "datespanset_minus") { eprintln!("[shim-scalars] skipping `datespanset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "datespanset_num_spans") { eprintln!("[shim-scalars] skipping `datespanset_num_spans`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "datespanset_overlaps") { eprintln!("[shim-scalars] skipping `datespanset_overlaps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "datespanset_to_text") { eprintln!("[shim-scalars] skipping `datespanset_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "datespanset_union") { eprintln!("[shim-scalars] skipping `datespanset_union`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "datespanset_upper") { eprintln!("[shim-scalars] skipping `datespanset_upper`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "datespanset_width") { eprintln!("[shim-scalars] skipping `datespanset_width`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "dbscan_cluster_points") { eprintln!("[shim-scalars] skipping `dbscan_cluster_points`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "dtw_distance") { eprintln!("[shim-scalars] skipping `dtw_distance`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "dtw_distance_normalized") { eprintln!("[shim-scalars] skipping `dtw_distance_normalized`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "duration_us") { eprintln!("[shim-scalars] skipping `duration_us`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "end_ts") { eprintln!("[shim-scalars] skipping `end_ts`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "end_x") { eprintln!("[shim-scalars] skipping `end_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "end_y") { eprintln!("[shim-scalars] skipping `end_y`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "float_span_adjacent") { eprintln!("[shim-scalars] skipping `float_span_adjacent`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "float_span_contains") { eprintln!("[shim-scalars] skipping `float_span_contains`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "float_span_contains_span") { eprintln!("[shim-scalars] skipping `float_span_contains_span`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "float_span_expand") { eprintln!("[shim-scalars] skipping `float_span_expand`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "float_span_intersection") { eprintln!("[shim-scalars] skipping `float_span_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "float_span_overlaps") { eprintln!("[shim-scalars] skipping `float_span_overlaps`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "float_span_shift") { eprintln!("[shim-scalars] skipping `float_span_shift`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "float_span_union") { eprintln!("[shim-scalars] skipping `float_span_union`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "float_span_width") { eprintln!("[shim-scalars] skipping `float_span_width`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "float_spanset_contains") { eprintln!("[shim-scalars] skipping `float_spanset_contains`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "float_spanset_intersection") { eprintln!("[shim-scalars] skipping `float_spanset_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "float_spanset_minus") { eprintln!("[shim-scalars] skipping `float_spanset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "float_spanset_num_spans") { eprintln!("[shim-scalars] skipping `float_spanset_num_spans`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "float_spanset_overlaps") { eprintln!("[shim-scalars] skipping `float_spanset_overlaps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "float_spanset_union") { eprintln!("[shim-scalars] skipping `float_spanset_union`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "float_spanset_width") { eprintln!("[shim-scalars] skipping `float_spanset_width`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "floatset_contains") { eprintln!("[shim-scalars] skipping `floatset_contains`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "floatset_from_text") { eprintln!("[shim-scalars] skipping `floatset_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "floatset_gaps") { eprintln!("[shim-scalars] skipping `floatset_gaps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatset_intersection") { eprintln!("[shim-scalars] skipping `floatset_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "floatset_is_disjoint") { eprintln!("[shim-scalars] skipping `floatset_is_disjoint`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "floatset_is_subset") { eprintln!("[shim-scalars] skipping `floatset_is_subset`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "floatset_len") { eprintln!("[shim-scalars] skipping `floatset_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "floatset_make") { eprintln!("[shim-scalars] skipping `floatset_make`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatset_minus") { eprintln!("[shim-scalars] skipping `floatset_minus`: {e}"); }
-    if let Err(e) = register_blob_f64_f64_to_blob(conn, "floatset_scale") { eprintln!("[shim-scalars] skipping `floatset_scale`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "floatset_shift") { eprintln!("[shim-scalars] skipping `floatset_shift`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "floatset_to_span") { eprintln!("[shim-scalars] skipping `floatset_to_span`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "floatset_to_text") { eprintln!("[shim-scalars] skipping `floatset_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatset_union") { eprintln!("[shim-scalars] skipping `floatset_union`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "floatspan_adjacent") { eprintln!("[shim-scalars] skipping `floatspan_adjacent`: {e}"); }
-    if let Err(e) = register_blob_f64_f64_to_blob(conn, "floatspan_bucket_list") { eprintln!("[shim-scalars] skipping `floatspan_bucket_list`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "floatspan_contains") { eprintln!("[shim-scalars] skipping `floatspan_contains`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "floatspan_contains_span") { eprintln!("[shim-scalars] skipping `floatspan_contains_span`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "floatspan_expand") { eprintln!("[shim-scalars] skipping `floatspan_expand`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "floatspan_from_text") { eprintln!("[shim-scalars] skipping `floatspan_from_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatspan_intersection") { eprintln!("[shim-scalars] skipping `floatspan_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "floatspan_lower") { eprintln!("[shim-scalars] skipping `floatspan_lower`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "floatspan_midpoint") { eprintln!("[shim-scalars] skipping `floatspan_midpoint`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatspan_minus") { eprintln!("[shim-scalars] skipping `floatspan_minus`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "floatspan_overlaps") { eprintln!("[shim-scalars] skipping `floatspan_overlaps`: {e}"); }
-    if let Err(e) = register_blob_f64_f64_to_blob(conn, "floatspan_scale") { eprintln!("[shim-scalars] skipping `floatspan_scale`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "floatspan_shift") { eprintln!("[shim-scalars] skipping `floatspan_shift`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "floatspan_to_text") { eprintln!("[shim-scalars] skipping `floatspan_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatspan_union") { eprintln!("[shim-scalars] skipping `floatspan_union`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "floatspan_upper") { eprintln!("[shim-scalars] skipping `floatspan_upper`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "floatspan_width") { eprintln!("[shim-scalars] skipping `floatspan_width`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "floatspanset_contains") { eprintln!("[shim-scalars] skipping `floatspanset_contains`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "floatspanset_from_span") { eprintln!("[shim-scalars] skipping `floatspanset_from_span`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "floatspanset_from_text") { eprintln!("[shim-scalars] skipping `floatspanset_from_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatspanset_intersection") { eprintln!("[shim-scalars] skipping `floatspanset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "floatspanset_lower") { eprintln!("[shim-scalars] skipping `floatspanset_lower`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatspanset_minus") { eprintln!("[shim-scalars] skipping `floatspanset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "floatspanset_num_spans") { eprintln!("[shim-scalars] skipping `floatspanset_num_spans`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "floatspanset_overlaps") { eprintln!("[shim-scalars] skipping `floatspanset_overlaps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "floatspanset_to_text") { eprintln!("[shim-scalars] skipping `floatspanset_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "floatspanset_union") { eprintln!("[shim-scalars] skipping `floatspanset_union`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "floatspanset_upper") { eprintln!("[shim-scalars] skipping `floatspanset_upper`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "floatspanset_width") { eprintln!("[shim-scalars] skipping `floatspanset_width`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "frechet_distance") { eprintln!("[shim-scalars] skipping `frechet_distance`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "gap_count") { eprintln!("[shim-scalars] skipping `gap_count`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "geodetic_distance") { eprintln!("[shim-scalars] skipping `geodetic_distance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "geometry") { eprintln!("[shim-scalars] skipping `geometry`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "hausdorff_distance") { eprintln!("[shim-scalars] skipping `hausdorff_distance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "indexed_interval_make") { eprintln!("[shim-scalars] skipping `indexed_interval_make`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "indexed_intervals_concat") { eprintln!("[shim-scalars] skipping `indexed_intervals_concat`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "indexed_point_xy_make") { eprintln!("[shim-scalars] skipping `indexed_point_xy_make`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "indexed_point_xyz_make") { eprintln!("[shim-scalars] skipping `indexed_point_xyz_make`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "indexed_points_xy_concat") { eprintln!("[shim-scalars] skipping `indexed_points_xy_concat`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "indexed_points_xyz_concat") { eprintln!("[shim-scalars] skipping `indexed_points_xyz_concat`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "int_span_adjacent") { eprintln!("[shim-scalars] skipping `int_span_adjacent`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "int_span_contains") { eprintln!("[shim-scalars] skipping `int_span_contains`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "int_span_contains_span") { eprintln!("[shim-scalars] skipping `int_span_contains_span`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "int_span_expand") { eprintln!("[shim-scalars] skipping `int_span_expand`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "int_span_intersection") { eprintln!("[shim-scalars] skipping `int_span_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "int_span_overlaps") { eprintln!("[shim-scalars] skipping `int_span_overlaps`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "int_span_shift") { eprintln!("[shim-scalars] skipping `int_span_shift`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "int_span_union") { eprintln!("[shim-scalars] skipping `int_span_union`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "int_span_width") { eprintln!("[shim-scalars] skipping `int_span_width`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "int_spanset_contains") { eprintln!("[shim-scalars] skipping `int_spanset_contains`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "int_spanset_intersection") { eprintln!("[shim-scalars] skipping `int_spanset_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "int_spanset_minus") { eprintln!("[shim-scalars] skipping `int_spanset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "int_spanset_num_spans") { eprintln!("[shim-scalars] skipping `int_spanset_num_spans`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "int_spanset_overlaps") { eprintln!("[shim-scalars] skipping `int_spanset_overlaps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "int_spanset_union") { eprintln!("[shim-scalars] skipping `int_spanset_union`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "int_spanset_width") { eprintln!("[shim-scalars] skipping `int_spanset_width`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "intset_contains") { eprintln!("[shim-scalars] skipping `intset_contains`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "intset_from_text") { eprintln!("[shim-scalars] skipping `intset_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "intset_gaps") { eprintln!("[shim-scalars] skipping `intset_gaps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intset_intersection") { eprintln!("[shim-scalars] skipping `intset_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "intset_is_disjoint") { eprintln!("[shim-scalars] skipping `intset_is_disjoint`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "intset_is_subset") { eprintln!("[shim-scalars] skipping `intset_is_subset`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "intset_len") { eprintln!("[shim-scalars] skipping `intset_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "intset_make") { eprintln!("[shim-scalars] skipping `intset_make`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intset_minus") { eprintln!("[shim-scalars] skipping `intset_minus`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "intset_shift") { eprintln!("[shim-scalars] skipping `intset_shift`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "intset_to_span") { eprintln!("[shim-scalars] skipping `intset_to_span`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "intset_to_text") { eprintln!("[shim-scalars] skipping `intset_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intset_union") { eprintln!("[shim-scalars] skipping `intset_union`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "intspan_adjacent") { eprintln!("[shim-scalars] skipping `intspan_adjacent`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "intspan_bucket_list") { eprintln!("[shim-scalars] skipping `intspan_bucket_list`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "intspan_contains") { eprintln!("[shim-scalars] skipping `intspan_contains`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "intspan_contains_span") { eprintln!("[shim-scalars] skipping `intspan_contains_span`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "intspan_expand") { eprintln!("[shim-scalars] skipping `intspan_expand`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "intspan_from_text") { eprintln!("[shim-scalars] skipping `intspan_from_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intspan_intersection") { eprintln!("[shim-scalars] skipping `intspan_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "intspan_lower") { eprintln!("[shim-scalars] skipping `intspan_lower`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intspan_minus") { eprintln!("[shim-scalars] skipping `intspan_minus`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "intspan_overlaps") { eprintln!("[shim-scalars] skipping `intspan_overlaps`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "intspan_shift") { eprintln!("[shim-scalars] skipping `intspan_shift`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "intspan_to_text") { eprintln!("[shim-scalars] skipping `intspan_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intspan_union") { eprintln!("[shim-scalars] skipping `intspan_union`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "intspan_upper") { eprintln!("[shim-scalars] skipping `intspan_upper`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "intspan_width") { eprintln!("[shim-scalars] skipping `intspan_width`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "intspanset_contains") { eprintln!("[shim-scalars] skipping `intspanset_contains`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "intspanset_from_span") { eprintln!("[shim-scalars] skipping `intspanset_from_span`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "intspanset_from_text") { eprintln!("[shim-scalars] skipping `intspanset_from_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intspanset_intersection") { eprintln!("[shim-scalars] skipping `intspanset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "intspanset_lower") { eprintln!("[shim-scalars] skipping `intspanset_lower`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intspanset_minus") { eprintln!("[shim-scalars] skipping `intspanset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "intspanset_num_spans") { eprintln!("[shim-scalars] skipping `intspanset_num_spans`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "intspanset_overlaps") { eprintln!("[shim-scalars] skipping `intspanset_overlaps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "intspanset_to_text") { eprintln!("[shim-scalars] skipping `intspanset_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "intspanset_union") { eprintln!("[shim-scalars] skipping `intspanset_union`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "intspanset_upper") { eprintln!("[shim-scalars] skipping `intspanset_upper`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "intspanset_width") { eprintln!("[shim-scalars] skipping `intspanset_width`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "item") { eprintln!("[shim-scalars] skipping `item`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "kmeans_cluster_points") { eprintln!("[shim-scalars] skipping `kmeans_cluster_points`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "latitude") { eprintln!("[shim-scalars] skipping `latitude`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "length") { eprintln!("[shim-scalars] skipping `length`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "linear") { eprintln!("[shim-scalars] skipping `linear`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "longitude") { eprintln!("[shim-scalars] skipping `longitude`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "lower") { eprintln!("[shim-scalars] skipping `lower`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "max") { eprintln!("[shim-scalars] skipping `max`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "max_gap_us") { eprintln!("[shim-scalars] skipping `max_gap_us`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "min") { eprintln!("[shim-scalars] skipping `min`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "mobilitydb_blob_cmp") { eprintln!("[shim-scalars] skipping `mobilitydb_blob_cmp`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_eq") { eprintln!("[shim-scalars] skipping `mobilitydb_blob_eq`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_ge") { eprintln!("[shim-scalars] skipping `mobilitydb_blob_ge`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_gt") { eprintln!("[shim-scalars] skipping `mobilitydb_blob_gt`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_le") { eprintln!("[shim-scalars] skipping `mobilitydb_blob_le`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_lt") { eprintln!("[shim-scalars] skipping `mobilitydb_blob_lt`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "network_coverage") { eprintln!("[shim-scalars] skipping `network_coverage`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "network_distance") { eprintln!("[shim-scalars] skipping `network_distance`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "network_graph_build_from_edges") { eprintln!("[shim-scalars] skipping `network_graph_build_from_edges`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "network_shortest_path") { eprintln!("[shim-scalars] skipping `network_shortest_path`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "network_shortest_path_via_graph") { eprintln!("[shim-scalars] skipping `network_shortest_path_via_graph`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "nodes") { eprintln!("[shim-scalars] skipping `nodes`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "npoint_distance") { eprintln!("[shim-scalars] skipping `npoint_distance`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "npoint_eq") { eprintln!("[shim-scalars] skipping `npoint_eq`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "npoint_position") { eprintln!("[shim-scalars] skipping `npoint_position`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "npoint_route") { eprintln!("[shim-scalars] skipping `npoint_route`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "npoint_same_route") { eprintln!("[shim-scalars] skipping `npoint_same_route`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "npoint_to_point2d") { eprintln!("[shim-scalars] skipping `npoint_to_point2d`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "nsegment_contains") { eprintln!("[shim-scalars] skipping `nsegment_contains`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "nsegment_end_pos") { eprintln!("[shim-scalars] skipping `nsegment_end_pos`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "nsegment_intersection") { eprintln!("[shim-scalars] skipping `nsegment_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "nsegment_length") { eprintln!("[shim-scalars] skipping `nsegment_length`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "nsegment_midpoint") { eprintln!("[shim-scalars] skipping `nsegment_midpoint`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "nsegment_overlaps") { eprintln!("[shim-scalars] skipping `nsegment_overlaps`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "nsegment_route") { eprintln!("[shim-scalars] skipping `nsegment_route`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "nsegment_route_eq") { eprintln!("[shim-scalars] skipping `nsegment_route_eq`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "nsegment_start_pos") { eprintln!("[shim-scalars] skipping `nsegment_start_pos`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "nsegment_union") { eprintln!("[shim-scalars] skipping `nsegment_union`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "orientation") { eprintln!("[shim-scalars] skipping `orientation`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "pair_count") { eprintln!("[shim-scalars] skipping `pair_count`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "perimeter") { eprintln!("[shim-scalars] skipping `perimeter`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "period_bucket_list") { eprintln!("[shim-scalars] skipping `period_bucket_list`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "period_scale") { eprintln!("[shim-scalars] skipping `period_scale`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "period_shift") { eprintln!("[shim-scalars] skipping `period_shift`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "periodset_contains") { eprintln!("[shim-scalars] skipping `periodset_contains`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "periodset_duration") { eprintln!("[shim-scalars] skipping `periodset_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "periodset_end_timestamp") { eprintln!("[shim-scalars] skipping `periodset_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "periodset_intersection") { eprintln!("[shim-scalars] skipping `periodset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "periodset_minus") { eprintln!("[shim-scalars] skipping `periodset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "periodset_num_periods") { eprintln!("[shim-scalars] skipping `periodset_num_periods`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "periodset_start_timestamp") { eprintln!("[shim-scalars] skipping `periodset_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "periodset_union") { eprintln!("[shim-scalars] skipping `periodset_union`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "point_count") { eprintln!("[shim-scalars] skipping `point_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "point_transform") { eprintln!("[shim-scalars] skipping `point_transform`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "proj") { eprintln!("[shim-scalars] skipping `proj`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "proj_is_valid_crs") { eprintln!("[shim-scalars] skipping `proj_is_valid_crs`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "proj_transform") { eprintln!("[shim-scalars] skipping `proj_transform`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "proj_transform_sequence") { eprintln!("[shim-scalars] skipping `proj_transform_sequence`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "quality_score") { eprintln!("[shim-scalars] skipping `quality_score`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "radius") { eprintln!("[shim-scalars] skipping `radius`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "route_id") { eprintln!("[shim-scalars] skipping `route_id`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "routes") { eprintln!("[shim-scalars] skipping `routes`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "score") { eprintln!("[shim-scalars] skipping `score`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "significant") { eprintln!("[shim-scalars] skipping `significant`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "source") { eprintln!("[shim-scalars] skipping `source`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "source_x") { eprintln!("[shim-scalars] skipping `source_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "source_y") { eprintln!("[shim-scalars] skipping `source_y`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "speed_after") { eprintln!("[shim-scalars] skipping `speed_after`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "speed_before") { eprintln!("[shim-scalars] skipping `speed_before`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "start") { eprintln!("[shim-scalars] skipping `start`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "start_ts") { eprintln!("[shim-scalars] skipping `start_ts`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "start_x") { eprintln!("[shim-scalars] skipping `start_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "start_y") { eprintln!("[shim-scalars] skipping `start_y`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_adjacent") { eprintln!("[shim-scalars] skipping `stbox_adjacent`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_area") { eprintln!("[shim-scalars] skipping `stbox_area`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "stbox_center_time") { eprintln!("[shim-scalars] skipping `stbox_center_time`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_center_x") { eprintln!("[shim-scalars] skipping `stbox_center_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_center_y") { eprintln!("[shim-scalars] skipping `stbox_center_y`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_contained_by") { eprintln!("[shim-scalars] skipping `stbox_contained_by`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_contains") { eprintln!("[shim-scalars] skipping `stbox_contains`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "stbox_duration") { eprintln!("[shim-scalars] skipping `stbox_duration`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "stbox_expand_spatial") { eprintln!("[shim-scalars] skipping `stbox_expand_spatial`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "stbox_expand_temporal") { eprintln!("[shim-scalars] skipping `stbox_expand_temporal`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "stbox_from_temporal") { eprintln!("[shim-scalars] skipping `stbox_from_temporal`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "stbox_from_text") { eprintln!("[shim-scalars] skipping `stbox_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "stbox_from_tgeompoint") { eprintln!("[shim-scalars] skipping `stbox_from_tgeompoint`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_height") { eprintln!("[shim-scalars] skipping `stbox_height`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "stbox_intersection") { eprintln!("[shim-scalars] skipping `stbox_intersection`: {e}"); }
-    if let Err(e) = register_4f64_2i64_to_blob(conn, "stbox_make") { eprintln!("[shim-scalars] skipping `stbox_make`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_overlaps") { eprintln!("[shim-scalars] skipping `stbox_overlaps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_same") { eprintln!("[shim-scalars] skipping `stbox_same`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "stbox_scale_spatial") { eprintln!("[shim-scalars] skipping `stbox_scale_spatial`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "stbox_scale_temporal") { eprintln!("[shim-scalars] skipping `stbox_scale_temporal`: {e}"); }
-    if let Err(e) = register_blob_f64_f64_to_blob(conn, "stbox_shift_spatial") { eprintln!("[shim-scalars] skipping `stbox_shift_spatial`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "stbox_shift_temporal") { eprintln!("[shim-scalars] skipping `stbox_shift_temporal`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "stbox_spatial_distance") { eprintln!("[shim-scalars] skipping `stbox_spatial_distance`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_spatially_adjacent") { eprintln!("[shim-scalars] skipping `stbox_spatially_adjacent`: {e}"); }
-    if let Err(e) = register_blob_blob_to_i64(conn, "stbox_temporal_distance") { eprintln!("[shim-scalars] skipping `stbox_temporal_distance`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_temporally_adjacent") { eprintln!("[shim-scalars] skipping `stbox_temporally_adjacent`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "stbox_tmax") { eprintln!("[shim-scalars] skipping `stbox_tmax`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "stbox_tmin") { eprintln!("[shim-scalars] skipping `stbox_tmin`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "stbox_to_text") { eprintln!("[shim-scalars] skipping `stbox_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "stbox_union") { eprintln!("[shim-scalars] skipping `stbox_union`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_width") { eprintln!("[shim-scalars] skipping `stbox_width`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_xmax") { eprintln!("[shim-scalars] skipping `stbox_xmax`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_xmin") { eprintln!("[shim-scalars] skipping `stbox_xmin`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_ymax") { eprintln!("[shim-scalars] skipping `stbox_ymax`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "stbox_ymin") { eprintln!("[shim-scalars] skipping `stbox_ymin`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "stepwise") { eprintln!("[shim-scalars] skipping `stepwise`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "stindex_entries_concat") { eprintln!("[shim-scalars] skipping `stindex_entries_concat`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "stindex_entry_make") { eprintln!("[shim-scalars] skipping `stindex_entry_make`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "target") { eprintln!("[shim-scalars] skipping `target`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "target_x") { eprintln!("[shim-scalars] skipping `target_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "target_y") { eprintln!("[shim-scalars] skipping `target_y`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_always_false") { eprintln!("[shim-scalars] skipping `tbool_always_false`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_always_true") { eprintln!("[shim-scalars] skipping `tbool_always_true`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tbool_and") { eprintln!("[shim-scalars] skipping `tbool_and`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_and_all") { eprintln!("[shim-scalars] skipping `tbool_and_all`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_at_false") { eprintln!("[shim-scalars] skipping `tbool_at_false`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tbool_at_period") { eprintln!("[shim-scalars] skipping `tbool_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_at_true") { eprintln!("[shim-scalars] skipping `tbool_at_true`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tbool_count") { eprintln!("[shim-scalars] skipping `tbool_count`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tbool_count_changes") { eprintln!("[shim-scalars] skipping `tbool_count_changes`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tbool_count_false") { eprintln!("[shim-scalars] skipping `tbool_count_false`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tbool_count_true") { eprintln!("[shim-scalars] skipping `tbool_count_true`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tbool_duration") { eprintln!("[shim-scalars] skipping `tbool_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tbool_duration_false") { eprintln!("[shim-scalars] skipping `tbool_duration_false`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tbool_duration_true") { eprintln!("[shim-scalars] skipping `tbool_duration_true`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tbool_end_timestamp") { eprintln!("[shim-scalars] skipping `tbool_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_end_value") { eprintln!("[shim-scalars] skipping `tbool_end_value`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_ever_false") { eprintln!("[shim-scalars] skipping `tbool_ever_false`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_ever_true") { eprintln!("[shim-scalars] skipping `tbool_ever_true`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "tbool_from_csv") { eprintln!("[shim-scalars] skipping `tbool_from_csv`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_from_ewkt") { eprintln!("[shim-scalars] skipping `tbool_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_from_mfjson") { eprintln!("[shim-scalars] skipping `tbool_from_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_implies") { eprintln!("[shim-scalars] skipping `tbool_implies`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_instant_from_ewkt") { eprintln!("[shim-scalars] skipping `tbool_instant_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_instant_n") { eprintln!("[shim-scalars] skipping `tbool_instant_n`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tbool_instant_to_ewkt") { eprintln!("[shim-scalars] skipping `tbool_instant_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_lower_inclusive") { eprintln!("[shim-scalars] skipping `tbool_lower_inclusive`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tbool_minus_period") { eprintln!("[shim-scalars] skipping `tbool_minus_period`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tbool_n_changes") { eprintln!("[shim-scalars] skipping `tbool_n_changes`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_nand") { eprintln!("[shim-scalars] skipping `tbool_nand`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_nor") { eprintln!("[shim-scalars] skipping `tbool_nor`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_not") { eprintln!("[shim-scalars] skipping `tbool_not`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tbool_num_instants") { eprintln!("[shim-scalars] skipping `tbool_num_instants`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tbool_or") { eprintln!("[shim-scalars] skipping `tbool_or`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_or_all") { eprintln!("[shim-scalars] skipping `tbool_or_all`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_span") { eprintln!("[shim-scalars] skipping `tbool_span`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tbool_start_timestamp") { eprintln!("[shim-scalars] skipping `tbool_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_start_value") { eprintln!("[shim-scalars] skipping `tbool_start_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_time_span") { eprintln!("[shim-scalars] skipping `tbool_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tbool_timestamp_n") { eprintln!("[shim-scalars] skipping `tbool_timestamp_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_timestamps") { eprintln!("[shim-scalars] skipping `tbool_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tbool_to_csv") { eprintln!("[shim-scalars] skipping `tbool_to_csv`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tbool_to_ewkt") { eprintln!("[shim-scalars] skipping `tbool_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tbool_to_json") { eprintln!("[shim-scalars] skipping `tbool_to_json`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tbool_to_mfjson") { eprintln!("[shim-scalars] skipping `tbool_to_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_to_tint") { eprintln!("[shim-scalars] skipping `tbool_to_tint`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_upper_inclusive") { eprintln!("[shim-scalars] skipping `tbool_upper_inclusive`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tbool_value_at") { eprintln!("[shim-scalars] skipping `tbool_value_at`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tbool_value_n") { eprintln!("[shim-scalars] skipping `tbool_value_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_values") { eprintln!("[shim-scalars] skipping `tbool_values`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_when_false") { eprintln!("[shim-scalars] skipping `tbool_when_false`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_when_true") { eprintln!("[shim-scalars] skipping `tbool_when_true`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_xnor") { eprintln!("[shim-scalars] skipping `tbool_xnor`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbool_xor") { eprintln!("[shim-scalars] skipping `tbool_xor`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbox_expand") { eprintln!("[shim-scalars] skipping `tbox_expand`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "tbox_from_text") { eprintln!("[shim-scalars] skipping `tbox_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tbox_make") { eprintln!("[shim-scalars] skipping `tbox_make`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tbox_to_text") { eprintln!("[shim-scalars] skipping `tbox_to_text`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_area") { eprintln!("[shim-scalars] skipping `tcbuffer_area`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tcbuffer_area_at") { eprintln!("[shim-scalars] skipping `tcbuffer_area_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_at_period") { eprintln!("[shim-scalars] skipping `tcbuffer_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_avg_area") { eprintln!("[shim-scalars] skipping `tcbuffer_avg_area`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_avg_radius") { eprintln!("[shim-scalars] skipping `tcbuffer_avg_radius`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_center_path_length") { eprintln!("[shim-scalars] skipping `tcbuffer_center_path_length`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tcbuffer_duration") { eprintln!("[shim-scalars] skipping `tcbuffer_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tcbuffer_end_timestamp") { eprintln!("[shim-scalars] skipping `tcbuffer_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_expand_radii") { eprintln!("[shim-scalars] skipping `tcbuffer_expand_radii`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "tcbuffer_from_ewkt") { eprintln!("[shim-scalars] skipping `tcbuffer_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_area") { eprintln!("[shim-scalars] skipping `tcbuffer_get_area`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_center_x") { eprintln!("[shim-scalars] skipping `tcbuffer_get_center_x`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_center_y") { eprintln!("[shim-scalars] skipping `tcbuffer_get_center_y`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_radii") { eprintln!("[shim-scalars] skipping `tcbuffer_get_radii`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_radius") { eprintln!("[shim-scalars] skipping `tcbuffer_get_radius`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_inst_new") { eprintln!("[shim-scalars] skipping `tcbuffer_inst_new`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_intersection") { eprintln!("[shim-scalars] skipping `tcbuffer_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_make") { eprintln!("[shim-scalars] skipping `tcbuffer_make`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_max_radius") { eprintln!("[shim-scalars] skipping `tcbuffer_max_radius`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_min_radius") { eprintln!("[shim-scalars] skipping `tcbuffer_min_radius`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tcbuffer_num_instants") { eprintln!("[shim-scalars] skipping `tcbuffer_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_overlap_region") { eprintln!("[shim-scalars] skipping `tcbuffer_overlap_region`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tcbuffer_radius_at") { eprintln!("[shim-scalars] skipping `tcbuffer_radius_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_scale") { eprintln!("[shim-scalars] skipping `tcbuffer_scale`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_scale_radii") { eprintln!("[shim-scalars] skipping `tcbuffer_scale_radii`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_seq_from_inst") { eprintln!("[shim-scalars] skipping `tcbuffer_seq_from_inst`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_shift") { eprintln!("[shim-scalars] skipping `tcbuffer_shift`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tcbuffer_start_timestamp") { eprintln!("[shim-scalars] skipping `tcbuffer_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_swept_area") { eprintln!("[shim-scalars] skipping `tcbuffer_swept_area`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_time_span") { eprintln!("[shim-scalars] skipping `tcbuffer_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_timestamps") { eprintln!("[shim-scalars] skipping `tcbuffer_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tcbuffer_to_ewkt") { eprintln!("[shim-scalars] skipping `tcbuffer_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_to_tgeompoint") { eprintln!("[shim-scalars] skipping `tcbuffer_to_tgeompoint`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_total_area") { eprintln!("[shim-scalars] skipping `tcbuffer_total_area`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_union") { eprintln!("[shim-scalars] skipping `tcbuffer_union`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_value_at") { eprintln!("[shim-scalars] skipping `tcbuffer_value_at`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tcbuffer_x_at") { eprintln!("[shim-scalars] skipping `tcbuffer_x_at`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tcbuffer_y_at") { eprintln!("[shim-scalars] skipping `tcbuffer_y_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "temporal_at_period") { eprintln!("[shim-scalars] skipping `temporal_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "temporal_at_periodset") { eprintln!("[shim-scalars] skipping `temporal_at_periodset`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "temporal_at_tbox") { eprintln!("[shim-scalars] skipping `temporal_at_tbox`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "temporal_at_timestamp") { eprintln!("[shim-scalars] skipping `temporal_at_timestamp`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_contains") { eprintln!("[shim-scalars] skipping `temporal_contains`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_during") { eprintln!("[shim-scalars] skipping `temporal_during`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_finishes") { eprintln!("[shim-scalars] skipping `temporal_finishes`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_follows") { eprintln!("[shim-scalars] skipping `temporal_follows`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "temporal_index_time_span") { eprintln!("[shim-scalars] skipping `temporal_index_time_span`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_meets") { eprintln!("[shim-scalars] skipping `temporal_meets`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "temporal_minus_timestamp") { eprintln!("[shim-scalars] skipping `temporal_minus_timestamp`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_overlaps") { eprintln!("[shim-scalars] skipping `temporal_overlaps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_precedes") { eprintln!("[shim-scalars] skipping `temporal_precedes`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "temporal_set_interpolation") { eprintln!("[shim-scalars] skipping `temporal_set_interpolation`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_starts") { eprintln!("[shim-scalars] skipping `temporal_starts`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "textset_from_text") { eprintln!("[shim-scalars] skipping `textset_from_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "textset_intersection") { eprintln!("[shim-scalars] skipping `textset_intersection`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "textset_is_disjoint") { eprintln!("[shim-scalars] skipping `textset_is_disjoint`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "textset_is_subset") { eprintln!("[shim-scalars] skipping `textset_is_subset`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "textset_is_superset") { eprintln!("[shim-scalars] skipping `textset_is_superset`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "textset_len") { eprintln!("[shim-scalars] skipping `textset_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "textset_make") { eprintln!("[shim-scalars] skipping `textset_make`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "textset_max") { eprintln!("[shim-scalars] skipping `textset_max`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "textset_min") { eprintln!("[shim-scalars] skipping `textset_min`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "textset_minus") { eprintln!("[shim-scalars] skipping `textset_minus`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "textset_symdiff") { eprintln!("[shim-scalars] skipping `textset_symdiff`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "textset_to_text") { eprintln!("[shim-scalars] skipping `textset_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "textset_union") { eprintln!("[shim-scalars] skipping `textset_union`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "textset_values") { eprintln!("[shim-scalars] skipping `textset_values`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_abs") { eprintln!("[shim-scalars] skipping `tfloat_abs`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_acos") { eprintln!("[shim-scalars] skipping `tfloat_acos`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_acosh") { eprintln!("[shim-scalars] skipping `tfloat_acosh`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_add") { eprintln!("[shim-scalars] skipping `tfloat_add`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_add_scalar") { eprintln!("[shim-scalars] skipping `tfloat_add_scalar`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_eq") { eprintln!("[shim-scalars] skipping `tfloat_always_eq`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_eq_scalar") { eprintln!("[shim-scalars] skipping `tfloat_always_eq_scalar`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_gt") { eprintln!("[shim-scalars] skipping `tfloat_always_gt`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_gt_scalar") { eprintln!("[shim-scalars] skipping `tfloat_always_gt_scalar`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_lt") { eprintln!("[shim-scalars] skipping `tfloat_always_lt`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_lt_scalar") { eprintln!("[shim-scalars] skipping `tfloat_always_lt_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_anomaly_count") { eprintln!("[shim-scalars] skipping `tfloat_anomaly_count`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_anomaly_count_iqr") { eprintln!("[shim-scalars] skipping `tfloat_anomaly_count_iqr`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_asin") { eprintln!("[shim-scalars] skipping `tfloat_asin`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_asinh") { eprintln!("[shim-scalars] skipping `tfloat_asinh`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_max") { eprintln!("[shim-scalars] skipping `tfloat_at_max`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_min") { eprintln!("[shim-scalars] skipping `tfloat_at_min`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tfloat_at_period") { eprintln!("[shim-scalars] skipping `tfloat_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_range") { eprintln!("[shim-scalars] skipping `tfloat_at_range`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_tbox") { eprintln!("[shim-scalars] skipping `tfloat_at_tbox`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_at_value") { eprintln!("[shim-scalars] skipping `tfloat_at_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_values") { eprintln!("[shim-scalars] skipping `tfloat_at_values`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_atan") { eprintln!("[shim-scalars] skipping `tfloat_atan`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_atan2") { eprintln!("[shim-scalars] skipping `tfloat_atan2`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_atanh") { eprintln!("[shim-scalars] skipping `tfloat_atanh`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_cbrt") { eprintln!("[shim-scalars] skipping `tfloat_cbrt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_ceil") { eprintln!("[shim-scalars] skipping `tfloat_ceil`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_clamp") { eprintln!("[shim-scalars] skipping `tfloat_clamp`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_coefficient_of_variation") { eprintln!("[shim-scalars] skipping `tfloat_coefficient_of_variation`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_copysign") { eprintln!("[shim-scalars] skipping `tfloat_copysign`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_cos") { eprintln!("[shim-scalars] skipping `tfloat_cos`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_cosh") { eprintln!("[shim-scalars] skipping `tfloat_cosh`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_count") { eprintln!("[shim-scalars] skipping `tfloat_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_cube") { eprintln!("[shim-scalars] skipping `tfloat_cube`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_cumsum") { eprintln!("[shim-scalars] skipping `tfloat_cumsum`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_degrees") { eprintln!("[shim-scalars] skipping `tfloat_degrees`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_delete_period") { eprintln!("[shim-scalars] skipping `tfloat_delete_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_delete_time") { eprintln!("[shim-scalars] skipping `tfloat_delete_time`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_derivative") { eprintln!("[shim-scalars] skipping `tfloat_derivative`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_derivative_wit") { eprintln!("[shim-scalars] skipping `tfloat_derivative_wit`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_detect_anomalies_iqr") { eprintln!("[shim-scalars] skipping `tfloat_detect_anomalies_iqr`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_detect_anomalies_moving_avg") { eprintln!("[shim-scalars] skipping `tfloat_detect_anomalies_moving_avg`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_detect_anomalies_zscore") { eprintln!("[shim-scalars] skipping `tfloat_detect_anomalies_zscore`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_detect_trend") { eprintln!("[shim-scalars] skipping `tfloat_detect_trend`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_detrend") { eprintln!("[shim-scalars] skipping `tfloat_detrend`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_diff") { eprintln!("[shim-scalars] skipping `tfloat_diff`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_div") { eprintln!("[shim-scalars] skipping `tfloat_div`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_div_scalar") { eprintln!("[shim-scalars] skipping `tfloat_div_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_downsample") { eprintln!("[shim-scalars] skipping `tfloat_downsample`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_duration") { eprintln!("[shim-scalars] skipping `tfloat_duration`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_ema") { eprintln!("[shim-scalars] skipping `tfloat_ema`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_end_timestamp") { eprintln!("[shim-scalars] skipping `tfloat_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_end_value") { eprintln!("[shim-scalars] skipping `tfloat_end_value`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_entropy") { eprintln!("[shim-scalars] skipping `tfloat_entropy`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_eq") { eprintln!("[shim-scalars] skipping `tfloat_ever_eq`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_eq_scalar") { eprintln!("[shim-scalars] skipping `tfloat_ever_eq_scalar`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_gt") { eprintln!("[shim-scalars] skipping `tfloat_ever_gt`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_gt_scalar") { eprintln!("[shim-scalars] skipping `tfloat_ever_gt_scalar`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_lt") { eprintln!("[shim-scalars] skipping `tfloat_ever_lt`: {e}"); }
-    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_lt_scalar") { eprintln!("[shim-scalars] skipping `tfloat_ever_lt_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_exp") { eprintln!("[shim-scalars] skipping `tfloat_exp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_exp2") { eprintln!("[shim-scalars] skipping `tfloat_exp2`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_expm1") { eprintln!("[shim-scalars] skipping `tfloat_expm1`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_exponential_smooth") { eprintln!("[shim-scalars] skipping `tfloat_exponential_smooth`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_fill_gaps") { eprintln!("[shim-scalars] skipping `tfloat_fill_gaps`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_floor") { eprintln!("[shim-scalars] skipping `tfloat_floor`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_forecast_linear") { eprintln!("[shim-scalars] skipping `tfloat_forecast_linear`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_fract") { eprintln!("[shim-scalars] skipping `tfloat_fract`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_from_csv") { eprintln!("[shim-scalars] skipping `tfloat_from_csv`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_from_ewkt") { eprintln!("[shim-scalars] skipping `tfloat_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_from_mfjson") { eprintln!("[shim-scalars] skipping `tfloat_from_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_gaussian_smooth") { eprintln!("[shim-scalars] skipping `tfloat_gaussian_smooth`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_hypot") { eprintln!("[shim-scalars] skipping `tfloat_hypot`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_insert") { eprintln!("[shim-scalars] skipping `tfloat_insert`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_instant_from_ewkt") { eprintln!("[shim-scalars] skipping `tfloat_instant_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_instant_from_mfjson") { eprintln!("[shim-scalars] skipping `tfloat_instant_from_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_instant_n") { eprintln!("[shim-scalars] skipping `tfloat_instant_n`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_instant_n_value") { eprintln!("[shim-scalars] skipping `tfloat_instant_n_value`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tfloat_instant_to_ewkt") { eprintln!("[shim-scalars] skipping `tfloat_instant_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_integral") { eprintln!("[shim-scalars] skipping `tfloat_integral`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_interpolation") { eprintln!("[shim-scalars] skipping `tfloat_interpolation`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_iqr") { eprintln!("[shim-scalars] skipping `tfloat_iqr`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tfloat_is_decreasing") { eprintln!("[shim-scalars] skipping `tfloat_is_decreasing`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tfloat_is_increasing") { eprintln!("[shim-scalars] skipping `tfloat_is_increasing`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_kalman_smooth") { eprintln!("[shim-scalars] skipping `tfloat_kalman_smooth`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_kurtosis") { eprintln!("[shim-scalars] skipping `tfloat_kurtosis`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_level_crossing_count") { eprintln!("[shim-scalars] skipping `tfloat_level_crossing_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_lift_between") { eprintln!("[shim-scalars] skipping `tfloat_lift_between`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_eq") { eprintln!("[shim-scalars] skipping `tfloat_lift_eq`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_ge") { eprintln!("[shim-scalars] skipping `tfloat_lift_ge`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_gt") { eprintln!("[shim-scalars] skipping `tfloat_lift_gt`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_le") { eprintln!("[shim-scalars] skipping `tfloat_lift_le`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_lt") { eprintln!("[shim-scalars] skipping `tfloat_lift_lt`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_ne") { eprintln!("[shim-scalars] skipping `tfloat_lift_ne`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_ln") { eprintln!("[shim-scalars] skipping `tfloat_ln`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_ln1p") { eprintln!("[shim-scalars] skipping `tfloat_ln1p`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_log10") { eprintln!("[shim-scalars] skipping `tfloat_log10`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_log2") { eprintln!("[shim-scalars] skipping `tfloat_log2`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_log_base") { eprintln!("[shim-scalars] skipping `tfloat_log_base`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tfloat_lower_inclusive") { eprintln!("[shim-scalars] skipping `tfloat_lower_inclusive`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_max") { eprintln!("[shim-scalars] skipping `tfloat_max`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_max_element") { eprintln!("[shim-scalars] skipping `tfloat_max_element`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_max_scalar") { eprintln!("[shim-scalars] skipping `tfloat_max_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_max_timestamp") { eprintln!("[shim-scalars] skipping `tfloat_max_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_max_value") { eprintln!("[shim-scalars] skipping `tfloat_max_value`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_max_value_wit") { eprintln!("[shim-scalars] skipping `tfloat_max_value_wit`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_mean") { eprintln!("[shim-scalars] skipping `tfloat_mean`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_median") { eprintln!("[shim-scalars] skipping `tfloat_median`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_merge") { eprintln!("[shim-scalars] skipping `tfloat_merge`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_min") { eprintln!("[shim-scalars] skipping `tfloat_min`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_min_element") { eprintln!("[shim-scalars] skipping `tfloat_min_element`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_min_scalar") { eprintln!("[shim-scalars] skipping `tfloat_min_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_min_timestamp") { eprintln!("[shim-scalars] skipping `tfloat_min_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_min_value") { eprintln!("[shim-scalars] skipping `tfloat_min_value`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_min_value_wit") { eprintln!("[shim-scalars] skipping `tfloat_min_value_wit`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tfloat_minus_period") { eprintln!("[shim-scalars] skipping `tfloat_minus_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_minus_range") { eprintln!("[shim-scalars] skipping `tfloat_minus_range`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_minus_tbox") { eprintln!("[shim-scalars] skipping `tfloat_minus_tbox`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_minus_timestamp") { eprintln!("[shim-scalars] skipping `tfloat_minus_timestamp`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_minus_value") { eprintln!("[shim-scalars] skipping `tfloat_minus_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_minus_values") { eprintln!("[shim-scalars] skipping `tfloat_minus_values`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_mod_scalar") { eprintln!("[shim-scalars] skipping `tfloat_mod_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_moving_average") { eprintln!("[shim-scalars] skipping `tfloat_moving_average`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_mul") { eprintln!("[shim-scalars] skipping `tfloat_mul`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_mul_scalar") { eprintln!("[shim-scalars] skipping `tfloat_mul_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_n_level_crossings") { eprintln!("[shim-scalars] skipping `tfloat_n_level_crossings`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_n_peaks") { eprintln!("[shim-scalars] skipping `tfloat_n_peaks`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_n_valleys") { eprintln!("[shim-scalars] skipping `tfloat_n_valleys`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_n_zero_crossings") { eprintln!("[shim-scalars] skipping `tfloat_n_zero_crossings`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_negate") { eprintln!("[shim-scalars] skipping `tfloat_negate`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_normalize") { eprintln!("[shim-scalars] skipping `tfloat_normalize`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_num_anomalies") { eprintln!("[shim-scalars] skipping `tfloat_num_anomalies`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_num_instants") { eprintln!("[shim-scalars] skipping `tfloat_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_num_instants_wit") { eprintln!("[shim-scalars] skipping `tfloat_num_instants_wit`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_num_segments") { eprintln!("[shim-scalars] skipping `tfloat_num_segments`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_pct") { eprintln!("[shim-scalars] skipping `tfloat_pct`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_pct_change") { eprintln!("[shim-scalars] skipping `tfloat_pct_change`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_peak_count") { eprintln!("[shim-scalars] skipping `tfloat_peak_count`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_percentile") { eprintln!("[shim-scalars] skipping `tfloat_percentile`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_pow") { eprintln!("[shim-scalars] skipping `tfloat_pow`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_precision") { eprintln!("[shim-scalars] skipping `tfloat_precision`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_radians") { eprintln!("[shim-scalars] skipping `tfloat_radians`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_range") { eprintln!("[shim-scalars] skipping `tfloat_range`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_recip") { eprintln!("[shim-scalars] skipping `tfloat_recip`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_remove_outliers") { eprintln!("[shim-scalars] skipping `tfloat_remove_outliers`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_resample_to_count") { eprintln!("[shim-scalars] skipping `tfloat_resample_to_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_rolling_mean") { eprintln!("[shim-scalars] skipping `tfloat_rolling_mean`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_rolling_stddev") { eprintln!("[shim-scalars] skipping `tfloat_rolling_stddev`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_rolling_variance") { eprintln!("[shim-scalars] skipping `tfloat_rolling_variance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_round") { eprintln!("[shim-scalars] skipping `tfloat_round`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_scale") { eprintln!("[shim-scalars] skipping `tfloat_scale`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_second_derivative") { eprintln!("[shim-scalars] skipping `tfloat_second_derivative`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_segments_count") { eprintln!("[shim-scalars] skipping `tfloat_segments_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_at_period") { eprintln!("[shim-scalars] skipping `tfloat_seqset_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_seqset_end_timestamp") { eprintln!("[shim-scalars] skipping `tfloat_seqset_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_intersection") { eprintln!("[shim-scalars] skipping `tfloat_seqset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_minus") { eprintln!("[shim-scalars] skipping `tfloat_seqset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_seqset_num_instants") { eprintln!("[shim-scalars] skipping `tfloat_seqset_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_seqset_num_sequences") { eprintln!("[shim-scalars] skipping `tfloat_seqset_num_sequences`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_scale") { eprintln!("[shim-scalars] skipping `tfloat_seqset_scale`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_sequence_n") { eprintln!("[shim-scalars] skipping `tfloat_seqset_sequence_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_shift") { eprintln!("[shim-scalars] skipping `tfloat_seqset_shift`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_seqset_start_timestamp") { eprintln!("[shim-scalars] skipping `tfloat_seqset_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_symdiff") { eprintln!("[shim-scalars] skipping `tfloat_seqset_symdiff`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_seqset_value_at") { eprintln!("[shim-scalars] skipping `tfloat_seqset_value_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_set_interpolation") { eprintln!("[shim-scalars] skipping `tfloat_set_interpolation`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_shift_scale_time") { eprintln!("[shim-scalars] skipping `tfloat_shift_scale_time`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_sign") { eprintln!("[shim-scalars] skipping `tfloat_sign`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_signum") { eprintln!("[shim-scalars] skipping `tfloat_signum`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_sin") { eprintln!("[shim-scalars] skipping `tfloat_sin`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_sinh") { eprintln!("[shim-scalars] skipping `tfloat_sinh`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_skewness") { eprintln!("[shim-scalars] skipping `tfloat_skewness`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_span") { eprintln!("[shim-scalars] skipping `tfloat_span`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_sqrt") { eprintln!("[shim-scalars] skipping `tfloat_sqrt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_square") { eprintln!("[shim-scalars] skipping `tfloat_square`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_start_timestamp") { eprintln!("[shim-scalars] skipping `tfloat_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_start_value") { eprintln!("[shim-scalars] skipping `tfloat_start_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_statistics") { eprintln!("[shim-scalars] skipping `tfloat_statistics`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_stddev") { eprintln!("[shim-scalars] skipping `tfloat_stddev`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_sub") { eprintln!("[shim-scalars] skipping `tfloat_sub`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_sub_scalar") { eprintln!("[shim-scalars] skipping `tfloat_sub_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_sum") { eprintln!("[shim-scalars] skipping `tfloat_sum`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tan") { eprintln!("[shim-scalars] skipping `tfloat_tan`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tanh") { eprintln!("[shim-scalars] skipping `tfloat_tanh`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tbox") { eprintln!("[shim-scalars] skipping `tfloat_tbox`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tbox_time_span") { eprintln!("[shim-scalars] skipping `tfloat_tbox_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_tbox_tmax") { eprintln!("[shim-scalars] skipping `tfloat_tbox_tmax`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_tbox_tmin") { eprintln!("[shim-scalars] skipping `tfloat_tbox_tmin`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tbox_value_span") { eprintln!("[shim-scalars] skipping `tfloat_tbox_value_span`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_tbox_vmax") { eprintln!("[shim-scalars] skipping `tfloat_tbox_vmax`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_tbox_vmin") { eprintln!("[shim-scalars] skipping `tfloat_tbox_vmin`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_eq") { eprintln!("[shim-scalars] skipping `tfloat_temporal_eq`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_ge") { eprintln!("[shim-scalars] skipping `tfloat_temporal_ge`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_gt") { eprintln!("[shim-scalars] skipping `tfloat_temporal_gt`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_le") { eprintln!("[shim-scalars] skipping `tfloat_temporal_le`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_lt") { eprintln!("[shim-scalars] skipping `tfloat_temporal_lt`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_temporal_median") { eprintln!("[shim-scalars] skipping `tfloat_temporal_median`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_ne") { eprintln!("[shim-scalars] skipping `tfloat_temporal_ne`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_temporal_stddev") { eprintln!("[shim-scalars] skipping `tfloat_temporal_stddev`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_temporal_variance") { eprintln!("[shim-scalars] skipping `tfloat_temporal_variance`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_time_bucket") { eprintln!("[shim-scalars] skipping `tfloat_time_bucket`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_time_bucket_count") { eprintln!("[shim-scalars] skipping `tfloat_time_bucket_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_time_span") { eprintln!("[shim-scalars] skipping `tfloat_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_time_split_count") { eprintln!("[shim-scalars] skipping `tfloat_time_split_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_time_split_nth") { eprintln!("[shim-scalars] skipping `tfloat_time_split_nth`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_timestamp_n") { eprintln!("[shim-scalars] skipping `tfloat_timestamp_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_timestamps") { eprintln!("[shim-scalars] skipping `tfloat_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tfloat_to_csv") { eprintln!("[shim-scalars] skipping `tfloat_to_csv`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tfloat_to_ewkt") { eprintln!("[shim-scalars] skipping `tfloat_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tfloat_to_json") { eprintln!("[shim-scalars] skipping `tfloat_to_json`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_to_linear") { eprintln!("[shim-scalars] skipping `tfloat_to_linear`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tfloat_to_mfjson") { eprintln!("[shim-scalars] skipping `tfloat_to_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_to_stepwise") { eprintln!("[shim-scalars] skipping `tfloat_to_stepwise`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_to_tint") { eprintln!("[shim-scalars] skipping `tfloat_to_tint`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_trend_n") { eprintln!("[shim-scalars] skipping `tfloat_trend_n`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_trend_segment_count") { eprintln!("[shim-scalars] skipping `tfloat_trend_segment_count`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_trend_slope") { eprintln!("[shim-scalars] skipping `tfloat_trend_slope`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_trunc") { eprintln!("[shim-scalars] skipping `tfloat_trunc`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tunion_avg") { eprintln!("[shim-scalars] skipping `tfloat_tunion_avg`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tunion_max") { eprintln!("[shim-scalars] skipping `tfloat_tunion_max`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tunion_min") { eprintln!("[shim-scalars] skipping `tfloat_tunion_min`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_tunion_sum") { eprintln!("[shim-scalars] skipping `tfloat_tunion_sum`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_twavg") { eprintln!("[shim-scalars] skipping `tfloat_twavg`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_twcount") { eprintln!("[shim-scalars] skipping `tfloat_twcount`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_twmax") { eprintln!("[shim-scalars] skipping `tfloat_twmax`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_twmin") { eprintln!("[shim-scalars] skipping `tfloat_twmin`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_twstddev") { eprintln!("[shim-scalars] skipping `tfloat_twstddev`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_twsum") { eprintln!("[shim-scalars] skipping `tfloat_twsum`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_twvariance") { eprintln!("[shim-scalars] skipping `tfloat_twvariance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_update") { eprintln!("[shim-scalars] skipping `tfloat_update`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tfloat_upper_inclusive") { eprintln!("[shim-scalars] skipping `tfloat_upper_inclusive`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_upsample") { eprintln!("[shim-scalars] skipping `tfloat_upsample`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_valley_count") { eprintln!("[shim-scalars] skipping `tfloat_valley_count`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tfloat_value_at") { eprintln!("[shim-scalars] skipping `tfloat_value_at`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_value_bucket_count") { eprintln!("[shim-scalars] skipping `tfloat_value_bucket_count`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tfloat_value_bucket_index") { eprintln!("[shim-scalars] skipping `tfloat_value_bucket_index`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_value_n") { eprintln!("[shim-scalars] skipping `tfloat_value_n`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_value_split_count") { eprintln!("[shim-scalars] skipping `tfloat_value_split_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_value_split_nth") { eprintln!("[shim-scalars] skipping `tfloat_value_split_nth`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_values") { eprintln!("[shim-scalars] skipping `tfloat_values`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloat_variance") { eprintln!("[shim-scalars] skipping `tfloat_variance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_wcount") { eprintln!("[shim-scalars] skipping `tfloat_wcount`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_eq") { eprintln!("[shim-scalars] skipping `tfloat_when_eq`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_ge") { eprintln!("[shim-scalars] skipping `tfloat_when_ge`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_gt") { eprintln!("[shim-scalars] skipping `tfloat_when_gt`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_le") { eprintln!("[shim-scalars] skipping `tfloat_when_le`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_lt") { eprintln!("[shim-scalars] skipping `tfloat_when_lt`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_ne") { eprintln!("[shim-scalars] skipping `tfloat_when_ne`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_wmax") { eprintln!("[shim-scalars] skipping `tfloat_wmax`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_wmedian") { eprintln!("[shim-scalars] skipping `tfloat_wmedian`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_wmin") { eprintln!("[shim-scalars] skipping `tfloat_wmin`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_wpercentile") { eprintln!("[shim-scalars] skipping `tfloat_wpercentile`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_wsum") { eprintln!("[shim-scalars] skipping `tfloat_wsum`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tfloat_zero_crossing_count") { eprintln!("[shim-scalars] skipping `tfloat_zero_crossing_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloat_zscore") { eprintln!("[shim-scalars] skipping `tfloat_zscore`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tfloatrange_always_contains") { eprintln!("[shim-scalars] skipping `tfloatrange_always_contains`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tfloatrange_ever_contains") { eprintln!("[shim-scalars] skipping `tfloatrange_ever_contains`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tfloatrange_from_bounds") { eprintln!("[shim-scalars] skipping `tfloatrange_from_bounds`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloatrange_lower") { eprintln!("[shim-scalars] skipping `tfloatrange_lower`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloatrange_midpoint") { eprintln!("[shim-scalars] skipping `tfloatrange_midpoint`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloatrange_upper") { eprintln!("[shim-scalars] skipping `tfloatrange_upper`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tfloatrange_width") { eprintln!("[shim-scalars] skipping `tfloatrange_width`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_at_period") { eprintln!("[shim-scalars] skipping `tgeogpoint_at_period`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tgeogpoint_at_stbox") { eprintln!("[shim-scalars] skipping `tgeogpoint_at_stbox`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeogpoint_avg_speed_geodetic") { eprintln!("[shim-scalars] skipping `tgeogpoint_avg_speed_geodetic`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tgeogpoint_azimuth_at") { eprintln!("[shim-scalars] skipping `tgeogpoint_azimuth_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_azimuth_geodetic") { eprintln!("[shim-scalars] skipping `tgeogpoint_azimuth_geodetic`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_distance") { eprintln!("[shim-scalars] skipping `tgeogpoint_distance`: {e}"); }
-    if let Err(e) = register_blob_f64_f64_to_blob(conn, "tgeogpoint_distance_to_point_seq") { eprintln!("[shim-scalars] skipping `tgeogpoint_distance_to_point_seq`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeogpoint_duration") { eprintln!("[shim-scalars] skipping `tgeogpoint_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeogpoint_end_timestamp") { eprintln!("[shim-scalars] skipping `tgeogpoint_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_end_value") { eprintln!("[shim-scalars] skipping `tgeogpoint_end_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_getlat") { eprintln!("[shim-scalars] skipping `tgeogpoint_getlat`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_getlon") { eprintln!("[shim-scalars] skipping `tgeogpoint_getlon`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_instant_n") { eprintln!("[shim-scalars] skipping `tgeogpoint_instant_n`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tgeogpoint_lat_at") { eprintln!("[shim-scalars] skipping `tgeogpoint_lat_at`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeogpoint_latitude_at") { eprintln!("[shim-scalars] skipping `tgeogpoint_latitude_at`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeogpoint_length_geodetic") { eprintln!("[shim-scalars] skipping `tgeogpoint_length_geodetic`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tgeogpoint_lon_at") { eprintln!("[shim-scalars] skipping `tgeogpoint_lon_at`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeogpoint_longitude_at") { eprintln!("[shim-scalars] skipping `tgeogpoint_longitude_at`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "tgeogpoint_min_distance") { eprintln!("[shim-scalars] skipping `tgeogpoint_min_distance`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tgeogpoint_minus_stbox") { eprintln!("[shim-scalars] skipping `tgeogpoint_minus_stbox`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeogpoint_num_instants") { eprintln!("[shim-scalars] skipping `tgeogpoint_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_shift") { eprintln!("[shim-scalars] skipping `tgeogpoint_shift`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tgeogpoint_speed_at") { eprintln!("[shim-scalars] skipping `tgeogpoint_speed_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_speed_geodetic") { eprintln!("[shim-scalars] skipping `tgeogpoint_speed_geodetic`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeogpoint_start_timestamp") { eprintln!("[shim-scalars] skipping `tgeogpoint_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_start_value") { eprintln!("[shim-scalars] skipping `tgeogpoint_start_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_time_span") { eprintln!("[shim-scalars] skipping `tgeogpoint_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_timestamps") { eprintln!("[shim-scalars] skipping `tgeogpoint_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_to_tgeompoint") { eprintln!("[shim-scalars] skipping `tgeogpoint_to_tgeompoint`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_value_at") { eprintln!("[shim-scalars] skipping `tgeogpoint_value_at`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeometry_always_contains") { eprintln!("[shim-scalars] skipping `tgeometry_always_contains`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_at_period") { eprintln!("[shim-scalars] skipping `tgeometry_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeometry_at_spatial_contains") { eprintln!("[shim-scalars] skipping `tgeometry_at_spatial_contains`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeometry_at_spatial_intersects") { eprintln!("[shim-scalars] skipping `tgeometry_at_spatial_intersects`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeometry_at_spatial_within") { eprintln!("[shim-scalars] skipping `tgeometry_at_spatial_within`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeometry_avg_area") { eprintln!("[shim-scalars] skipping `tgeometry_avg_area`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_bounding_box") { eprintln!("[shim-scalars] skipping `tgeometry_bounding_box`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_centroid") { eprintln!("[shim-scalars] skipping `tgeometry_centroid`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeometry_dominant_type") { eprintln!("[shim-scalars] skipping `tgeometry_dominant_type`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeometry_duration") { eprintln!("[shim-scalars] skipping `tgeometry_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeometry_end_timestamp") { eprintln!("[shim-scalars] skipping `tgeometry_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeometry_ever_contains") { eprintln!("[shim-scalars] skipping `tgeometry_ever_contains`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeometry_ever_intersects") { eprintln!("[shim-scalars] skipping `tgeometry_ever_intersects`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeometry_ever_within") { eprintln!("[shim-scalars] skipping `tgeometry_ever_within`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeometry_get_area") { eprintln!("[shim-scalars] skipping `tgeometry_get_area`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeometry_get_length") { eprintln!("[shim-scalars] skipping `tgeometry_get_length`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeometry_is_homogeneous") { eprintln!("[shim-scalars] skipping `tgeometry_is_homogeneous`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeometry_max_area") { eprintln!("[shim-scalars] skipping `tgeometry_max_area`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeometry_min_area") { eprintln!("[shim-scalars] skipping `tgeometry_min_area`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeometry_num_instants") { eprintln!("[shim-scalars] skipping `tgeometry_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_scale") { eprintln!("[shim-scalars] skipping `tgeometry_scale`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_shift") { eprintln!("[shim-scalars] skipping `tgeometry_shift`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_simplify") { eprintln!("[shim-scalars] skipping `tgeometry_simplify`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeometry_start_timestamp") { eprintln!("[shim-scalars] skipping `tgeometry_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_tarea") { eprintln!("[shim-scalars] skipping `tgeometry_tarea`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_tlength") { eprintln!("[shim-scalars] skipping `tgeometry_tlength`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeometry_to_tgeompoint") { eprintln!("[shim-scalars] skipping `tgeometry_to_tgeompoint`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeometry_total_area") { eprintln!("[shim-scalars] skipping `tgeometry_total_area`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeometry_total_coords") { eprintln!("[shim-scalars] skipping `tgeometry_total_coords`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeometry_type") { eprintln!("[shim-scalars] skipping `tgeometry_type`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_altitude") { eprintln!("[shim-scalars] skipping `tgeompoint3d_altitude`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_altitude_profile") { eprintln!("[shim-scalars] skipping `tgeompoint3d_altitude_profile`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_altitude_range") { eprintln!("[shim-scalars] skipping `tgeompoint3d_altitude_range`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_at_period") { eprintln!("[shim-scalars] skipping `tgeompoint3d_at_period`: {e}"); }
-    if let Err(e) = register_blob_4f64_to_blob(conn, "tgeompoint3d_at_point") { eprintln!("[shim-scalars] skipping `tgeompoint3d_at_point`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_at_stbox") { eprintln!("[shim-scalars] skipping `tgeompoint3d_at_stbox`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_avg_speed") { eprintln!("[shim-scalars] skipping `tgeompoint3d_avg_speed`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_avg_speed_3d") { eprintln!("[shim-scalars] skipping `tgeompoint3d_avg_speed_3d`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_azimuth") { eprintln!("[shim-scalars] skipping `tgeompoint3d_azimuth`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_centroid") { eprintln!("[shim-scalars] skipping `tgeompoint3d_centroid`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_climb_rate") { eprintln!("[shim-scalars] skipping `tgeompoint3d_climb_rate`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_cumulative_length") { eprintln!("[shim-scalars] skipping `tgeompoint3d_cumulative_length`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_descent_rate") { eprintln!("[shim-scalars] skipping `tgeompoint3d_descent_rate`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "tgeompoint3d_dtw_distance") { eprintln!("[shim-scalars] skipping `tgeompoint3d_dtw_distance`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint3d_duration") { eprintln!("[shim-scalars] skipping `tgeompoint3d_duration`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_elevation_gain") { eprintln!("[shim-scalars] skipping `tgeompoint3d_elevation_gain`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_elevation_loss") { eprintln!("[shim-scalars] skipping `tgeompoint3d_elevation_loss`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint3d_end_timestamp") { eprintln!("[shim-scalars] skipping `tgeompoint3d_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_end_value") { eprintln!("[shim-scalars] skipping `tgeompoint3d_end_value`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "tgeompoint3d_frechet_distance") { eprintln!("[shim-scalars] skipping `tgeompoint3d_frechet_distance`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "tgeompoint3d_from_csv") { eprintln!("[shim-scalars] skipping `tgeompoint3d_from_csv`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "tgeompoint3d_from_ewkt") { eprintln!("[shim-scalars] skipping `tgeompoint3d_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_from_text") { eprintln!("[shim-scalars] skipping `tgeompoint3d_from_text`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_getx") { eprintln!("[shim-scalars] skipping `tgeompoint3d_getx`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_gety") { eprintln!("[shim-scalars] skipping `tgeompoint3d_gety`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_getz") { eprintln!("[shim-scalars] skipping `tgeompoint3d_getz`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "tgeompoint3d_hausdorff_distance") { eprintln!("[shim-scalars] skipping `tgeompoint3d_hausdorff_distance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_inst_new") { eprintln!("[shim-scalars] skipping `tgeompoint3d_inst_new`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_instant_n") { eprintln!("[shim-scalars] skipping `tgeompoint3d_instant_n`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_length") { eprintln!("[shim-scalars] skipping `tgeompoint3d_length`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_length_2d") { eprintln!("[shim-scalars] skipping `tgeompoint3d_length_2d`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_length_3d") { eprintln!("[shim-scalars] skipping `tgeompoint3d_length_3d`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_max_altitude") { eprintln!("[shim-scalars] skipping `tgeompoint3d_max_altitude`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_min_altitude") { eprintln!("[shim-scalars] skipping `tgeompoint3d_min_altitude`: {e}"); }
-    if let Err(e) = register_blob_4f64_to_blob(conn, "tgeompoint3d_minus_point") { eprintln!("[shim-scalars] skipping `tgeompoint3d_minus_point`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_minus_stbox") { eprintln!("[shim-scalars] skipping `tgeompoint3d_minus_stbox`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint3d_num_instants") { eprintln!("[shim-scalars] skipping `tgeompoint3d_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_pitch") { eprintln!("[shim-scalars] skipping `tgeompoint3d_pitch`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_planar_length") { eprintln!("[shim-scalars] skipping `tgeompoint3d_planar_length`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_project_to_2d") { eprintln!("[shim-scalars] skipping `tgeompoint3d_project_to_2d`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_seq_from_inst") { eprintln!("[shim-scalars] skipping `tgeompoint3d_seq_from_inst`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_shift") { eprintln!("[shim-scalars] skipping `tgeompoint3d_shift`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_simplify") { eprintln!("[shim-scalars] skipping `tgeompoint3d_simplify`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_speed_3d") { eprintln!("[shim-scalars] skipping `tgeompoint3d_speed_3d`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint3d_start_timestamp") { eprintln!("[shim-scalars] skipping `tgeompoint3d_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_start_value") { eprintln!("[shim-scalars] skipping `tgeompoint3d_start_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_stbox") { eprintln!("[shim-scalars] skipping `tgeompoint3d_stbox`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_time_span") { eprintln!("[shim-scalars] skipping `tgeompoint3d_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_timestamps") { eprintln!("[shim-scalars] skipping `tgeompoint3d_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint3d_to_csv") { eprintln!("[shim-scalars] skipping `tgeompoint3d_to_csv`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint3d_to_ewkt") { eprintln!("[shim-scalars] skipping `tgeompoint3d_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint3d_to_text") { eprintln!("[shim-scalars] skipping `tgeompoint3d_to_text`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_total_climb") { eprintln!("[shim-scalars] skipping `tgeompoint3d_total_climb`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_total_descent") { eprintln!("[shim-scalars] skipping `tgeompoint3d_total_descent`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_value_at") { eprintln!("[shim-scalars] skipping `tgeompoint3d_value_at`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tgeompoint3d_value_at_x") { eprintln!("[shim-scalars] skipping `tgeompoint3d_value_at_x`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tgeompoint3d_value_at_y") { eprintln!("[shim-scalars] skipping `tgeompoint3d_value_at_y`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tgeompoint3d_value_at_z") { eprintln!("[shim-scalars] skipping `tgeompoint3d_value_at_z`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_vertical_speed") { eprintln!("[shim-scalars] skipping `tgeompoint3d_vertical_speed`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_x_coords") { eprintln!("[shim-scalars] skipping `tgeompoint3d_x_coords`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_y_coords") { eprintln!("[shim-scalars] skipping `tgeompoint3d_y_coords`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_z_coords") { eprintln!("[shim-scalars] skipping `tgeompoint3d_z_coords`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_angular_difference") { eprintln!("[shim-scalars] skipping `tgeompoint_angular_difference`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_area") { eprintln!("[shim-scalars] skipping `tgeompoint_area`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_at_geometry") { eprintln!("[shim-scalars] skipping `tgeompoint_at_geometry`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tgeompoint_at_period") { eprintln!("[shim-scalars] skipping `tgeompoint_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_at_points") { eprintln!("[shim-scalars] skipping `tgeompoint_at_points`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tgeompoint_at_stbox") { eprintln!("[shim-scalars] skipping `tgeompoint_at_stbox`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_avg_speed") { eprintln!("[shim-scalars] skipping `tgeompoint_avg_speed`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_azimuth") { eprintln!("[shim-scalars] skipping `tgeompoint_azimuth`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_bearing") { eprintln!("[shim-scalars] skipping `tgeompoint_bearing`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_bearing_seq") { eprintln!("[shim-scalars] skipping `tgeompoint_bearing_seq`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_bounding_box") { eprintln!("[shim-scalars] skipping `tgeompoint_bounding_box`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_bounds_detailed") { eprintln!("[shim-scalars] skipping `tgeompoint_bounds_detailed`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_buffer_polygon") { eprintln!("[shim-scalars] skipping `tgeompoint_buffer_polygon`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_center_x") { eprintln!("[shim-scalars] skipping `tgeompoint_center_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_center_y") { eprintln!("[shim-scalars] skipping `tgeompoint_center_y`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_centroid") { eprintln!("[shim-scalars] skipping `tgeompoint_centroid`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_centroid_x") { eprintln!("[shim-scalars] skipping `tgeompoint_centroid_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_centroid_y") { eprintln!("[shim-scalars] skipping `tgeompoint_centroid_y`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_cluster_dbscan") { eprintln!("[shim-scalars] skipping `tgeompoint_cluster_dbscan`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_cluster_kmeans") { eprintln!("[shim-scalars] skipping `tgeompoint_cluster_kmeans`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_convex_hull_area") { eprintln!("[shim-scalars] skipping `tgeompoint_convex_hull_area`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_cpa_distance") { eprintln!("[shim-scalars] skipping `tgeompoint_cpa_distance`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_cpa_time") { eprintln!("[shim-scalars] skipping `tgeompoint_cpa_time`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_cum_length") { eprintln!("[shim-scalars] skipping `tgeompoint_cum_length`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_cumulative_length") { eprintln!("[shim-scalars] skipping `tgeompoint_cumulative_length`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_delete_period") { eprintln!("[shim-scalars] skipping `tgeompoint_delete_period`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_detect_u_turns") { eprintln!("[shim-scalars] skipping `tgeompoint_detect_u_turns`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_dir_seg_n") { eprintln!("[shim-scalars] skipping `tgeompoint_dir_seg_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_dir_stats") { eprintln!("[shim-scalars] skipping `tgeompoint_dir_stats`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_direction_segment_count") { eprintln!("[shim-scalars] skipping `tgeompoint_direction_segment_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_direction_stats") { eprintln!("[shim-scalars] skipping `tgeompoint_direction_stats`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_disjoint_polygon") { eprintln!("[shim-scalars] skipping `tgeompoint_disjoint_polygon`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_disjoint_trajectory") { eprintln!("[shim-scalars] skipping `tgeompoint_disjoint_trajectory`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_displacement") { eprintln!("[shim-scalars] skipping `tgeompoint_displacement`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_downsample") { eprintln!("[shim-scalars] skipping `tgeompoint_downsample`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_duration") { eprintln!("[shim-scalars] skipping `tgeompoint_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_end_timestamp") { eprintln!("[shim-scalars] skipping `tgeompoint_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_end_x") { eprintln!("[shim-scalars] skipping `tgeompoint_end_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_end_y") { eprintln!("[shim-scalars] skipping `tgeompoint_end_y`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_entirely_within") { eprintln!("[shim-scalars] skipping `tgeompoint_entirely_within`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_find_convoys") { eprintln!("[shim-scalars] skipping `tgeompoint_find_convoys`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_find_flocks") { eprintln!("[shim-scalars] skipping `tgeompoint_find_flocks`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_find_meetings") { eprintln!("[shim-scalars] skipping `tgeompoint_find_meetings`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_forecast_position") { eprintln!("[shim-scalars] skipping `tgeompoint_forecast_position`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_forecast_trajectory") { eprintln!("[shim-scalars] skipping `tgeompoint_forecast_trajectory`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_csv") { eprintln!("[shim-scalars] skipping `tgeompoint_from_csv`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_ewkt") { eprintln!("[shim-scalars] skipping `tgeompoint_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_geojson") { eprintln!("[shim-scalars] skipping `tgeompoint_from_geojson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_geojson_feature") { eprintln!("[shim-scalars] skipping `tgeompoint_from_geojson_feature`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_gpx") { eprintln!("[shim-scalars] skipping `tgeompoint_from_gpx`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_hexewkb") { eprintln!("[shim-scalars] skipping `tgeompoint_from_hexewkb`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_mfjson") { eprintln!("[shim-scalars] skipping `tgeompoint_from_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_web_mercator") { eprintln!("[shim-scalars] skipping `tgeompoint_from_web_mercator`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_full") { eprintln!("[shim-scalars] skipping `tgeompoint_full`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_full_analysis") { eprintln!("[shim-scalars] skipping `tgeompoint_full_analysis`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_geodetic_length") { eprintln!("[shim-scalars] skipping `tgeompoint_geodetic_length`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_geodetic_speed") { eprintln!("[shim-scalars] skipping `tgeompoint_geodetic_speed`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_getx") { eprintln!("[shim-scalars] skipping `tgeompoint_getx`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_gety") { eprintln!("[shim-scalars] skipping `tgeompoint_gety`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_height") { eprintln!("[shim-scalars] skipping `tgeompoint_height`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_instant_from_ewkt") { eprintln!("[shim-scalars] skipping `tgeompoint_instant_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_instant_from_mfjson") { eprintln!("[shim-scalars] skipping `tgeompoint_instant_from_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_instant_n_x") { eprintln!("[shim-scalars] skipping `tgeompoint_instant_n_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_instant_n_y") { eprintln!("[shim-scalars] skipping `tgeompoint_instant_n_y`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_instant_to_ewkt") { eprintln!("[shim-scalars] skipping `tgeompoint_instant_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_interpolation") { eprintln!("[shim-scalars] skipping `tgeompoint_interpolation`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_intersects_polygon") { eprintln!("[shim-scalars] skipping `tgeompoint_intersects_polygon`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_intersects_trajectory") { eprintln!("[shim-scalars] skipping `tgeompoint_intersects_trajectory`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_is_simple") { eprintln!("[shim-scalars] skipping `tgeompoint_is_simple`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_is_stopped") { eprintln!("[shim-scalars] skipping `tgeompoint_is_stopped`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_kalman_smooth") { eprintln!("[shim-scalars] skipping `tgeompoint_kalman_smooth`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_length") { eprintln!("[shim-scalars] skipping `tgeompoint_length`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_lower_inclusive") { eprintln!("[shim-scalars] skipping `tgeompoint_lower_inclusive`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_make_simple") { eprintln!("[shim-scalars] skipping `tgeompoint_make_simple`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_map_match") { eprintln!("[shim-scalars] skipping `tgeompoint_map_match`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_map_match_hmm") { eprintln!("[shim-scalars] skipping `tgeompoint_map_match_hmm`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_max_speed") { eprintln!("[shim-scalars] skipping `tgeompoint_max_speed`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_merge") { eprintln!("[shim-scalars] skipping `tgeompoint_merge`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_min_distance") { eprintln!("[shim-scalars] skipping `tgeompoint_min_distance`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_min_speed") { eprintln!("[shim-scalars] skipping `tgeompoint_min_speed`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_minus_geometry") { eprintln!("[shim-scalars] skipping `tgeompoint_minus_geometry`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tgeompoint_minus_period") { eprintln!("[shim-scalars] skipping `tgeompoint_minus_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_minus_points") { eprintln!("[shim-scalars] skipping `tgeompoint_minus_points`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tgeompoint_minus_stbox") { eprintln!("[shim-scalars] skipping `tgeompoint_minus_stbox`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_minus_timestamp") { eprintln!("[shim-scalars] skipping `tgeompoint_minus_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_movement_count") { eprintln!("[shim-scalars] skipping `tgeompoint_movement_count`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_movement_n") { eprintln!("[shim-scalars] skipping `tgeompoint_movement_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_movement_sum") { eprintln!("[shim-scalars] skipping `tgeompoint_movement_sum`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_movement_summary") { eprintln!("[shim-scalars] skipping `tgeompoint_movement_summary`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_nearest_approach_between_distance") { eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_between_distance`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_nearest_approach_between_time") { eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_between_time`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "tgeompoint_nearest_approach_distance") { eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_distance`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_nearest_approach_instant_distance") { eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_instant_distance`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_nearest_approach_instant_time") { eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_instant_time`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_nearest_approach_time") { eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_time`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_nearest_point_on_trajectory") { eprintln!("[shim-scalars] skipping `tgeompoint_nearest_point_on_trajectory`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_num_instants") { eprintln!("[shim-scalars] skipping `tgeompoint_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_num_segments") { eprintln!("[shim-scalars] skipping `tgeompoint_num_segments`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_num_u_turns") { eprintln!("[shim-scalars] skipping `tgeompoint_num_u_turns`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_offset_curve") { eprintln!("[shim-scalars] skipping `tgeompoint_offset_curve`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "tgeompoint_overlaps_stbox") { eprintln!("[shim-scalars] skipping `tgeompoint_overlaps_stbox`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_quality_metrics") { eprintln!("[shim-scalars] skipping `tgeompoint_quality_metrics`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_quality_report") { eprintln!("[shim-scalars] skipping `tgeompoint_quality_report`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_quality_score") { eprintln!("[shim-scalars] skipping `tgeompoint_quality_score`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_remove_repeated_points") { eprintln!("[shim-scalars] skipping `tgeompoint_remove_repeated_points`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_resample_to_count") { eprintln!("[shim-scalars] skipping `tgeompoint_resample_to_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_at_period") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_seqset_end_timestamp") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_intersection") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_minus") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_seqset_num_instants") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_seqset_num_sequences") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_num_sequences`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_scale") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_scale`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_sequence_n") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_sequence_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_shift") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_shift`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_seqset_start_timestamp") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_symdiff") { eprintln!("[shim-scalars] skipping `tgeompoint_seqset_symdiff`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_shortest_line_length") { eprintln!("[shim-scalars] skipping `tgeompoint_shortest_line_length`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tgeompoint_simplify") { eprintln!("[shim-scalars] skipping `tgeompoint_simplify`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_simplify_semantic") { eprintln!("[shim-scalars] skipping `tgeompoint_simplify_semantic`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_simplify_to_n") { eprintln!("[shim-scalars] skipping `tgeompoint_simplify_to_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_simplify_visvalingam") { eprintln!("[shim-scalars] skipping `tgeompoint_simplify_visvalingam`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_sinuosity") { eprintln!("[shim-scalars] skipping `tgeompoint_sinuosity`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_span") { eprintln!("[shim-scalars] skipping `tgeompoint_span`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_speed_seg_n") { eprintln!("[shim-scalars] skipping `tgeompoint_speed_seg_n`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_speed_segment_count") { eprintln!("[shim-scalars] skipping `tgeompoint_speed_segment_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_speed_stats") { eprintln!("[shim-scalars] skipping `tgeompoint_speed_stats`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_speeds") { eprintln!("[shim-scalars] skipping `tgeompoint_speeds`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_speeds_seq") { eprintln!("[shim-scalars] skipping `tgeompoint_speeds_seq`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_srid") { eprintln!("[shim-scalars] skipping `tgeompoint_srid`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_start_timestamp") { eprintln!("[shim-scalars] skipping `tgeompoint_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_start_x") { eprintln!("[shim-scalars] skipping `tgeompoint_start_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_start_y") { eprintln!("[shim-scalars] skipping `tgeompoint_start_y`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_stop_duration") { eprintln!("[shim-scalars] skipping `tgeompoint_stop_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_stop_n") { eprintln!("[shim-scalars] skipping `tgeompoint_stop_n`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_stop_segment_count") { eprintln!("[shim-scalars] skipping `tgeompoint_stop_segment_count`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_stop_split_count") { eprintln!("[shim-scalars] skipping `tgeompoint_stop_split_count`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tcontains") { eprintln!("[shim-scalars] skipping `tgeompoint_tcontains`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tcovers") { eprintln!("[shim-scalars] skipping `tgeompoint_tcovers`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tcrosses_polygon") { eprintln!("[shim-scalars] skipping `tgeompoint_tcrosses_polygon`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tdisjoint") { eprintln!("[shim-scalars] skipping `tgeompoint_tdisjoint`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tdisjoint_polygon") { eprintln!("[shim-scalars] skipping `tgeompoint_tdisjoint_polygon`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tdwithin") { eprintln!("[shim-scalars] skipping `tgeompoint_tdwithin`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_temporal_distance") { eprintln!("[shim-scalars] skipping `tgeompoint_temporal_distance`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tequals") { eprintln!("[shim-scalars] skipping `tgeompoint_tequals`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_time_bucket") { eprintln!("[shim-scalars] skipping `tgeompoint_time_bucket`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_time_split_count") { eprintln!("[shim-scalars] skipping `tgeompoint_time_split_count`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_timestamp_n") { eprintln!("[shim-scalars] skipping `tgeompoint_timestamp_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_timestamps") { eprintln!("[shim-scalars] skipping `tgeompoint_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tintersects") { eprintln!("[shim-scalars] skipping `tgeompoint_tintersects`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tintersects_polygon") { eprintln!("[shim-scalars] skipping `tgeompoint_tintersects_polygon`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_to_3d") { eprintln!("[shim-scalars] skipping `tgeompoint_to_3d`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_to_3d_with_altitudes") { eprintln!("[shim-scalars] skipping `tgeompoint_to_3d_with_altitudes`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_csv") { eprintln!("[shim-scalars] skipping `tgeompoint_to_csv`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_ewkt") { eprintln!("[shim-scalars] skipping `tgeompoint_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_geojson") { eprintln!("[shim-scalars] skipping `tgeompoint_to_geojson`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_geojson_feature") { eprintln!("[shim-scalars] skipping `tgeompoint_to_geojson_feature`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_geojson_feature_collection") { eprintln!("[shim-scalars] skipping `tgeompoint_to_geojson_feature_collection`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_gpx") { eprintln!("[shim-scalars] skipping `tgeompoint_to_gpx`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_hexewkb") { eprintln!("[shim-scalars] skipping `tgeompoint_to_hexewkb`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_kml") { eprintln!("[shim-scalars] skipping `tgeompoint_to_kml`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_mfjson") { eprintln!("[shim-scalars] skipping `tgeompoint_to_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_to_tgeogpoint") { eprintln!("[shim-scalars] skipping `tgeompoint_to_tgeogpoint`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_to_web_mercator") { eprintln!("[shim-scalars] skipping `tgeompoint_to_web_mercator`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_tortuosity") { eprintln!("[shim-scalars] skipping `tgeompoint_tortuosity`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_tortuosity_idx") { eprintln!("[shim-scalars] skipping `tgeompoint_tortuosity_idx`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_total_distance") { eprintln!("[shim-scalars] skipping `tgeompoint_total_distance`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_total_duration") { eprintln!("[shim-scalars] skipping `tgeompoint_total_duration`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_total_length_set") { eprintln!("[shim-scalars] skipping `tgeompoint_total_length_set`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_toverlaps") { eprintln!("[shim-scalars] skipping `tgeompoint_toverlaps`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_traj_geog_bearing") { eprintln!("[shim-scalars] skipping `tgeompoint_traj_geog_bearing`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_traj_geog_speed") { eprintln!("[shim-scalars] skipping `tgeompoint_traj_geog_speed`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_transform") { eprintln!("[shim-scalars] skipping `tgeompoint_transform`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_ttouches") { eprintln!("[shim-scalars] skipping `tgeompoint_ttouches`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_turn_seq") { eprintln!("[shim-scalars] skipping `tgeompoint_turn_seq`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_twithin_polygon") { eprintln!("[shim-scalars] skipping `tgeompoint_twithin_polygon`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_upper_inclusive") { eprintln!("[shim-scalars] skipping `tgeompoint_upper_inclusive`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_upsample") { eprintln!("[shim-scalars] skipping `tgeompoint_upsample`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_utm_zone") { eprintln!("[shim-scalars] skipping `tgeompoint_utm_zone`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_v_stats") { eprintln!("[shim-scalars] skipping `tgeompoint_v_stats`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tgeompoint_value_at") { eprintln!("[shim-scalars] skipping `tgeompoint_value_at`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_vmax") { eprintln!("[shim-scalars] skipping `tgeompoint_vmax`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_vmin") { eprintln!("[shim-scalars] skipping `tgeompoint_vmin`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_width") { eprintln!("[shim-scalars] skipping `tgeompoint_width`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_within_polygon") { eprintln!("[shim-scalars] skipping `tgeompoint_within_polygon`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_x_at") { eprintln!("[shim-scalars] skipping `tgeompoint_x_at`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_xmax") { eprintln!("[shim-scalars] skipping `tgeompoint_xmax`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_xmin") { eprintln!("[shim-scalars] skipping `tgeompoint_xmin`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_y_at") { eprintln!("[shim-scalars] skipping `tgeompoint_y_at`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_ymax") { eprintln!("[shim-scalars] skipping `tgeompoint_ymax`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_ymin") { eprintln!("[shim-scalars] skipping `tgeompoint_ymin`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "timeset_gaps") { eprintln!("[shim-scalars] skipping `timeset_gaps`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "timeset_to_span") { eprintln!("[shim-scalars] skipping `timeset_to_span`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "timestamps") { eprintln!("[shim-scalars] skipping `timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_abs") { eprintln!("[shim-scalars] skipping `tint_abs`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_add") { eprintln!("[shim-scalars] skipping `tint_add`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_add_scalar") { eprintln!("[shim-scalars] skipping `tint_add_scalar`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_eq") { eprintln!("[shim-scalars] skipping `tint_always_eq`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_eq_scalar") { eprintln!("[shim-scalars] skipping `tint_always_eq_scalar`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_gt") { eprintln!("[shim-scalars] skipping `tint_always_gt`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_gt_scalar") { eprintln!("[shim-scalars] skipping `tint_always_gt_scalar`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_lt") { eprintln!("[shim-scalars] skipping `tint_always_lt`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_lt_scalar") { eprintln!("[shim-scalars] skipping `tint_always_lt_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_at_max") { eprintln!("[shim-scalars] skipping `tint_at_max`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_at_min") { eprintln!("[shim-scalars] skipping `tint_at_min`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tint_at_period") { eprintln!("[shim-scalars] skipping `tint_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_at_range") { eprintln!("[shim-scalars] skipping `tint_at_range`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_at_tbox") { eprintln!("[shim-scalars] skipping `tint_at_tbox`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_at_value") { eprintln!("[shim-scalars] skipping `tint_at_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_at_values") { eprintln!("[shim-scalars] skipping `tint_at_values`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_bitwise_and") { eprintln!("[shim-scalars] skipping `tint_bitwise_and`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_bitwise_or") { eprintln!("[shim-scalars] skipping `tint_bitwise_or`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_bitwise_xor") { eprintln!("[shim-scalars] skipping `tint_bitwise_xor`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_clamp") { eprintln!("[shim-scalars] skipping `tint_clamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_consecutive_diff") { eprintln!("[shim-scalars] skipping `tint_consecutive_diff`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_count") { eprintln!("[shim-scalars] skipping `tint_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_cube") { eprintln!("[shim-scalars] skipping `tint_cube`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_cumsum") { eprintln!("[shim-scalars] skipping `tint_cumsum`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_delete_period") { eprintln!("[shim-scalars] skipping `tint_delete_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_delete_time") { eprintln!("[shim-scalars] skipping `tint_delete_time`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_detect_anomalies_iqr") { eprintln!("[shim-scalars] skipping `tint_detect_anomalies_iqr`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_detect_anomalies_zscore") { eprintln!("[shim-scalars] skipping `tint_detect_anomalies_zscore`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_diff") { eprintln!("[shim-scalars] skipping `tint_diff`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_div") { eprintln!("[shim-scalars] skipping `tint_div`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_div_scalar") { eprintln!("[shim-scalars] skipping `tint_div_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_downsample") { eprintln!("[shim-scalars] skipping `tint_downsample`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_duration") { eprintln!("[shim-scalars] skipping `tint_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_end_timestamp") { eprintln!("[shim-scalars] skipping `tint_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_end_value") { eprintln!("[shim-scalars] skipping `tint_end_value`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_eq") { eprintln!("[shim-scalars] skipping `tint_ever_eq`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_eq_scalar") { eprintln!("[shim-scalars] skipping `tint_ever_eq_scalar`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_gt") { eprintln!("[shim-scalars] skipping `tint_ever_gt`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_gt_scalar") { eprintln!("[shim-scalars] skipping `tint_ever_gt_scalar`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_lt") { eprintln!("[shim-scalars] skipping `tint_ever_lt`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_lt_scalar") { eprintln!("[shim-scalars] skipping `tint_ever_lt_scalar`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tint_exponential_smooth") { eprintln!("[shim-scalars] skipping `tint_exponential_smooth`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_from_csv") { eprintln!("[shim-scalars] skipping `tint_from_csv`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_from_ewkt") { eprintln!("[shim-scalars] skipping `tint_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_from_mfjson") { eprintln!("[shim-scalars] skipping `tint_from_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_gcd") { eprintln!("[shim-scalars] skipping `tint_gcd`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_insert") { eprintln!("[shim-scalars] skipping `tint_insert`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_instant_from_ewkt") { eprintln!("[shim-scalars] skipping `tint_instant_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_instant_from_mfjson") { eprintln!("[shim-scalars] skipping `tint_instant_from_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_instant_n") { eprintln!("[shim-scalars] skipping `tint_instant_n`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_instant_n_value") { eprintln!("[shim-scalars] skipping `tint_instant_n_value`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tint_instant_to_ewkt") { eprintln!("[shim-scalars] skipping `tint_instant_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_integral") { eprintln!("[shim-scalars] skipping `tint_integral`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_interpolation") { eprintln!("[shim-scalars] skipping `tint_interpolation`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_iqr") { eprintln!("[shim-scalars] skipping `tint_iqr`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_kurtosis") { eprintln!("[shim-scalars] skipping `tint_kurtosis`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_lcm") { eprintln!("[shim-scalars] skipping `tint_lcm`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_lift_between") { eprintln!("[shim-scalars] skipping `tint_lift_between`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_eq") { eprintln!("[shim-scalars] skipping `tint_lift_eq`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_ge") { eprintln!("[shim-scalars] skipping `tint_lift_ge`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_gt") { eprintln!("[shim-scalars] skipping `tint_lift_gt`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_le") { eprintln!("[shim-scalars] skipping `tint_lift_le`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_lt") { eprintln!("[shim-scalars] skipping `tint_lift_lt`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_ne") { eprintln!("[shim-scalars] skipping `tint_lift_ne`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tint_lower_inclusive") { eprintln!("[shim-scalars] skipping `tint_lower_inclusive`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_max") { eprintln!("[shim-scalars] skipping `tint_max`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_max_timestamp") { eprintln!("[shim-scalars] skipping `tint_max_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_max_value_scalar") { eprintln!("[shim-scalars] skipping `tint_max_value_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_max_value_wit") { eprintln!("[shim-scalars] skipping `tint_max_value_wit`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_mean") { eprintln!("[shim-scalars] skipping `tint_mean`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_mean_f64") { eprintln!("[shim-scalars] skipping `tint_mean_f64`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_median") { eprintln!("[shim-scalars] skipping `tint_median`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_merge") { eprintln!("[shim-scalars] skipping `tint_merge`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_min") { eprintln!("[shim-scalars] skipping `tint_min`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_min_timestamp") { eprintln!("[shim-scalars] skipping `tint_min_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_min_value_scalar") { eprintln!("[shim-scalars] skipping `tint_min_value_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_min_value_wit") { eprintln!("[shim-scalars] skipping `tint_min_value_wit`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tint_minus_period") { eprintln!("[shim-scalars] skipping `tint_minus_period`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_minus_range") { eprintln!("[shim-scalars] skipping `tint_minus_range`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_minus_tbox") { eprintln!("[shim-scalars] skipping `tint_minus_tbox`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_minus_timestamp") { eprintln!("[shim-scalars] skipping `tint_minus_timestamp`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_minus_value") { eprintln!("[shim-scalars] skipping `tint_minus_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_minus_values") { eprintln!("[shim-scalars] skipping `tint_minus_values`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_mod") { eprintln!("[shim-scalars] skipping `tint_mod`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_mod_scalar") { eprintln!("[shim-scalars] skipping `tint_mod_scalar`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_moving_average") { eprintln!("[shim-scalars] skipping `tint_moving_average`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_mul") { eprintln!("[shim-scalars] skipping `tint_mul`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_mul_scalar") { eprintln!("[shim-scalars] skipping `tint_mul_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_negate") { eprintln!("[shim-scalars] skipping `tint_negate`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_num_anomalies") { eprintln!("[shim-scalars] skipping `tint_num_anomalies`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_num_instants") { eprintln!("[shim-scalars] skipping `tint_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_num_instants_wit") { eprintln!("[shim-scalars] skipping `tint_num_instants_wit`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_num_segments") { eprintln!("[shim-scalars] skipping `tint_num_segments`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_percentile") { eprintln!("[shim-scalars] skipping `tint_percentile`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_pow") { eprintln!("[shim-scalars] skipping `tint_pow`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_range") { eprintln!("[shim-scalars] skipping `tint_range`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_range_value") { eprintln!("[shim-scalars] skipping `tint_range_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_resample_to_count") { eprintln!("[shim-scalars] skipping `tint_resample_to_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_rolling_mean") { eprintln!("[shim-scalars] skipping `tint_rolling_mean`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_rolling_stddev") { eprintln!("[shim-scalars] skipping `tint_rolling_stddev`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_rolling_variance") { eprintln!("[shim-scalars] skipping `tint_rolling_variance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_at_period") { eprintln!("[shim-scalars] skipping `tint_seqset_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_seqset_end_timestamp") { eprintln!("[shim-scalars] skipping `tint_seqset_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_intersection") { eprintln!("[shim-scalars] skipping `tint_seqset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_minus") { eprintln!("[shim-scalars] skipping `tint_seqset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_seqset_num_instants") { eprintln!("[shim-scalars] skipping `tint_seqset_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_seqset_num_sequences") { eprintln!("[shim-scalars] skipping `tint_seqset_num_sequences`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_scale") { eprintln!("[shim-scalars] skipping `tint_seqset_scale`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_sequence_n") { eprintln!("[shim-scalars] skipping `tint_seqset_sequence_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_shift") { eprintln!("[shim-scalars] skipping `tint_seqset_shift`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_seqset_start_timestamp") { eprintln!("[shim-scalars] skipping `tint_seqset_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_symdiff") { eprintln!("[shim-scalars] skipping `tint_seqset_symdiff`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_seqset_value_at") { eprintln!("[shim-scalars] skipping `tint_seqset_value_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_sequence_to_tfloat") { eprintln!("[shim-scalars] skipping `tint_sequence_to_tfloat`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_shift") { eprintln!("[shim-scalars] skipping `tint_shift`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_sign") { eprintln!("[shim-scalars] skipping `tint_sign`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_skewness") { eprintln!("[shim-scalars] skipping `tint_skewness`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_span") { eprintln!("[shim-scalars] skipping `tint_span`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_square") { eprintln!("[shim-scalars] skipping `tint_square`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_start_timestamp") { eprintln!("[shim-scalars] skipping `tint_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_start_value") { eprintln!("[shim-scalars] skipping `tint_start_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_statistics") { eprintln!("[shim-scalars] skipping `tint_statistics`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_stddev") { eprintln!("[shim-scalars] skipping `tint_stddev`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_sub") { eprintln!("[shim-scalars] skipping `tint_sub`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_sub_scalar") { eprintln!("[shim-scalars] skipping `tint_sub_scalar`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_sum") { eprintln!("[shim-scalars] skipping `tint_sum`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_tbox") { eprintln!("[shim-scalars] skipping `tint_tbox`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_tbox_time_span") { eprintln!("[shim-scalars] skipping `tint_tbox_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_tbox_tmax") { eprintln!("[shim-scalars] skipping `tint_tbox_tmax`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_tbox_tmin") { eprintln!("[shim-scalars] skipping `tint_tbox_tmin`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_tbox_vmax") { eprintln!("[shim-scalars] skipping `tint_tbox_vmax`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_tbox_vmin") { eprintln!("[shim-scalars] skipping `tint_tbox_vmin`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_temporal_avg") { eprintln!("[shim-scalars] skipping `tint_temporal_avg`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_temporal_count") { eprintln!("[shim-scalars] skipping `tint_temporal_count`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_eq") { eprintln!("[shim-scalars] skipping `tint_temporal_eq`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_ge") { eprintln!("[shim-scalars] skipping `tint_temporal_ge`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_gt") { eprintln!("[shim-scalars] skipping `tint_temporal_gt`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_le") { eprintln!("[shim-scalars] skipping `tint_temporal_le`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_lt") { eprintln!("[shim-scalars] skipping `tint_temporal_lt`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_temporal_median") { eprintln!("[shim-scalars] skipping `tint_temporal_median`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_ne") { eprintln!("[shim-scalars] skipping `tint_temporal_ne`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_temporal_stddev") { eprintln!("[shim-scalars] skipping `tint_temporal_stddev`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_temporal_variance") { eprintln!("[shim-scalars] skipping `tint_temporal_variance`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_time_bucket") { eprintln!("[shim-scalars] skipping `tint_time_bucket`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_time_span") { eprintln!("[shim-scalars] skipping `tint_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_time_split_count") { eprintln!("[shim-scalars] skipping `tint_time_split_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_time_split_nth") { eprintln!("[shim-scalars] skipping `tint_time_split_nth`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_timestamp_n") { eprintln!("[shim-scalars] skipping `tint_timestamp_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_timestamps") { eprintln!("[shim-scalars] skipping `tint_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tint_to_csv") { eprintln!("[shim-scalars] skipping `tint_to_csv`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tint_to_ewkt") { eprintln!("[shim-scalars] skipping `tint_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tint_to_json") { eprintln!("[shim-scalars] skipping `tint_to_json`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tint_to_mfjson") { eprintln!("[shim-scalars] skipping `tint_to_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_to_tbool") { eprintln!("[shim-scalars] skipping `tint_to_tbool`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_to_tfloat") { eprintln!("[shim-scalars] skipping `tint_to_tfloat`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_tunion_avg") { eprintln!("[shim-scalars] skipping `tint_tunion_avg`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_tunion_max") { eprintln!("[shim-scalars] skipping `tint_tunion_max`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_tunion_min") { eprintln!("[shim-scalars] skipping `tint_tunion_min`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_tunion_sum") { eprintln!("[shim-scalars] skipping `tint_tunion_sum`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_twavg") { eprintln!("[shim-scalars] skipping `tint_twavg`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_twcount") { eprintln!("[shim-scalars] skipping `tint_twcount`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_twmax") { eprintln!("[shim-scalars] skipping `tint_twmax`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_twmin") { eprintln!("[shim-scalars] skipping `tint_twmin`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_twstddev") { eprintln!("[shim-scalars] skipping `tint_twstddev`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_twsum") { eprintln!("[shim-scalars] skipping `tint_twsum`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_twvariance") { eprintln!("[shim-scalars] skipping `tint_twvariance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_update") { eprintln!("[shim-scalars] skipping `tint_update`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tint_upper_inclusive") { eprintln!("[shim-scalars] skipping `tint_upper_inclusive`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_upsample") { eprintln!("[shim-scalars] skipping `tint_upsample`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_value_bucket_count") { eprintln!("[shim-scalars] skipping `tint_value_bucket_count`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_value_bucket_index") { eprintln!("[shim-scalars] skipping `tint_value_bucket_index`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tint_value_n") { eprintln!("[shim-scalars] skipping `tint_value_n`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tint_value_split_count") { eprintln!("[shim-scalars] skipping `tint_value_split_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_value_split_nth") { eprintln!("[shim-scalars] skipping `tint_value_split_nth`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_values") { eprintln!("[shim-scalars] skipping `tint_values`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tint_variance") { eprintln!("[shim-scalars] skipping `tint_variance`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_wcount") { eprintln!("[shim-scalars] skipping `tint_wcount`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_eq") { eprintln!("[shim-scalars] skipping `tint_when_eq`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_ge") { eprintln!("[shim-scalars] skipping `tint_when_ge`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_gt") { eprintln!("[shim-scalars] skipping `tint_when_gt`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_le") { eprintln!("[shim-scalars] skipping `tint_when_le`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_lt") { eprintln!("[shim-scalars] skipping `tint_when_lt`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_ne") { eprintln!("[shim-scalars] skipping `tint_when_ne`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_wmax") { eprintln!("[shim-scalars] skipping `tint_wmax`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_wmedian") { eprintln!("[shim-scalars] skipping `tint_wmedian`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_wmin") { eprintln!("[shim-scalars] skipping `tint_wmin`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_wpercentile") { eprintln!("[shim-scalars] skipping `tint_wpercentile`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tint_wsum") { eprintln!("[shim-scalars] skipping `tint_wsum`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tintrange_always_contains") { eprintln!("[shim-scalars] skipping `tintrange_always_contains`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tintrange_ever_contains") { eprintln!("[shim-scalars] skipping `tintrange_ever_contains`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tintrange_from_bounds") { eprintln!("[shim-scalars] skipping `tintrange_from_bounds`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tintrange_lower") { eprintln!("[shim-scalars] skipping `tintrange_lower`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tintrange_upper") { eprintln!("[shim-scalars] skipping `tintrange_upper`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tintrange_width") { eprintln!("[shim-scalars] skipping `tintrange_width`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tmax") { eprintln!("[shim-scalars] skipping `tmax`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tmin") { eprintln!("[shim-scalars] skipping `tmin`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tnpoint_at_period") { eprintln!("[shim-scalars] skipping `tnpoint_at_period`: {e}"); }
-    if let Err(e) = register_blob_f64_f64_to_blob(conn, "tnpoint_at_position_range") { eprintln!("[shim-scalars] skipping `tnpoint_at_position_range`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_avg_network_speed") { eprintln!("[shim-scalars] skipping `tnpoint_avg_network_speed`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_avg_position") { eprintln!("[shim-scalars] skipping `tnpoint_avg_position`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_cumulative_length") { eprintln!("[shim-scalars] skipping `tnpoint_cumulative_length`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tnpoint_duration") { eprintln!("[shim-scalars] skipping `tnpoint_duration`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_end_position") { eprintln!("[shim-scalars] skipping `tnpoint_end_position`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tnpoint_end_timestamp") { eprintln!("[shim-scalars] skipping `tnpoint_end_timestamp`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "tnpoint_from_ewkt") { eprintln!("[shim-scalars] skipping `tnpoint_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_inst_new") { eprintln!("[shim-scalars] skipping `tnpoint_inst_new`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tnpoint_interpolate") { eprintln!("[shim-scalars] skipping `tnpoint_interpolate`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tnpoint_is_backward") { eprintln!("[shim-scalars] skipping `tnpoint_is_backward`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tnpoint_is_forward") { eprintln!("[shim-scalars] skipping `tnpoint_is_forward`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "tnpoint_is_single_route") { eprintln!("[shim-scalars] skipping `tnpoint_is_single_route`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_length") { eprintln!("[shim-scalars] skipping `tnpoint_length`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_match_quality") { eprintln!("[shim-scalars] skipping `tnpoint_match_quality`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_max_position") { eprintln!("[shim-scalars] skipping `tnpoint_max_position`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_min_position") { eprintln!("[shim-scalars] skipping `tnpoint_min_position`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_network_length") { eprintln!("[shim-scalars] skipping `tnpoint_network_length`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_network_speed") { eprintln!("[shim-scalars] skipping `tnpoint_network_speed`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tnpoint_num_instants") { eprintln!("[shim-scalars] skipping `tnpoint_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tnpoint_num_route_changes") { eprintln!("[shim-scalars] skipping `tnpoint_num_route_changes`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tnpoint_num_routes") { eprintln!("[shim-scalars] skipping `tnpoint_num_routes`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tnpoint_position_at") { eprintln!("[shim-scalars] skipping `tnpoint_position_at`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_positions") { eprintln!("[shim-scalars] skipping `tnpoint_positions`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tnpoint_route") { eprintln!("[shim-scalars] skipping `tnpoint_route`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tnpoint_route_id") { eprintln!("[shim-scalars] skipping `tnpoint_route_id`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_routes") { eprintln!("[shim-scalars] skipping `tnpoint_routes`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tnpoint_scale") { eprintln!("[shim-scalars] skipping `tnpoint_scale`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tnpoint_scale_time") { eprintln!("[shim-scalars] skipping `tnpoint_scale_time`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_seq_from_inst") { eprintln!("[shim-scalars] skipping `tnpoint_seq_from_inst`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tnpoint_shift") { eprintln!("[shim-scalars] skipping `tnpoint_shift`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tnpoint_shift_time") { eprintln!("[shim-scalars] skipping `tnpoint_shift_time`: {e}"); }
-    if let Err(e) = register_blob_f64_to_blob(conn, "tnpoint_simplify") { eprintln!("[shim-scalars] skipping `tnpoint_simplify`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_speed") { eprintln!("[shim-scalars] skipping `tnpoint_speed`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tnpoint_start_position") { eprintln!("[shim-scalars] skipping `tnpoint_start_position`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tnpoint_start_timestamp") { eprintln!("[shim-scalars] skipping `tnpoint_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_time_span") { eprintln!("[shim-scalars] skipping `tnpoint_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_timestamps") { eprintln!("[shim-scalars] skipping `tnpoint_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tnpoint_to_ewkt") { eprintln!("[shim-scalars] skipping `tnpoint_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tnpoint_to_geometry") { eprintln!("[shim-scalars] skipping `tnpoint_to_geometry`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "total_cost") { eprintln!("[shim-scalars] skipping `total_cost`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_angular_acceleration") { eprintln!("[shim-scalars] skipping `tpose_angular_acceleration`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tpose_angular_distance_to_pose") { eprintln!("[shim-scalars] skipping `tpose_angular_distance_to_pose`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_angular_velocity") { eprintln!("[shim-scalars] skipping `tpose_angular_velocity`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_at_period") { eprintln!("[shim-scalars] skipping `tpose_at_period`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tpose_avg_orientation") { eprintln!("[shim-scalars] skipping `tpose_avg_orientation`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_compute_heading_from_movement") { eprintln!("[shim-scalars] skipping `tpose_compute_heading_from_movement`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_curvature") { eprintln!("[shim-scalars] skipping `tpose_curvature`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_distance") { eprintln!("[shim-scalars] skipping `tpose_distance`: {e}"); }
-    if let Err(e) = register_blob_f64_f64_to_blob(conn, "tpose_distance_to_point") { eprintln!("[shim-scalars] skipping `tpose_distance_to_point`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tpose_distance_to_pose") { eprintln!("[shim-scalars] skipping `tpose_distance_to_pose`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tpose_duration") { eprintln!("[shim-scalars] skipping `tpose_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tpose_end_timestamp") { eprintln!("[shim-scalars] skipping `tpose_end_timestamp`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "tpose_from_ewkt") { eprintln!("[shim-scalars] skipping `tpose_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_get_orientation") { eprintln!("[shim-scalars] skipping `tpose_get_orientation`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_get_x") { eprintln!("[shim-scalars] skipping `tpose_get_x`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_get_y") { eprintln!("[shim-scalars] skipping `tpose_get_y`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_heading_degrees") { eprintln!("[shim-scalars] skipping `tpose_heading_degrees`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_inst_new") { eprintln!("[shim-scalars] skipping `tpose_inst_new`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_linear_acceleration") { eprintln!("[shim-scalars] skipping `tpose_linear_acceleration`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_linear_speed") { eprintln!("[shim-scalars] skipping `tpose_linear_speed`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_make") { eprintln!("[shim-scalars] skipping `tpose_make`: {e}"); }
-    if let Err(e) = register_blob_blob_to_f64(conn, "tpose_nearest_approach") { eprintln!("[shim-scalars] skipping `tpose_nearest_approach`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tpose_num_instants") { eprintln!("[shim-scalars] skipping `tpose_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tpose_path_length") { eprintln!("[shim-scalars] skipping `tpose_path_length`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tpose_pose_at_orientation") { eprintln!("[shim-scalars] skipping `tpose_pose_at_orientation`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tpose_pose_at_x") { eprintln!("[shim-scalars] skipping `tpose_pose_at_x`: {e}"); }
-    if let Err(e) = register_blob_i64_to_f64(conn, "tpose_pose_at_y") { eprintln!("[shim-scalars] skipping `tpose_pose_at_y`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_scale") { eprintln!("[shim-scalars] skipping `tpose_scale`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_seq_from_inst") { eprintln!("[shim-scalars] skipping `tpose_seq_from_inst`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_shift") { eprintln!("[shim-scalars] skipping `tpose_shift`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tpose_start_timestamp") { eprintln!("[shim-scalars] skipping `tpose_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_time_span") { eprintln!("[shim-scalars] skipping `tpose_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_timestamps") { eprintln!("[shim-scalars] skipping `tpose_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tpose_to_ewkt") { eprintln!("[shim-scalars] skipping `tpose_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_to_tgeompoint") { eprintln!("[shim-scalars] skipping `tpose_to_tgeompoint`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "tpose_total_rotation") { eprintln!("[shim-scalars] skipping `tpose_total_rotation`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tpose_value_at") { eprintln!("[shim-scalars] skipping `tpose_value_at`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "traj1_id") { eprintln!("[shim-scalars] skipping `traj1_id`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "traj2_id") { eprintln!("[shim-scalars] skipping `traj2_id`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "trajectory_ids") { eprintln!("[shim-scalars] skipping `trajectory_ids`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tstzset_contains") { eprintln!("[shim-scalars] skipping `tstzset_contains`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tstzset_end_timestamp") { eprintln!("[shim-scalars] skipping `tstzset_end_timestamp`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "tstzset_from_text") { eprintln!("[shim-scalars] skipping `tstzset_from_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tstzset_intersection") { eprintln!("[shim-scalars] skipping `tstzset_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tstzset_len") { eprintln!("[shim-scalars] skipping `tstzset_len`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tstzset_make") { eprintln!("[shim-scalars] skipping `tstzset_make`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tstzset_minus") { eprintln!("[shim-scalars] skipping `tstzset_minus`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "tstzset_num_timestamps") { eprintln!("[shim-scalars] skipping `tstzset_num_timestamps`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "tstzset_overlaps") { eprintln!("[shim-scalars] skipping `tstzset_overlaps`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tstzset_scale") { eprintln!("[shim-scalars] skipping `tstzset_scale`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tstzset_shift") { eprintln!("[shim-scalars] skipping `tstzset_shift`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tstzset_start_timestamp") { eprintln!("[shim-scalars] skipping `tstzset_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tstzset_successor") { eprintln!("[shim-scalars] skipping `tstzset_successor`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tstzset_timestamp_n") { eprintln!("[shim-scalars] skipping `tstzset_timestamp_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "tstzset_timestamps") { eprintln!("[shim-scalars] skipping `tstzset_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "tstzset_to_text") { eprintln!("[shim-scalars] skipping `tstzset_to_text`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tstzset_union") { eprintln!("[shim-scalars] skipping `tstzset_union`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "tstzspan_adjacent") { eprintln!("[shim-scalars] skipping `tstzspan_adjacent`: {e}"); }
-    if let Err(e) = register_blob_i64_to_bool(conn, "tstzspan_contains") { eprintln!("[shim-scalars] skipping `tstzspan_contains`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "tstzspan_contains_span") { eprintln!("[shim-scalars] skipping `tstzspan_contains_span`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tstzspan_duration") { eprintln!("[shim-scalars] skipping `tstzspan_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tstzspan_end") { eprintln!("[shim-scalars] skipping `tstzspan_end`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tstzspan_expand") { eprintln!("[shim-scalars] skipping `tstzspan_expand`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tstzspan_intersection") { eprintln!("[shim-scalars] skipping `tstzspan_intersection`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tstzspan_midpoint") { eprintln!("[shim-scalars] skipping `tstzspan_midpoint`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tstzspan_minus") { eprintln!("[shim-scalars] skipping `tstzspan_minus`: {e}"); }
-    if let Err(e) = register_blob_blob_to_bool(conn, "tstzspan_overlaps") { eprintln!("[shim-scalars] skipping `tstzspan_overlaps`: {e}"); }
-    if let Err(e) = register_blob_i64_to_blob(conn, "tstzspan_shift") { eprintln!("[shim-scalars] skipping `tstzspan_shift`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "tstzspan_start") { eprintln!("[shim-scalars] skipping `tstzspan_start`: {e}"); }
-    if let Err(e) = register_blob_blob_to_blob(conn, "tstzspan_union") { eprintln!("[shim-scalars] skipping `tstzspan_union`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "ttext_at_period") { eprintln!("[shim-scalars] skipping `ttext_at_period`: {e}"); }
-    if let Err(e) = register_blob_text_to_blob(conn, "ttext_at_value") { eprintln!("[shim-scalars] skipping `ttext_at_value`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_btrim") { eprintln!("[shim-scalars] skipping `ttext_btrim`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_char_count") { eprintln!("[shim-scalars] skipping `ttext_char_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_concat_seqs") { eprintln!("[shim-scalars] skipping `ttext_concat_seqs`: {e}"); }
-    if let Err(e) = register_blob_text_to_blob(conn, "ttext_concat_str") { eprintln!("[shim-scalars] skipping `ttext_concat_str`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "ttext_contains") { eprintln!("[shim-scalars] skipping `ttext_contains`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "ttext_count") { eprintln!("[shim-scalars] skipping `ttext_count`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "ttext_duration") { eprintln!("[shim-scalars] skipping `ttext_duration`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "ttext_end_timestamp") { eprintln!("[shim-scalars] skipping `ttext_end_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_end_value") { eprintln!("[shim-scalars] skipping `ttext_end_value`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "ttext_ends_with") { eprintln!("[shim-scalars] skipping `ttext_ends_with`: {e}"); }
-    if let Err(e) = register_text_to_blob(conn, "ttext_from_csv") { eprintln!("[shim-scalars] skipping `ttext_from_csv`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_from_ewkt") { eprintln!("[shim-scalars] skipping `ttext_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_from_mfjson") { eprintln!("[shim-scalars] skipping `ttext_from_mfjson`: {e}"); }
-    if let Err(e) = register_blob_text_to_blob(conn, "ttext_ilike") { eprintln!("[shim-scalars] skipping `ttext_ilike`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_instant_from_ewkt") { eprintln!("[shim-scalars] skipping `ttext_instant_from_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_instant_n") { eprintln!("[shim-scalars] skipping `ttext_instant_n`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_instant_to_ewkt") { eprintln!("[shim-scalars] skipping `ttext_instant_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_u32_to_blob(conn, "ttext_left") { eprintln!("[shim-scalars] skipping `ttext_left`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_length") { eprintln!("[shim-scalars] skipping `ttext_length`: {e}"); }
-    if let Err(e) = register_blob_text_to_blob(conn, "ttext_like") { eprintln!("[shim-scalars] skipping `ttext_like`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "ttext_longest_length") { eprintln!("[shim-scalars] skipping `ttext_longest_length`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_lower") { eprintln!("[shim-scalars] skipping `ttext_lower`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "ttext_lower_inclusive") { eprintln!("[shim-scalars] skipping `ttext_lower_inclusive`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_lpad") { eprintln!("[shim-scalars] skipping `ttext_lpad`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_ltrim") { eprintln!("[shim-scalars] skipping `ttext_ltrim`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_max_value") { eprintln!("[shim-scalars] skipping `ttext_max_value`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_min_value") { eprintln!("[shim-scalars] skipping `ttext_min_value`: {e}"); }
-    if let Err(e) = register_blob_i64_i64_to_blob(conn, "ttext_minus_period") { eprintln!("[shim-scalars] skipping `ttext_minus_period`: {e}"); }
-    if let Err(e) = register_blob_text_to_blob(conn, "ttext_minus_value") { eprintln!("[shim-scalars] skipping `ttext_minus_value`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "ttext_num_instants") { eprintln!("[shim-scalars] skipping `ttext_num_instants`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "ttext_num_instants_scalar") { eprintln!("[shim-scalars] skipping `ttext_num_instants_scalar`: {e}"); }
-    if let Err(e) = register_blob_text_to_blob(conn, "ttext_regex_match") { eprintln!("[shim-scalars] skipping `ttext_regex_match`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_repeat") { eprintln!("[shim-scalars] skipping `ttext_repeat`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_replace") { eprintln!("[shim-scalars] skipping `ttext_replace`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_reverse") { eprintln!("[shim-scalars] skipping `ttext_reverse`: {e}"); }
-    if let Err(e) = register_blob_u32_to_blob(conn, "ttext_right") { eprintln!("[shim-scalars] skipping `ttext_right`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_rpad") { eprintln!("[shim-scalars] skipping `ttext_rpad`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_rtrim") { eprintln!("[shim-scalars] skipping `ttext_rtrim`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_shift") { eprintln!("[shim-scalars] skipping `ttext_shift`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "ttext_shortest_length") { eprintln!("[shim-scalars] skipping `ttext_shortest_length`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_span") { eprintln!("[shim-scalars] skipping `ttext_span`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "ttext_start_timestamp") { eprintln!("[shim-scalars] skipping `ttext_start_timestamp`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_start_value") { eprintln!("[shim-scalars] skipping `ttext_start_value`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "ttext_starts_with") { eprintln!("[shim-scalars] skipping `ttext_starts_with`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_substr") { eprintln!("[shim-scalars] skipping `ttext_substr`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_time_span") { eprintln!("[shim-scalars] skipping `ttext_time_span`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "ttext_timestamp_n") { eprintln!("[shim-scalars] skipping `ttext_timestamp_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_timestamps") { eprintln!("[shim-scalars] skipping `ttext_timestamps`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_to_csv") { eprintln!("[shim-scalars] skipping `ttext_to_csv`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_to_ewkt") { eprintln!("[shim-scalars] skipping `ttext_to_ewkt`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_to_json") { eprintln!("[shim-scalars] skipping `ttext_to_json`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_to_mfjson") { eprintln!("[shim-scalars] skipping `ttext_to_mfjson`: {e}"); }
-    if let Err(e) = register_blob_to_i64(conn, "ttext_total_char_count") { eprintln!("[shim-scalars] skipping `ttext_total_char_count`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_trim") { eprintln!("[shim-scalars] skipping `ttext_trim`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_upper") { eprintln!("[shim-scalars] skipping `ttext_upper`: {e}"); }
-    if let Err(e) = register_blob_to_bool(conn, "ttext_upper_inclusive") { eprintln!("[shim-scalars] skipping `ttext_upper_inclusive`: {e}"); }
-    if let Err(e) = register_blob_to_text(conn, "ttext_value_n") { eprintln!("[shim-scalars] skipping `ttext_value_n`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "ttext_values") { eprintln!("[shim-scalars] skipping `ttext_values`: {e}"); }
-    if let Err(e) = register_blob_text_to_blob(conn, "ttext_when_eq") { eprintln!("[shim-scalars] skipping `ttext_when_eq`: {e}"); }
-    if let Err(e) = register_blob_text_to_blob(conn, "ttext_when_ne") { eprintln!("[shim-scalars] skipping `ttext_when_ne`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "upper") { eprintln!("[shim-scalars] skipping `upper`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "utm_epsg_for_point") { eprintln!("[shim-scalars] skipping `utm_epsg_for_point`: {e}"); }
-    if let Err(e) = register_blob_to_i32(conn, "utm_zone_for_point") { eprintln!("[shim-scalars] skipping `utm_zone_for_point`: {e}"); }
-    if let Err(e) = register_blob_to_blob(conn, "values") { eprintln!("[shim-scalars] skipping `values`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "vmax") { eprintln!("[shim-scalars] skipping `vmax`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "vmin") { eprintln!("[shim-scalars] skipping `vmin`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "web_mercator_to_wgs84_lat") { eprintln!("[shim-scalars] skipping `web_mercator_to_wgs84_lat`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "web_mercator_to_wgs84_lon") { eprintln!("[shim-scalars] skipping `web_mercator_to_wgs84_lon`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "wgs84_to_web_mercator_x") { eprintln!("[shim-scalars] skipping `wgs84_to_web_mercator_x`: {e}"); }
-    if let Err(e) = register_blob_to_f64(conn, "wgs84_to_web_mercator_y") { eprintln!("[shim-scalars] skipping `wgs84_to_web_mercator_y`: {e}"); }
+    if let Err(e) = register_blob_to_f64(conn, "acceleration") {
+        eprintln!("[shim-scalars] skipping `acceleration`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "angle") {
+        eprintln!("[shim-scalars] skipping `angle`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "area") {
+        eprintln!("[shim-scalars] skipping `area`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "average_frechet_distance") {
+        eprintln!("[shim-scalars] skipping `average_frechet_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "avg_position") {
+        eprintln!("[shim-scalars] skipping `avg_position`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "avg_sampling_rate_us") {
+        eprintln!("[shim-scalars] skipping `avg_sampling_rate_us`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bearing_after") {
+        eprintln!("[shim-scalars] skipping `bearing_after`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bearing_before") {
+        eprintln!("[shim-scalars] skipping `bearing_before`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "bidirectional") {
+        eprintln!("[shim-scalars] skipping `bidirectional`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_bool_count_current") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_count_current`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_bool_count_superseded") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_count_superseded`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_bool_current") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_current`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "bitemporal_bool_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_from_text") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_inst_new") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_inst_new`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_bool_len") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_seq_from_inst") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_seq_from_inst`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "bitemporal_bool_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "bitemporal_bool_to_text") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_transaction_extent") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_transaction_extent`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "bitemporal_bool_valid_at") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_valid_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_bool_valid_extent") {
+        eprintln!("[shim-scalars] skipping `bitemporal_bool_valid_extent`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_float_count_current") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_count_current`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_float_count_superseded") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_count_superseded`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_float_current") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_current`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "bitemporal_float_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_from_text") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_inst_new") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_inst_new`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_float_len") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_seq_from_inst") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_seq_from_inst`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "bitemporal_float_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "bitemporal_float_to_text") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_transaction_extent") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_transaction_extent`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "bitemporal_float_valid_at") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_valid_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_float_valid_extent") {
+        eprintln!("[shim-scalars] skipping `bitemporal_float_valid_extent`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_int_count_current") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_count_current`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_int_count_superseded") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_count_superseded`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_int_current") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_current`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "bitemporal_int_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_from_text") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_inst_new") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_inst_new`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_int_len") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_seq_from_inst") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_seq_from_inst`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "bitemporal_int_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "bitemporal_int_to_text") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_transaction_extent") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_transaction_extent`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_int_valid_extent") {
+        eprintln!("[shim-scalars] skipping `bitemporal_int_valid_extent`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_text_count_current") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_count_current`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_text_count_superseded") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_count_superseded`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_text_current") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_current`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "bitemporal_text_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_from_text") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_inst_new") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_inst_new`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "bitemporal_text_len") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_seq_from_inst") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_seq_from_inst`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "bitemporal_text_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "bitemporal_text_to_text") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_transaction_extent") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_transaction_extent`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "bitemporal_text_valid_extent") {
+        eprintln!("[shim-scalars] skipping `bitemporal_text_valid_extent`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "center_x") {
+        eprintln!("[shim-scalars] skipping `center_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "center_y") {
+        eprintln!("[shim-scalars] skipping `center_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "centroid_x") {
+        eprintln!("[shim-scalars] skipping `centroid_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "centroid_y") {
+        eprintln!("[shim-scalars] skipping `centroid_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "cluster_count") {
+        eprintln!("[shim-scalars] skipping `cluster_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "cluster_id") {
+        eprintln!("[shim-scalars] skipping `cluster_id`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "date_span_adjacent") {
+        eprintln!("[shim-scalars] skipping `date_span_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "date_span_contains_span") {
+        eprintln!("[shim-scalars] skipping `date_span_contains_span`: {e}");
+    }
+    if let Err(e) = register_blob_i32_to_blob(conn, "date_span_expand") {
+        eprintln!("[shim-scalars] skipping `date_span_expand`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "date_span_intersection") {
+        eprintln!("[shim-scalars] skipping `date_span_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "date_span_overlaps") {
+        eprintln!("[shim-scalars] skipping `date_span_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_i32_to_blob(conn, "date_span_shift") {
+        eprintln!("[shim-scalars] skipping `date_span_shift`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "date_span_union") {
+        eprintln!("[shim-scalars] skipping `date_span_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "date_span_width") {
+        eprintln!("[shim-scalars] skipping `date_span_width`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "date_spanset_intersection") {
+        eprintln!("[shim-scalars] skipping `date_spanset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "date_spanset_minus") {
+        eprintln!("[shim-scalars] skipping `date_spanset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "date_spanset_num_spans") {
+        eprintln!("[shim-scalars] skipping `date_spanset_num_spans`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "date_spanset_overlaps") {
+        eprintln!("[shim-scalars] skipping `date_spanset_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "date_spanset_union") {
+        eprintln!("[shim-scalars] skipping `date_spanset_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "date_spanset_width") {
+        eprintln!("[shim-scalars] skipping `date_spanset_width`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "dateset_from_int") {
+        eprintln!("[shim-scalars] skipping `dateset_from_int`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "dateset_from_text") {
+        eprintln!("[shim-scalars] skipping `dateset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "dateset_gaps") {
+        eprintln!("[shim-scalars] skipping `dateset_gaps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "dateset_intersection") {
+        eprintln!("[shim-scalars] skipping `dateset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "dateset_len") {
+        eprintln!("[shim-scalars] skipping `dateset_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "dateset_make") {
+        eprintln!("[shim-scalars] skipping `dateset_make`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "dateset_minus") {
+        eprintln!("[shim-scalars] skipping `dateset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_i32_to_blob(conn, "dateset_shift") {
+        eprintln!("[shim-scalars] skipping `dateset_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "dateset_successor") {
+        eprintln!("[shim-scalars] skipping `dateset_successor`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "dateset_to_span") {
+        eprintln!("[shim-scalars] skipping `dateset_to_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "dateset_to_text") {
+        eprintln!("[shim-scalars] skipping `dateset_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "dateset_union") {
+        eprintln!("[shim-scalars] skipping `dateset_union`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "datespan_adjacent") {
+        eprintln!("[shim-scalars] skipping `datespan_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "datespan_contains_span") {
+        eprintln!("[shim-scalars] skipping `datespan_contains_span`: {e}");
+    }
+    if let Err(e) = register_blob_i32_to_blob(conn, "datespan_expand") {
+        eprintln!("[shim-scalars] skipping `datespan_expand`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "datespan_from_text") {
+        eprintln!("[shim-scalars] skipping `datespan_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "datespan_intersection") {
+        eprintln!("[shim-scalars] skipping `datespan_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "datespan_lower") {
+        eprintln!("[shim-scalars] skipping `datespan_lower`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "datespan_overlaps") {
+        eprintln!("[shim-scalars] skipping `datespan_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_i32_to_blob(conn, "datespan_shift") {
+        eprintln!("[shim-scalars] skipping `datespan_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "datespan_to_text") {
+        eprintln!("[shim-scalars] skipping `datespan_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "datespan_union") {
+        eprintln!("[shim-scalars] skipping `datespan_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "datespan_upper") {
+        eprintln!("[shim-scalars] skipping `datespan_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "datespan_width") {
+        eprintln!("[shim-scalars] skipping `datespan_width`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "datespanset_from_span") {
+        eprintln!("[shim-scalars] skipping `datespanset_from_span`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "datespanset_from_text") {
+        eprintln!("[shim-scalars] skipping `datespanset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "datespanset_intersection") {
+        eprintln!("[shim-scalars] skipping `datespanset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "datespanset_lower") {
+        eprintln!("[shim-scalars] skipping `datespanset_lower`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "datespanset_make") {
+        eprintln!("[shim-scalars] skipping `datespanset_make`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "datespanset_minus") {
+        eprintln!("[shim-scalars] skipping `datespanset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "datespanset_num_spans") {
+        eprintln!("[shim-scalars] skipping `datespanset_num_spans`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "datespanset_overlaps") {
+        eprintln!("[shim-scalars] skipping `datespanset_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "datespanset_to_text") {
+        eprintln!("[shim-scalars] skipping `datespanset_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "datespanset_union") {
+        eprintln!("[shim-scalars] skipping `datespanset_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "datespanset_upper") {
+        eprintln!("[shim-scalars] skipping `datespanset_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "datespanset_width") {
+        eprintln!("[shim-scalars] skipping `datespanset_width`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "dbscan_cluster_points") {
+        eprintln!("[shim-scalars] skipping `dbscan_cluster_points`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "dtw_distance") {
+        eprintln!("[shim-scalars] skipping `dtw_distance`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "dtw_distance_normalized") {
+        eprintln!("[shim-scalars] skipping `dtw_distance_normalized`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "duration_us") {
+        eprintln!("[shim-scalars] skipping `duration_us`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "end_ts") {
+        eprintln!("[shim-scalars] skipping `end_ts`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "end_x") {
+        eprintln!("[shim-scalars] skipping `end_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "end_y") {
+        eprintln!("[shim-scalars] skipping `end_y`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "float_span_adjacent") {
+        eprintln!("[shim-scalars] skipping `float_span_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "float_span_contains") {
+        eprintln!("[shim-scalars] skipping `float_span_contains`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "float_span_contains_span") {
+        eprintln!("[shim-scalars] skipping `float_span_contains_span`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "float_span_expand") {
+        eprintln!("[shim-scalars] skipping `float_span_expand`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "float_span_intersection") {
+        eprintln!("[shim-scalars] skipping `float_span_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "float_span_overlaps") {
+        eprintln!("[shim-scalars] skipping `float_span_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "float_span_shift") {
+        eprintln!("[shim-scalars] skipping `float_span_shift`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "float_span_union") {
+        eprintln!("[shim-scalars] skipping `float_span_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "float_span_width") {
+        eprintln!("[shim-scalars] skipping `float_span_width`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "float_spanset_contains") {
+        eprintln!("[shim-scalars] skipping `float_spanset_contains`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "float_spanset_intersection") {
+        eprintln!("[shim-scalars] skipping `float_spanset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "float_spanset_minus") {
+        eprintln!("[shim-scalars] skipping `float_spanset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "float_spanset_num_spans") {
+        eprintln!("[shim-scalars] skipping `float_spanset_num_spans`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "float_spanset_overlaps") {
+        eprintln!("[shim-scalars] skipping `float_spanset_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "float_spanset_union") {
+        eprintln!("[shim-scalars] skipping `float_spanset_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "float_spanset_width") {
+        eprintln!("[shim-scalars] skipping `float_spanset_width`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "floatset_contains") {
+        eprintln!("[shim-scalars] skipping `floatset_contains`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "floatset_from_text") {
+        eprintln!("[shim-scalars] skipping `floatset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "floatset_gaps") {
+        eprintln!("[shim-scalars] skipping `floatset_gaps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatset_intersection") {
+        eprintln!("[shim-scalars] skipping `floatset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "floatset_is_disjoint") {
+        eprintln!("[shim-scalars] skipping `floatset_is_disjoint`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "floatset_is_subset") {
+        eprintln!("[shim-scalars] skipping `floatset_is_subset`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "floatset_len") {
+        eprintln!("[shim-scalars] skipping `floatset_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "floatset_make") {
+        eprintln!("[shim-scalars] skipping `floatset_make`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatset_minus") {
+        eprintln!("[shim-scalars] skipping `floatset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_f64_f64_to_blob(conn, "floatset_scale") {
+        eprintln!("[shim-scalars] skipping `floatset_scale`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "floatset_shift") {
+        eprintln!("[shim-scalars] skipping `floatset_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "floatset_to_span") {
+        eprintln!("[shim-scalars] skipping `floatset_to_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "floatset_to_text") {
+        eprintln!("[shim-scalars] skipping `floatset_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatset_union") {
+        eprintln!("[shim-scalars] skipping `floatset_union`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "floatspan_adjacent") {
+        eprintln!("[shim-scalars] skipping `floatspan_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_f64_f64_to_blob(conn, "floatspan_bucket_list") {
+        eprintln!("[shim-scalars] skipping `floatspan_bucket_list`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "floatspan_contains") {
+        eprintln!("[shim-scalars] skipping `floatspan_contains`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "floatspan_contains_span") {
+        eprintln!("[shim-scalars] skipping `floatspan_contains_span`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "floatspan_expand") {
+        eprintln!("[shim-scalars] skipping `floatspan_expand`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "floatspan_from_text") {
+        eprintln!("[shim-scalars] skipping `floatspan_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatspan_intersection") {
+        eprintln!("[shim-scalars] skipping `floatspan_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "floatspan_lower") {
+        eprintln!("[shim-scalars] skipping `floatspan_lower`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "floatspan_midpoint") {
+        eprintln!("[shim-scalars] skipping `floatspan_midpoint`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatspan_minus") {
+        eprintln!("[shim-scalars] skipping `floatspan_minus`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "floatspan_overlaps") {
+        eprintln!("[shim-scalars] skipping `floatspan_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_f64_f64_to_blob(conn, "floatspan_scale") {
+        eprintln!("[shim-scalars] skipping `floatspan_scale`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "floatspan_shift") {
+        eprintln!("[shim-scalars] skipping `floatspan_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "floatspan_to_text") {
+        eprintln!("[shim-scalars] skipping `floatspan_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatspan_union") {
+        eprintln!("[shim-scalars] skipping `floatspan_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "floatspan_upper") {
+        eprintln!("[shim-scalars] skipping `floatspan_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "floatspan_width") {
+        eprintln!("[shim-scalars] skipping `floatspan_width`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "floatspanset_contains") {
+        eprintln!("[shim-scalars] skipping `floatspanset_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "floatspanset_from_span") {
+        eprintln!("[shim-scalars] skipping `floatspanset_from_span`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "floatspanset_from_text") {
+        eprintln!("[shim-scalars] skipping `floatspanset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatspanset_intersection") {
+        eprintln!("[shim-scalars] skipping `floatspanset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "floatspanset_lower") {
+        eprintln!("[shim-scalars] skipping `floatspanset_lower`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatspanset_minus") {
+        eprintln!("[shim-scalars] skipping `floatspanset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "floatspanset_num_spans") {
+        eprintln!("[shim-scalars] skipping `floatspanset_num_spans`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "floatspanset_overlaps") {
+        eprintln!("[shim-scalars] skipping `floatspanset_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "floatspanset_to_text") {
+        eprintln!("[shim-scalars] skipping `floatspanset_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "floatspanset_union") {
+        eprintln!("[shim-scalars] skipping `floatspanset_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "floatspanset_upper") {
+        eprintln!("[shim-scalars] skipping `floatspanset_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "floatspanset_width") {
+        eprintln!("[shim-scalars] skipping `floatspanset_width`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "frechet_distance") {
+        eprintln!("[shim-scalars] skipping `frechet_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "gap_count") {
+        eprintln!("[shim-scalars] skipping `gap_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "geodetic_distance") {
+        eprintln!("[shim-scalars] skipping `geodetic_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "geometry") {
+        eprintln!("[shim-scalars] skipping `geometry`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "hausdorff_distance") {
+        eprintln!("[shim-scalars] skipping `hausdorff_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "indexed_interval_make") {
+        eprintln!("[shim-scalars] skipping `indexed_interval_make`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "indexed_intervals_concat") {
+        eprintln!("[shim-scalars] skipping `indexed_intervals_concat`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "indexed_point_xy_make") {
+        eprintln!("[shim-scalars] skipping `indexed_point_xy_make`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "indexed_point_xyz_make") {
+        eprintln!("[shim-scalars] skipping `indexed_point_xyz_make`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "indexed_points_xy_concat") {
+        eprintln!("[shim-scalars] skipping `indexed_points_xy_concat`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "indexed_points_xyz_concat") {
+        eprintln!("[shim-scalars] skipping `indexed_points_xyz_concat`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "int_span_adjacent") {
+        eprintln!("[shim-scalars] skipping `int_span_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "int_span_contains") {
+        eprintln!("[shim-scalars] skipping `int_span_contains`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "int_span_contains_span") {
+        eprintln!("[shim-scalars] skipping `int_span_contains_span`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "int_span_expand") {
+        eprintln!("[shim-scalars] skipping `int_span_expand`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "int_span_intersection") {
+        eprintln!("[shim-scalars] skipping `int_span_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "int_span_overlaps") {
+        eprintln!("[shim-scalars] skipping `int_span_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "int_span_shift") {
+        eprintln!("[shim-scalars] skipping `int_span_shift`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "int_span_union") {
+        eprintln!("[shim-scalars] skipping `int_span_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "int_span_width") {
+        eprintln!("[shim-scalars] skipping `int_span_width`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "int_spanset_contains") {
+        eprintln!("[shim-scalars] skipping `int_spanset_contains`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "int_spanset_intersection") {
+        eprintln!("[shim-scalars] skipping `int_spanset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "int_spanset_minus") {
+        eprintln!("[shim-scalars] skipping `int_spanset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "int_spanset_num_spans") {
+        eprintln!("[shim-scalars] skipping `int_spanset_num_spans`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "int_spanset_overlaps") {
+        eprintln!("[shim-scalars] skipping `int_spanset_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "int_spanset_union") {
+        eprintln!("[shim-scalars] skipping `int_spanset_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "int_spanset_width") {
+        eprintln!("[shim-scalars] skipping `int_spanset_width`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "intset_contains") {
+        eprintln!("[shim-scalars] skipping `intset_contains`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "intset_from_text") {
+        eprintln!("[shim-scalars] skipping `intset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "intset_gaps") {
+        eprintln!("[shim-scalars] skipping `intset_gaps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intset_intersection") {
+        eprintln!("[shim-scalars] skipping `intset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "intset_is_disjoint") {
+        eprintln!("[shim-scalars] skipping `intset_is_disjoint`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "intset_is_subset") {
+        eprintln!("[shim-scalars] skipping `intset_is_subset`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "intset_len") {
+        eprintln!("[shim-scalars] skipping `intset_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "intset_make") {
+        eprintln!("[shim-scalars] skipping `intset_make`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intset_minus") {
+        eprintln!("[shim-scalars] skipping `intset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "intset_shift") {
+        eprintln!("[shim-scalars] skipping `intset_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "intset_to_span") {
+        eprintln!("[shim-scalars] skipping `intset_to_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "intset_to_text") {
+        eprintln!("[shim-scalars] skipping `intset_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intset_union") {
+        eprintln!("[shim-scalars] skipping `intset_union`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "intspan_adjacent") {
+        eprintln!("[shim-scalars] skipping `intspan_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "intspan_bucket_list") {
+        eprintln!("[shim-scalars] skipping `intspan_bucket_list`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "intspan_contains") {
+        eprintln!("[shim-scalars] skipping `intspan_contains`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "intspan_contains_span") {
+        eprintln!("[shim-scalars] skipping `intspan_contains_span`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "intspan_expand") {
+        eprintln!("[shim-scalars] skipping `intspan_expand`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "intspan_from_text") {
+        eprintln!("[shim-scalars] skipping `intspan_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intspan_intersection") {
+        eprintln!("[shim-scalars] skipping `intspan_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "intspan_lower") {
+        eprintln!("[shim-scalars] skipping `intspan_lower`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intspan_minus") {
+        eprintln!("[shim-scalars] skipping `intspan_minus`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "intspan_overlaps") {
+        eprintln!("[shim-scalars] skipping `intspan_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "intspan_shift") {
+        eprintln!("[shim-scalars] skipping `intspan_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "intspan_to_text") {
+        eprintln!("[shim-scalars] skipping `intspan_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intspan_union") {
+        eprintln!("[shim-scalars] skipping `intspan_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "intspan_upper") {
+        eprintln!("[shim-scalars] skipping `intspan_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "intspan_width") {
+        eprintln!("[shim-scalars] skipping `intspan_width`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "intspanset_contains") {
+        eprintln!("[shim-scalars] skipping `intspanset_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "intspanset_from_span") {
+        eprintln!("[shim-scalars] skipping `intspanset_from_span`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "intspanset_from_text") {
+        eprintln!("[shim-scalars] skipping `intspanset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intspanset_intersection") {
+        eprintln!("[shim-scalars] skipping `intspanset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "intspanset_lower") {
+        eprintln!("[shim-scalars] skipping `intspanset_lower`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intspanset_minus") {
+        eprintln!("[shim-scalars] skipping `intspanset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "intspanset_num_spans") {
+        eprintln!("[shim-scalars] skipping `intspanset_num_spans`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "intspanset_overlaps") {
+        eprintln!("[shim-scalars] skipping `intspanset_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "intspanset_to_text") {
+        eprintln!("[shim-scalars] skipping `intspanset_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "intspanset_union") {
+        eprintln!("[shim-scalars] skipping `intspanset_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "intspanset_upper") {
+        eprintln!("[shim-scalars] skipping `intspanset_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "intspanset_width") {
+        eprintln!("[shim-scalars] skipping `intspanset_width`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "item") {
+        eprintln!("[shim-scalars] skipping `item`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "kmeans_cluster_points") {
+        eprintln!("[shim-scalars] skipping `kmeans_cluster_points`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "latitude") {
+        eprintln!("[shim-scalars] skipping `latitude`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "length") {
+        eprintln!("[shim-scalars] skipping `length`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "linear") {
+        eprintln!("[shim-scalars] skipping `linear`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "longitude") {
+        eprintln!("[shim-scalars] skipping `longitude`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "lower") {
+        eprintln!("[shim-scalars] skipping `lower`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "max") {
+        eprintln!("[shim-scalars] skipping `max`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "max_gap_us") {
+        eprintln!("[shim-scalars] skipping `max_gap_us`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "min") {
+        eprintln!("[shim-scalars] skipping `min`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "mobilitydb_blob_cmp") {
+        eprintln!("[shim-scalars] skipping `mobilitydb_blob_cmp`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_eq") {
+        eprintln!("[shim-scalars] skipping `mobilitydb_blob_eq`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_ge") {
+        eprintln!("[shim-scalars] skipping `mobilitydb_blob_ge`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_gt") {
+        eprintln!("[shim-scalars] skipping `mobilitydb_blob_gt`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_le") {
+        eprintln!("[shim-scalars] skipping `mobilitydb_blob_le`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "mobilitydb_blob_lt") {
+        eprintln!("[shim-scalars] skipping `mobilitydb_blob_lt`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "network_coverage") {
+        eprintln!("[shim-scalars] skipping `network_coverage`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "network_distance") {
+        eprintln!("[shim-scalars] skipping `network_distance`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "network_graph_build_from_edges") {
+        eprintln!("[shim-scalars] skipping `network_graph_build_from_edges`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "network_shortest_path") {
+        eprintln!("[shim-scalars] skipping `network_shortest_path`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "network_shortest_path_via_graph") {
+        eprintln!("[shim-scalars] skipping `network_shortest_path_via_graph`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "nodes") {
+        eprintln!("[shim-scalars] skipping `nodes`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "npoint_distance") {
+        eprintln!("[shim-scalars] skipping `npoint_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "npoint_eq") {
+        eprintln!("[shim-scalars] skipping `npoint_eq`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "npoint_position") {
+        eprintln!("[shim-scalars] skipping `npoint_position`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "npoint_route") {
+        eprintln!("[shim-scalars] skipping `npoint_route`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "npoint_same_route") {
+        eprintln!("[shim-scalars] skipping `npoint_same_route`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "npoint_to_point2d") {
+        eprintln!("[shim-scalars] skipping `npoint_to_point2d`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "nsegment_contains") {
+        eprintln!("[shim-scalars] skipping `nsegment_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "nsegment_end_pos") {
+        eprintln!("[shim-scalars] skipping `nsegment_end_pos`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "nsegment_intersection") {
+        eprintln!("[shim-scalars] skipping `nsegment_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "nsegment_length") {
+        eprintln!("[shim-scalars] skipping `nsegment_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "nsegment_midpoint") {
+        eprintln!("[shim-scalars] skipping `nsegment_midpoint`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "nsegment_overlaps") {
+        eprintln!("[shim-scalars] skipping `nsegment_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "nsegment_route") {
+        eprintln!("[shim-scalars] skipping `nsegment_route`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "nsegment_route_eq") {
+        eprintln!("[shim-scalars] skipping `nsegment_route_eq`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "nsegment_start_pos") {
+        eprintln!("[shim-scalars] skipping `nsegment_start_pos`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "nsegment_union") {
+        eprintln!("[shim-scalars] skipping `nsegment_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "orientation") {
+        eprintln!("[shim-scalars] skipping `orientation`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "pair_count") {
+        eprintln!("[shim-scalars] skipping `pair_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "perimeter") {
+        eprintln!("[shim-scalars] skipping `perimeter`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "period_bucket_list") {
+        eprintln!("[shim-scalars] skipping `period_bucket_list`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "period_scale") {
+        eprintln!("[shim-scalars] skipping `period_scale`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "period_shift") {
+        eprintln!("[shim-scalars] skipping `period_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "periodset_contains") {
+        eprintln!("[shim-scalars] skipping `periodset_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "periodset_duration") {
+        eprintln!("[shim-scalars] skipping `periodset_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "periodset_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `periodset_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "periodset_intersection") {
+        eprintln!("[shim-scalars] skipping `periodset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "periodset_minus") {
+        eprintln!("[shim-scalars] skipping `periodset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "periodset_num_periods") {
+        eprintln!("[shim-scalars] skipping `periodset_num_periods`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "periodset_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `periodset_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "periodset_union") {
+        eprintln!("[shim-scalars] skipping `periodset_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "point_count") {
+        eprintln!("[shim-scalars] skipping `point_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "point_transform") {
+        eprintln!("[shim-scalars] skipping `point_transform`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "proj") {
+        eprintln!("[shim-scalars] skipping `proj`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "proj_is_valid_crs") {
+        eprintln!("[shim-scalars] skipping `proj_is_valid_crs`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "proj_transform") {
+        eprintln!("[shim-scalars] skipping `proj_transform`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "proj_transform_sequence") {
+        eprintln!("[shim-scalars] skipping `proj_transform_sequence`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "quality_score") {
+        eprintln!("[shim-scalars] skipping `quality_score`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "radius") {
+        eprintln!("[shim-scalars] skipping `radius`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "route_id") {
+        eprintln!("[shim-scalars] skipping `route_id`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "routes") {
+        eprintln!("[shim-scalars] skipping `routes`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "score") {
+        eprintln!("[shim-scalars] skipping `score`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "significant") {
+        eprintln!("[shim-scalars] skipping `significant`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "source") {
+        eprintln!("[shim-scalars] skipping `source`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "source_x") {
+        eprintln!("[shim-scalars] skipping `source_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "source_y") {
+        eprintln!("[shim-scalars] skipping `source_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "speed_after") {
+        eprintln!("[shim-scalars] skipping `speed_after`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "speed_before") {
+        eprintln!("[shim-scalars] skipping `speed_before`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "start") {
+        eprintln!("[shim-scalars] skipping `start`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "start_ts") {
+        eprintln!("[shim-scalars] skipping `start_ts`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "start_x") {
+        eprintln!("[shim-scalars] skipping `start_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "start_y") {
+        eprintln!("[shim-scalars] skipping `start_y`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_adjacent") {
+        eprintln!("[shim-scalars] skipping `stbox_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_area") {
+        eprintln!("[shim-scalars] skipping `stbox_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "stbox_center_time") {
+        eprintln!("[shim-scalars] skipping `stbox_center_time`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_center_x") {
+        eprintln!("[shim-scalars] skipping `stbox_center_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_center_y") {
+        eprintln!("[shim-scalars] skipping `stbox_center_y`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_contained_by") {
+        eprintln!("[shim-scalars] skipping `stbox_contained_by`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_contains") {
+        eprintln!("[shim-scalars] skipping `stbox_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "stbox_duration") {
+        eprintln!("[shim-scalars] skipping `stbox_duration`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "stbox_expand_spatial") {
+        eprintln!("[shim-scalars] skipping `stbox_expand_spatial`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "stbox_expand_temporal") {
+        eprintln!("[shim-scalars] skipping `stbox_expand_temporal`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "stbox_from_temporal") {
+        eprintln!("[shim-scalars] skipping `stbox_from_temporal`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "stbox_from_text") {
+        eprintln!("[shim-scalars] skipping `stbox_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "stbox_from_tgeompoint") {
+        eprintln!("[shim-scalars] skipping `stbox_from_tgeompoint`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_height") {
+        eprintln!("[shim-scalars] skipping `stbox_height`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "stbox_intersection") {
+        eprintln!("[shim-scalars] skipping `stbox_intersection`: {e}");
+    }
+    if let Err(e) = register_4f64_2i64_to_blob(conn, "stbox_make") {
+        eprintln!("[shim-scalars] skipping `stbox_make`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_overlaps") {
+        eprintln!("[shim-scalars] skipping `stbox_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_same") {
+        eprintln!("[shim-scalars] skipping `stbox_same`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "stbox_scale_spatial") {
+        eprintln!("[shim-scalars] skipping `stbox_scale_spatial`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "stbox_scale_temporal") {
+        eprintln!("[shim-scalars] skipping `stbox_scale_temporal`: {e}");
+    }
+    if let Err(e) = register_blob_f64_f64_to_blob(conn, "stbox_shift_spatial") {
+        eprintln!("[shim-scalars] skipping `stbox_shift_spatial`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "stbox_shift_temporal") {
+        eprintln!("[shim-scalars] skipping `stbox_shift_temporal`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "stbox_spatial_distance") {
+        eprintln!("[shim-scalars] skipping `stbox_spatial_distance`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_spatially_adjacent") {
+        eprintln!("[shim-scalars] skipping `stbox_spatially_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_i64(conn, "stbox_temporal_distance") {
+        eprintln!("[shim-scalars] skipping `stbox_temporal_distance`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "stbox_temporally_adjacent") {
+        eprintln!("[shim-scalars] skipping `stbox_temporally_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "stbox_tmax") {
+        eprintln!("[shim-scalars] skipping `stbox_tmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "stbox_tmin") {
+        eprintln!("[shim-scalars] skipping `stbox_tmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "stbox_to_text") {
+        eprintln!("[shim-scalars] skipping `stbox_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "stbox_union") {
+        eprintln!("[shim-scalars] skipping `stbox_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_width") {
+        eprintln!("[shim-scalars] skipping `stbox_width`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_xmax") {
+        eprintln!("[shim-scalars] skipping `stbox_xmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_xmin") {
+        eprintln!("[shim-scalars] skipping `stbox_xmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_ymax") {
+        eprintln!("[shim-scalars] skipping `stbox_ymax`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "stbox_ymin") {
+        eprintln!("[shim-scalars] skipping `stbox_ymin`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "stepwise") {
+        eprintln!("[shim-scalars] skipping `stepwise`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "stindex_entries_concat") {
+        eprintln!("[shim-scalars] skipping `stindex_entries_concat`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "stindex_entry_make") {
+        eprintln!("[shim-scalars] skipping `stindex_entry_make`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "target") {
+        eprintln!("[shim-scalars] skipping `target`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "target_x") {
+        eprintln!("[shim-scalars] skipping `target_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "target_y") {
+        eprintln!("[shim-scalars] skipping `target_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_always_false") {
+        eprintln!("[shim-scalars] skipping `tbool_always_false`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_always_true") {
+        eprintln!("[shim-scalars] skipping `tbool_always_true`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tbool_and") {
+        eprintln!("[shim-scalars] skipping `tbool_and`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_and_all") {
+        eprintln!("[shim-scalars] skipping `tbool_and_all`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_at_false") {
+        eprintln!("[shim-scalars] skipping `tbool_at_false`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tbool_at_period") {
+        eprintln!("[shim-scalars] skipping `tbool_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_at_true") {
+        eprintln!("[shim-scalars] skipping `tbool_at_true`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tbool_count") {
+        eprintln!("[shim-scalars] skipping `tbool_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tbool_count_changes") {
+        eprintln!("[shim-scalars] skipping `tbool_count_changes`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tbool_count_false") {
+        eprintln!("[shim-scalars] skipping `tbool_count_false`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tbool_count_true") {
+        eprintln!("[shim-scalars] skipping `tbool_count_true`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tbool_duration") {
+        eprintln!("[shim-scalars] skipping `tbool_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tbool_duration_false") {
+        eprintln!("[shim-scalars] skipping `tbool_duration_false`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tbool_duration_true") {
+        eprintln!("[shim-scalars] skipping `tbool_duration_true`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tbool_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tbool_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_end_value") {
+        eprintln!("[shim-scalars] skipping `tbool_end_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_ever_false") {
+        eprintln!("[shim-scalars] skipping `tbool_ever_false`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_ever_true") {
+        eprintln!("[shim-scalars] skipping `tbool_ever_true`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tbool_from_csv") {
+        eprintln!("[shim-scalars] skipping `tbool_from_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tbool_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_from_mfjson") {
+        eprintln!("[shim-scalars] skipping `tbool_from_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_implies") {
+        eprintln!("[shim-scalars] skipping `tbool_implies`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_instant_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tbool_instant_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_instant_n") {
+        eprintln!("[shim-scalars] skipping `tbool_instant_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tbool_instant_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tbool_instant_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_lower_inclusive") {
+        eprintln!("[shim-scalars] skipping `tbool_lower_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tbool_minus_period") {
+        eprintln!("[shim-scalars] skipping `tbool_minus_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tbool_n_changes") {
+        eprintln!("[shim-scalars] skipping `tbool_n_changes`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_nand") {
+        eprintln!("[shim-scalars] skipping `tbool_nand`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_nor") {
+        eprintln!("[shim-scalars] skipping `tbool_nor`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_not") {
+        eprintln!("[shim-scalars] skipping `tbool_not`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tbool_num_instants") {
+        eprintln!("[shim-scalars] skipping `tbool_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tbool_or") {
+        eprintln!("[shim-scalars] skipping `tbool_or`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_or_all") {
+        eprintln!("[shim-scalars] skipping `tbool_or_all`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_span") {
+        eprintln!("[shim-scalars] skipping `tbool_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tbool_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tbool_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_start_value") {
+        eprintln!("[shim-scalars] skipping `tbool_start_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_time_span") {
+        eprintln!("[shim-scalars] skipping `tbool_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tbool_timestamp_n") {
+        eprintln!("[shim-scalars] skipping `tbool_timestamp_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_timestamps") {
+        eprintln!("[shim-scalars] skipping `tbool_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tbool_to_csv") {
+        eprintln!("[shim-scalars] skipping `tbool_to_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tbool_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tbool_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tbool_to_json") {
+        eprintln!("[shim-scalars] skipping `tbool_to_json`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tbool_to_mfjson") {
+        eprintln!("[shim-scalars] skipping `tbool_to_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_to_tint") {
+        eprintln!("[shim-scalars] skipping `tbool_to_tint`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_upper_inclusive") {
+        eprintln!("[shim-scalars] skipping `tbool_upper_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tbool_value_at") {
+        eprintln!("[shim-scalars] skipping `tbool_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tbool_value_n") {
+        eprintln!("[shim-scalars] skipping `tbool_value_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_values") {
+        eprintln!("[shim-scalars] skipping `tbool_values`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_when_false") {
+        eprintln!("[shim-scalars] skipping `tbool_when_false`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_when_true") {
+        eprintln!("[shim-scalars] skipping `tbool_when_true`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_xnor") {
+        eprintln!("[shim-scalars] skipping `tbool_xnor`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbool_xor") {
+        eprintln!("[shim-scalars] skipping `tbool_xor`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbox_expand") {
+        eprintln!("[shim-scalars] skipping `tbox_expand`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tbox_from_text") {
+        eprintln!("[shim-scalars] skipping `tbox_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tbox_make") {
+        eprintln!("[shim-scalars] skipping `tbox_make`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tbox_to_text") {
+        eprintln!("[shim-scalars] skipping `tbox_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_area") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_area`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tcbuffer_area_at") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_area_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_at_period") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_avg_area") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_avg_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_avg_radius") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_avg_radius`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_center_path_length") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_center_path_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tcbuffer_duration") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tcbuffer_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_expand_radii") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_expand_radii`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tcbuffer_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_area") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_get_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_center_x") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_get_center_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_center_y") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_get_center_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_radii") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_get_radii`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_get_radius") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_get_radius`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_inst_new") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_inst_new`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_intersection") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_make") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_make`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_max_radius") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_max_radius`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_min_radius") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_min_radius`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tcbuffer_num_instants") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_overlap_region") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_overlap_region`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tcbuffer_radius_at") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_radius_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_scale") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_scale`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_scale_radii") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_scale_radii`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_seq_from_inst") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_seq_from_inst`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_shift") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tcbuffer_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_swept_area") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_swept_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_time_span") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_timestamps") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tcbuffer_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_to_tgeompoint") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_to_tgeompoint`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tcbuffer_total_area") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_total_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_union") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tcbuffer_value_at") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tcbuffer_x_at") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_x_at`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tcbuffer_y_at") {
+        eprintln!("[shim-scalars] skipping `tcbuffer_y_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "temporal_at_period") {
+        eprintln!("[shim-scalars] skipping `temporal_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "temporal_at_periodset") {
+        eprintln!("[shim-scalars] skipping `temporal_at_periodset`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "temporal_at_tbox") {
+        eprintln!("[shim-scalars] skipping `temporal_at_tbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "temporal_at_timestamp") {
+        eprintln!("[shim-scalars] skipping `temporal_at_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_contains") {
+        eprintln!("[shim-scalars] skipping `temporal_contains`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_during") {
+        eprintln!("[shim-scalars] skipping `temporal_during`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_finishes") {
+        eprintln!("[shim-scalars] skipping `temporal_finishes`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_follows") {
+        eprintln!("[shim-scalars] skipping `temporal_follows`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "temporal_index_time_span") {
+        eprintln!("[shim-scalars] skipping `temporal_index_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_meets") {
+        eprintln!("[shim-scalars] skipping `temporal_meets`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "temporal_minus_timestamp") {
+        eprintln!("[shim-scalars] skipping `temporal_minus_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_overlaps") {
+        eprintln!("[shim-scalars] skipping `temporal_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_precedes") {
+        eprintln!("[shim-scalars] skipping `temporal_precedes`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "temporal_set_interpolation") {
+        eprintln!("[shim-scalars] skipping `temporal_set_interpolation`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "temporal_starts") {
+        eprintln!("[shim-scalars] skipping `temporal_starts`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "textset_from_text") {
+        eprintln!("[shim-scalars] skipping `textset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "textset_intersection") {
+        eprintln!("[shim-scalars] skipping `textset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "textset_is_disjoint") {
+        eprintln!("[shim-scalars] skipping `textset_is_disjoint`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "textset_is_subset") {
+        eprintln!("[shim-scalars] skipping `textset_is_subset`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "textset_is_superset") {
+        eprintln!("[shim-scalars] skipping `textset_is_superset`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "textset_len") {
+        eprintln!("[shim-scalars] skipping `textset_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "textset_make") {
+        eprintln!("[shim-scalars] skipping `textset_make`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "textset_max") {
+        eprintln!("[shim-scalars] skipping `textset_max`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "textset_min") {
+        eprintln!("[shim-scalars] skipping `textset_min`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "textset_minus") {
+        eprintln!("[shim-scalars] skipping `textset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "textset_symdiff") {
+        eprintln!("[shim-scalars] skipping `textset_symdiff`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "textset_to_text") {
+        eprintln!("[shim-scalars] skipping `textset_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "textset_union") {
+        eprintln!("[shim-scalars] skipping `textset_union`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "textset_values") {
+        eprintln!("[shim-scalars] skipping `textset_values`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_abs") {
+        eprintln!("[shim-scalars] skipping `tfloat_abs`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_acos") {
+        eprintln!("[shim-scalars] skipping `tfloat_acos`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_acosh") {
+        eprintln!("[shim-scalars] skipping `tfloat_acosh`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_add") {
+        eprintln!("[shim-scalars] skipping `tfloat_add`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_add_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_add_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_eq") {
+        eprintln!("[shim-scalars] skipping `tfloat_always_eq`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_eq_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_always_eq_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_gt") {
+        eprintln!("[shim-scalars] skipping `tfloat_always_gt`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_gt_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_always_gt_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_lt") {
+        eprintln!("[shim-scalars] skipping `tfloat_always_lt`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_always_lt_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_always_lt_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_anomaly_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_anomaly_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_anomaly_count_iqr") {
+        eprintln!("[shim-scalars] skipping `tfloat_anomaly_count_iqr`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_asin") {
+        eprintln!("[shim-scalars] skipping `tfloat_asin`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_asinh") {
+        eprintln!("[shim-scalars] skipping `tfloat_asinh`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_max") {
+        eprintln!("[shim-scalars] skipping `tfloat_at_max`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_min") {
+        eprintln!("[shim-scalars] skipping `tfloat_at_min`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tfloat_at_period") {
+        eprintln!("[shim-scalars] skipping `tfloat_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_range") {
+        eprintln!("[shim-scalars] skipping `tfloat_at_range`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_tbox") {
+        eprintln!("[shim-scalars] skipping `tfloat_at_tbox`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_at_value") {
+        eprintln!("[shim-scalars] skipping `tfloat_at_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_at_values") {
+        eprintln!("[shim-scalars] skipping `tfloat_at_values`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_atan") {
+        eprintln!("[shim-scalars] skipping `tfloat_atan`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_atan2") {
+        eprintln!("[shim-scalars] skipping `tfloat_atan2`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_atanh") {
+        eprintln!("[shim-scalars] skipping `tfloat_atanh`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_cbrt") {
+        eprintln!("[shim-scalars] skipping `tfloat_cbrt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_ceil") {
+        eprintln!("[shim-scalars] skipping `tfloat_ceil`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_clamp") {
+        eprintln!("[shim-scalars] skipping `tfloat_clamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_coefficient_of_variation") {
+        eprintln!("[shim-scalars] skipping `tfloat_coefficient_of_variation`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_copysign") {
+        eprintln!("[shim-scalars] skipping `tfloat_copysign`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_cos") {
+        eprintln!("[shim-scalars] skipping `tfloat_cos`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_cosh") {
+        eprintln!("[shim-scalars] skipping `tfloat_cosh`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_cube") {
+        eprintln!("[shim-scalars] skipping `tfloat_cube`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_cumsum") {
+        eprintln!("[shim-scalars] skipping `tfloat_cumsum`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_degrees") {
+        eprintln!("[shim-scalars] skipping `tfloat_degrees`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_delete_period") {
+        eprintln!("[shim-scalars] skipping `tfloat_delete_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_delete_time") {
+        eprintln!("[shim-scalars] skipping `tfloat_delete_time`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_derivative") {
+        eprintln!("[shim-scalars] skipping `tfloat_derivative`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_derivative_wit") {
+        eprintln!("[shim-scalars] skipping `tfloat_derivative_wit`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_detect_anomalies_iqr") {
+        eprintln!("[shim-scalars] skipping `tfloat_detect_anomalies_iqr`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_detect_anomalies_moving_avg") {
+        eprintln!("[shim-scalars] skipping `tfloat_detect_anomalies_moving_avg`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_detect_anomalies_zscore") {
+        eprintln!("[shim-scalars] skipping `tfloat_detect_anomalies_zscore`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_detect_trend") {
+        eprintln!("[shim-scalars] skipping `tfloat_detect_trend`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_detrend") {
+        eprintln!("[shim-scalars] skipping `tfloat_detrend`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_diff") {
+        eprintln!("[shim-scalars] skipping `tfloat_diff`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_div") {
+        eprintln!("[shim-scalars] skipping `tfloat_div`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_div_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_div_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_downsample") {
+        eprintln!("[shim-scalars] skipping `tfloat_downsample`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_duration") {
+        eprintln!("[shim-scalars] skipping `tfloat_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_ema") {
+        eprintln!("[shim-scalars] skipping `tfloat_ema`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tfloat_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_end_value") {
+        eprintln!("[shim-scalars] skipping `tfloat_end_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_entropy") {
+        eprintln!("[shim-scalars] skipping `tfloat_entropy`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_eq") {
+        eprintln!("[shim-scalars] skipping `tfloat_ever_eq`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_eq_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_ever_eq_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_gt") {
+        eprintln!("[shim-scalars] skipping `tfloat_ever_gt`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_gt_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_ever_gt_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_lt") {
+        eprintln!("[shim-scalars] skipping `tfloat_ever_lt`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_bool(conn, "tfloat_ever_lt_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_ever_lt_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_exp") {
+        eprintln!("[shim-scalars] skipping `tfloat_exp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_exp2") {
+        eprintln!("[shim-scalars] skipping `tfloat_exp2`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_expm1") {
+        eprintln!("[shim-scalars] skipping `tfloat_expm1`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_exponential_smooth") {
+        eprintln!("[shim-scalars] skipping `tfloat_exponential_smooth`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_fill_gaps") {
+        eprintln!("[shim-scalars] skipping `tfloat_fill_gaps`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_floor") {
+        eprintln!("[shim-scalars] skipping `tfloat_floor`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_forecast_linear") {
+        eprintln!("[shim-scalars] skipping `tfloat_forecast_linear`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_fract") {
+        eprintln!("[shim-scalars] skipping `tfloat_fract`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_from_csv") {
+        eprintln!("[shim-scalars] skipping `tfloat_from_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tfloat_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_from_mfjson") {
+        eprintln!("[shim-scalars] skipping `tfloat_from_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_gaussian_smooth") {
+        eprintln!("[shim-scalars] skipping `tfloat_gaussian_smooth`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_hypot") {
+        eprintln!("[shim-scalars] skipping `tfloat_hypot`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_insert") {
+        eprintln!("[shim-scalars] skipping `tfloat_insert`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_instant_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tfloat_instant_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_instant_from_mfjson") {
+        eprintln!("[shim-scalars] skipping `tfloat_instant_from_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_instant_n") {
+        eprintln!("[shim-scalars] skipping `tfloat_instant_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_instant_n_value") {
+        eprintln!("[shim-scalars] skipping `tfloat_instant_n_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tfloat_instant_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tfloat_instant_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_integral") {
+        eprintln!("[shim-scalars] skipping `tfloat_integral`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_interpolation") {
+        eprintln!("[shim-scalars] skipping `tfloat_interpolation`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_iqr") {
+        eprintln!("[shim-scalars] skipping `tfloat_iqr`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tfloat_is_decreasing") {
+        eprintln!("[shim-scalars] skipping `tfloat_is_decreasing`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tfloat_is_increasing") {
+        eprintln!("[shim-scalars] skipping `tfloat_is_increasing`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_kalman_smooth") {
+        eprintln!("[shim-scalars] skipping `tfloat_kalman_smooth`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_kurtosis") {
+        eprintln!("[shim-scalars] skipping `tfloat_kurtosis`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_level_crossing_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_level_crossing_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_lift_between") {
+        eprintln!("[shim-scalars] skipping `tfloat_lift_between`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_eq") {
+        eprintln!("[shim-scalars] skipping `tfloat_lift_eq`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_ge") {
+        eprintln!("[shim-scalars] skipping `tfloat_lift_ge`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_gt") {
+        eprintln!("[shim-scalars] skipping `tfloat_lift_gt`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_le") {
+        eprintln!("[shim-scalars] skipping `tfloat_lift_le`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_lt") {
+        eprintln!("[shim-scalars] skipping `tfloat_lift_lt`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_lift_ne") {
+        eprintln!("[shim-scalars] skipping `tfloat_lift_ne`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_ln") {
+        eprintln!("[shim-scalars] skipping `tfloat_ln`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_ln1p") {
+        eprintln!("[shim-scalars] skipping `tfloat_ln1p`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_log10") {
+        eprintln!("[shim-scalars] skipping `tfloat_log10`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_log2") {
+        eprintln!("[shim-scalars] skipping `tfloat_log2`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_log_base") {
+        eprintln!("[shim-scalars] skipping `tfloat_log_base`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tfloat_lower_inclusive") {
+        eprintln!("[shim-scalars] skipping `tfloat_lower_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_max") {
+        eprintln!("[shim-scalars] skipping `tfloat_max`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_max_element") {
+        eprintln!("[shim-scalars] skipping `tfloat_max_element`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_max_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_max_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_max_timestamp") {
+        eprintln!("[shim-scalars] skipping `tfloat_max_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_max_value") {
+        eprintln!("[shim-scalars] skipping `tfloat_max_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_max_value_wit") {
+        eprintln!("[shim-scalars] skipping `tfloat_max_value_wit`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_mean") {
+        eprintln!("[shim-scalars] skipping `tfloat_mean`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_median") {
+        eprintln!("[shim-scalars] skipping `tfloat_median`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_merge") {
+        eprintln!("[shim-scalars] skipping `tfloat_merge`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_min") {
+        eprintln!("[shim-scalars] skipping `tfloat_min`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_min_element") {
+        eprintln!("[shim-scalars] skipping `tfloat_min_element`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_min_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_min_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_min_timestamp") {
+        eprintln!("[shim-scalars] skipping `tfloat_min_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_min_value") {
+        eprintln!("[shim-scalars] skipping `tfloat_min_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_min_value_wit") {
+        eprintln!("[shim-scalars] skipping `tfloat_min_value_wit`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tfloat_minus_period") {
+        eprintln!("[shim-scalars] skipping `tfloat_minus_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_minus_range") {
+        eprintln!("[shim-scalars] skipping `tfloat_minus_range`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_minus_tbox") {
+        eprintln!("[shim-scalars] skipping `tfloat_minus_tbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_minus_timestamp") {
+        eprintln!("[shim-scalars] skipping `tfloat_minus_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_minus_value") {
+        eprintln!("[shim-scalars] skipping `tfloat_minus_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_minus_values") {
+        eprintln!("[shim-scalars] skipping `tfloat_minus_values`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_mod_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_mod_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_moving_average") {
+        eprintln!("[shim-scalars] skipping `tfloat_moving_average`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_mul") {
+        eprintln!("[shim-scalars] skipping `tfloat_mul`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_mul_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_mul_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_n_level_crossings") {
+        eprintln!("[shim-scalars] skipping `tfloat_n_level_crossings`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_n_peaks") {
+        eprintln!("[shim-scalars] skipping `tfloat_n_peaks`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_n_valleys") {
+        eprintln!("[shim-scalars] skipping `tfloat_n_valleys`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_n_zero_crossings") {
+        eprintln!("[shim-scalars] skipping `tfloat_n_zero_crossings`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_negate") {
+        eprintln!("[shim-scalars] skipping `tfloat_negate`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_normalize") {
+        eprintln!("[shim-scalars] skipping `tfloat_normalize`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_num_anomalies") {
+        eprintln!("[shim-scalars] skipping `tfloat_num_anomalies`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_num_instants") {
+        eprintln!("[shim-scalars] skipping `tfloat_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_num_instants_wit") {
+        eprintln!("[shim-scalars] skipping `tfloat_num_instants_wit`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_num_segments") {
+        eprintln!("[shim-scalars] skipping `tfloat_num_segments`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_pct") {
+        eprintln!("[shim-scalars] skipping `tfloat_pct`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_pct_change") {
+        eprintln!("[shim-scalars] skipping `tfloat_pct_change`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_peak_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_peak_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_percentile") {
+        eprintln!("[shim-scalars] skipping `tfloat_percentile`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_pow") {
+        eprintln!("[shim-scalars] skipping `tfloat_pow`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_precision") {
+        eprintln!("[shim-scalars] skipping `tfloat_precision`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_radians") {
+        eprintln!("[shim-scalars] skipping `tfloat_radians`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_range") {
+        eprintln!("[shim-scalars] skipping `tfloat_range`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_recip") {
+        eprintln!("[shim-scalars] skipping `tfloat_recip`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_remove_outliers") {
+        eprintln!("[shim-scalars] skipping `tfloat_remove_outliers`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_resample_to_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_resample_to_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_rolling_mean") {
+        eprintln!("[shim-scalars] skipping `tfloat_rolling_mean`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_rolling_stddev") {
+        eprintln!("[shim-scalars] skipping `tfloat_rolling_stddev`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_rolling_variance") {
+        eprintln!("[shim-scalars] skipping `tfloat_rolling_variance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_round") {
+        eprintln!("[shim-scalars] skipping `tfloat_round`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_scale") {
+        eprintln!("[shim-scalars] skipping `tfloat_scale`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_second_derivative") {
+        eprintln!("[shim-scalars] skipping `tfloat_second_derivative`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_segments_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_segments_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_at_period") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_seqset_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_intersection") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_minus") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_seqset_num_instants") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_seqset_num_sequences") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_num_sequences`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_scale") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_scale`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_sequence_n") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_sequence_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_shift") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_seqset_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_seqset_symdiff") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_symdiff`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_seqset_value_at") {
+        eprintln!("[shim-scalars] skipping `tfloat_seqset_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_set_interpolation") {
+        eprintln!("[shim-scalars] skipping `tfloat_set_interpolation`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_shift_scale_time") {
+        eprintln!("[shim-scalars] skipping `tfloat_shift_scale_time`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_sign") {
+        eprintln!("[shim-scalars] skipping `tfloat_sign`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_signum") {
+        eprintln!("[shim-scalars] skipping `tfloat_signum`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_sin") {
+        eprintln!("[shim-scalars] skipping `tfloat_sin`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_sinh") {
+        eprintln!("[shim-scalars] skipping `tfloat_sinh`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_skewness") {
+        eprintln!("[shim-scalars] skipping `tfloat_skewness`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_span") {
+        eprintln!("[shim-scalars] skipping `tfloat_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_sqrt") {
+        eprintln!("[shim-scalars] skipping `tfloat_sqrt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_square") {
+        eprintln!("[shim-scalars] skipping `tfloat_square`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tfloat_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_start_value") {
+        eprintln!("[shim-scalars] skipping `tfloat_start_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_statistics") {
+        eprintln!("[shim-scalars] skipping `tfloat_statistics`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_stddev") {
+        eprintln!("[shim-scalars] skipping `tfloat_stddev`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_sub") {
+        eprintln!("[shim-scalars] skipping `tfloat_sub`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_sub_scalar") {
+        eprintln!("[shim-scalars] skipping `tfloat_sub_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_sum") {
+        eprintln!("[shim-scalars] skipping `tfloat_sum`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tan") {
+        eprintln!("[shim-scalars] skipping `tfloat_tan`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tanh") {
+        eprintln!("[shim-scalars] skipping `tfloat_tanh`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tbox") {
+        eprintln!("[shim-scalars] skipping `tfloat_tbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tbox_time_span") {
+        eprintln!("[shim-scalars] skipping `tfloat_tbox_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_tbox_tmax") {
+        eprintln!("[shim-scalars] skipping `tfloat_tbox_tmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_tbox_tmin") {
+        eprintln!("[shim-scalars] skipping `tfloat_tbox_tmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tbox_value_span") {
+        eprintln!("[shim-scalars] skipping `tfloat_tbox_value_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_tbox_vmax") {
+        eprintln!("[shim-scalars] skipping `tfloat_tbox_vmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_tbox_vmin") {
+        eprintln!("[shim-scalars] skipping `tfloat_tbox_vmin`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_eq") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_eq`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_ge") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_ge`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_gt") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_gt`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_le") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_le`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_lt") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_lt`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_temporal_median") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_median`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tfloat_temporal_ne") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_ne`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_temporal_stddev") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_stddev`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_temporal_variance") {
+        eprintln!("[shim-scalars] skipping `tfloat_temporal_variance`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_time_bucket") {
+        eprintln!("[shim-scalars] skipping `tfloat_time_bucket`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_time_bucket_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_time_bucket_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_time_span") {
+        eprintln!("[shim-scalars] skipping `tfloat_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_time_split_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_time_split_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_time_split_nth") {
+        eprintln!("[shim-scalars] skipping `tfloat_time_split_nth`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_timestamp_n") {
+        eprintln!("[shim-scalars] skipping `tfloat_timestamp_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_timestamps") {
+        eprintln!("[shim-scalars] skipping `tfloat_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tfloat_to_csv") {
+        eprintln!("[shim-scalars] skipping `tfloat_to_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tfloat_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tfloat_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tfloat_to_json") {
+        eprintln!("[shim-scalars] skipping `tfloat_to_json`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_to_linear") {
+        eprintln!("[shim-scalars] skipping `tfloat_to_linear`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tfloat_to_mfjson") {
+        eprintln!("[shim-scalars] skipping `tfloat_to_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_to_stepwise") {
+        eprintln!("[shim-scalars] skipping `tfloat_to_stepwise`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_to_tint") {
+        eprintln!("[shim-scalars] skipping `tfloat_to_tint`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_trend_n") {
+        eprintln!("[shim-scalars] skipping `tfloat_trend_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_trend_segment_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_trend_segment_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_trend_slope") {
+        eprintln!("[shim-scalars] skipping `tfloat_trend_slope`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_trunc") {
+        eprintln!("[shim-scalars] skipping `tfloat_trunc`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tunion_avg") {
+        eprintln!("[shim-scalars] skipping `tfloat_tunion_avg`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tunion_max") {
+        eprintln!("[shim-scalars] skipping `tfloat_tunion_max`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tunion_min") {
+        eprintln!("[shim-scalars] skipping `tfloat_tunion_min`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_tunion_sum") {
+        eprintln!("[shim-scalars] skipping `tfloat_tunion_sum`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_twavg") {
+        eprintln!("[shim-scalars] skipping `tfloat_twavg`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_twcount") {
+        eprintln!("[shim-scalars] skipping `tfloat_twcount`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_twmax") {
+        eprintln!("[shim-scalars] skipping `tfloat_twmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_twmin") {
+        eprintln!("[shim-scalars] skipping `tfloat_twmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_twstddev") {
+        eprintln!("[shim-scalars] skipping `tfloat_twstddev`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_twsum") {
+        eprintln!("[shim-scalars] skipping `tfloat_twsum`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_twvariance") {
+        eprintln!("[shim-scalars] skipping `tfloat_twvariance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_update") {
+        eprintln!("[shim-scalars] skipping `tfloat_update`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tfloat_upper_inclusive") {
+        eprintln!("[shim-scalars] skipping `tfloat_upper_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_upsample") {
+        eprintln!("[shim-scalars] skipping `tfloat_upsample`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_valley_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_valley_count`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tfloat_value_at") {
+        eprintln!("[shim-scalars] skipping `tfloat_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_value_bucket_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_value_bucket_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tfloat_value_bucket_index") {
+        eprintln!("[shim-scalars] skipping `tfloat_value_bucket_index`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_value_n") {
+        eprintln!("[shim-scalars] skipping `tfloat_value_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_value_split_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_value_split_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_value_split_nth") {
+        eprintln!("[shim-scalars] skipping `tfloat_value_split_nth`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_values") {
+        eprintln!("[shim-scalars] skipping `tfloat_values`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloat_variance") {
+        eprintln!("[shim-scalars] skipping `tfloat_variance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_wcount") {
+        eprintln!("[shim-scalars] skipping `tfloat_wcount`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_eq") {
+        eprintln!("[shim-scalars] skipping `tfloat_when_eq`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_ge") {
+        eprintln!("[shim-scalars] skipping `tfloat_when_ge`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_gt") {
+        eprintln!("[shim-scalars] skipping `tfloat_when_gt`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_le") {
+        eprintln!("[shim-scalars] skipping `tfloat_when_le`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_lt") {
+        eprintln!("[shim-scalars] skipping `tfloat_when_lt`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tfloat_when_ne") {
+        eprintln!("[shim-scalars] skipping `tfloat_when_ne`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_wmax") {
+        eprintln!("[shim-scalars] skipping `tfloat_wmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_wmedian") {
+        eprintln!("[shim-scalars] skipping `tfloat_wmedian`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_wmin") {
+        eprintln!("[shim-scalars] skipping `tfloat_wmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_wpercentile") {
+        eprintln!("[shim-scalars] skipping `tfloat_wpercentile`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_wsum") {
+        eprintln!("[shim-scalars] skipping `tfloat_wsum`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tfloat_zero_crossing_count") {
+        eprintln!("[shim-scalars] skipping `tfloat_zero_crossing_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloat_zscore") {
+        eprintln!("[shim-scalars] skipping `tfloat_zscore`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tfloatrange_always_contains") {
+        eprintln!("[shim-scalars] skipping `tfloatrange_always_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tfloatrange_ever_contains") {
+        eprintln!("[shim-scalars] skipping `tfloatrange_ever_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tfloatrange_from_bounds") {
+        eprintln!("[shim-scalars] skipping `tfloatrange_from_bounds`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloatrange_lower") {
+        eprintln!("[shim-scalars] skipping `tfloatrange_lower`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloatrange_midpoint") {
+        eprintln!("[shim-scalars] skipping `tfloatrange_midpoint`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloatrange_upper") {
+        eprintln!("[shim-scalars] skipping `tfloatrange_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tfloatrange_width") {
+        eprintln!("[shim-scalars] skipping `tfloatrange_width`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_at_period") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tgeogpoint_at_stbox") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_at_stbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeogpoint_avg_speed_geodetic") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_avg_speed_geodetic`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tgeogpoint_azimuth_at") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_azimuth_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_azimuth_geodetic") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_azimuth_geodetic`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_distance") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_distance`: {e}");
+    }
+    if let Err(e) = register_blob_f64_f64_to_blob(conn, "tgeogpoint_distance_to_point_seq") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_distance_to_point_seq`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeogpoint_duration") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeogpoint_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_end_value") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_end_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_getlat") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_getlat`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_getlon") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_getlon`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_instant_n") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_instant_n`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tgeogpoint_lat_at") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_lat_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeogpoint_latitude_at") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_latitude_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeogpoint_length_geodetic") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_length_geodetic`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tgeogpoint_lon_at") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_lon_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeogpoint_longitude_at") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_longitude_at`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "tgeogpoint_min_distance") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_min_distance`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tgeogpoint_minus_stbox") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_minus_stbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeogpoint_num_instants") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_shift") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_shift`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tgeogpoint_speed_at") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_speed_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_speed_geodetic") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_speed_geodetic`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeogpoint_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_start_value") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_start_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_time_span") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_timestamps") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_to_tgeompoint") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_to_tgeompoint`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeogpoint_value_at") {
+        eprintln!("[shim-scalars] skipping `tgeogpoint_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeometry_always_contains") {
+        eprintln!("[shim-scalars] skipping `tgeometry_always_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_at_period") {
+        eprintln!("[shim-scalars] skipping `tgeometry_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeometry_at_spatial_contains") {
+        eprintln!("[shim-scalars] skipping `tgeometry_at_spatial_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeometry_at_spatial_intersects") {
+        eprintln!("[shim-scalars] skipping `tgeometry_at_spatial_intersects`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeometry_at_spatial_within") {
+        eprintln!("[shim-scalars] skipping `tgeometry_at_spatial_within`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeometry_avg_area") {
+        eprintln!("[shim-scalars] skipping `tgeometry_avg_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_bounding_box") {
+        eprintln!("[shim-scalars] skipping `tgeometry_bounding_box`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_centroid") {
+        eprintln!("[shim-scalars] skipping `tgeometry_centroid`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeometry_dominant_type") {
+        eprintln!("[shim-scalars] skipping `tgeometry_dominant_type`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeometry_duration") {
+        eprintln!("[shim-scalars] skipping `tgeometry_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeometry_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeometry_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeometry_ever_contains") {
+        eprintln!("[shim-scalars] skipping `tgeometry_ever_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeometry_ever_intersects") {
+        eprintln!("[shim-scalars] skipping `tgeometry_ever_intersects`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeometry_ever_within") {
+        eprintln!("[shim-scalars] skipping `tgeometry_ever_within`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeometry_get_area") {
+        eprintln!("[shim-scalars] skipping `tgeometry_get_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeometry_get_length") {
+        eprintln!("[shim-scalars] skipping `tgeometry_get_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeometry_is_homogeneous") {
+        eprintln!("[shim-scalars] skipping `tgeometry_is_homogeneous`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeometry_max_area") {
+        eprintln!("[shim-scalars] skipping `tgeometry_max_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeometry_min_area") {
+        eprintln!("[shim-scalars] skipping `tgeometry_min_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeometry_num_instants") {
+        eprintln!("[shim-scalars] skipping `tgeometry_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_scale") {
+        eprintln!("[shim-scalars] skipping `tgeometry_scale`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_shift") {
+        eprintln!("[shim-scalars] skipping `tgeometry_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_simplify") {
+        eprintln!("[shim-scalars] skipping `tgeometry_simplify`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeometry_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeometry_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_tarea") {
+        eprintln!("[shim-scalars] skipping `tgeometry_tarea`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_tlength") {
+        eprintln!("[shim-scalars] skipping `tgeometry_tlength`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeometry_to_tgeompoint") {
+        eprintln!("[shim-scalars] skipping `tgeometry_to_tgeompoint`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeometry_total_area") {
+        eprintln!("[shim-scalars] skipping `tgeometry_total_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeometry_total_coords") {
+        eprintln!("[shim-scalars] skipping `tgeometry_total_coords`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeometry_type") {
+        eprintln!("[shim-scalars] skipping `tgeometry_type`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_altitude") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_altitude`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_altitude_profile") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_altitude_profile`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_altitude_range") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_altitude_range`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_at_period") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_4f64_to_blob(conn, "tgeompoint3d_at_point") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_at_point`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_at_stbox") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_at_stbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_avg_speed") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_avg_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_avg_speed_3d") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_avg_speed_3d`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_azimuth") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_azimuth`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_centroid") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_centroid`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_climb_rate") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_climb_rate`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_cumulative_length") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_cumulative_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_descent_rate") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_descent_rate`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "tgeompoint3d_dtw_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_dtw_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint3d_duration") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_elevation_gain") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_elevation_gain`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_elevation_loss") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_elevation_loss`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint3d_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_end_value") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_end_value`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "tgeompoint3d_frechet_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_frechet_distance`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tgeompoint3d_from_csv") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_from_csv`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tgeompoint3d_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_from_text") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_getx") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_getx`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_gety") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_gety`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_getz") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_getz`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "tgeompoint3d_hausdorff_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_hausdorff_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_inst_new") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_inst_new`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_instant_n") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_instant_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_length") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_length_2d") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_length_2d`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_length_3d") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_length_3d`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_max_altitude") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_max_altitude`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_min_altitude") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_min_altitude`: {e}");
+    }
+    if let Err(e) = register_blob_4f64_to_blob(conn, "tgeompoint3d_minus_point") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_minus_point`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_minus_stbox") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_minus_stbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint3d_num_instants") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_pitch") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_pitch`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_planar_length") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_planar_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_project_to_2d") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_project_to_2d`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_seq_from_inst") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_seq_from_inst`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_shift") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_simplify") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_simplify`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_speed_3d") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_speed_3d`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint3d_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_start_value") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_start_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_stbox") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_stbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_time_span") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_timestamps") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint3d_to_csv") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_to_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint3d_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint3d_to_text") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_total_climb") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_total_climb`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint3d_total_descent") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_total_descent`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_value_at") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tgeompoint3d_value_at_x") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_value_at_x`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tgeompoint3d_value_at_y") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_value_at_y`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tgeompoint3d_value_at_z") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_value_at_z`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_vertical_speed") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_vertical_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_x_coords") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_x_coords`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_y_coords") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_y_coords`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint3d_z_coords") {
+        eprintln!("[shim-scalars] skipping `tgeompoint3d_z_coords`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_angular_difference") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_angular_difference`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_area") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_at_geometry") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_at_geometry`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tgeompoint_at_period") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_at_points") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_at_points`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tgeompoint_at_stbox") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_at_stbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_avg_speed") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_avg_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_azimuth") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_azimuth`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_bearing") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_bearing`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_bearing_seq") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_bearing_seq`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_bounding_box") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_bounding_box`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_bounds_detailed") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_bounds_detailed`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_buffer_polygon") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_buffer_polygon`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_center_x") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_center_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_center_y") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_center_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_centroid") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_centroid`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_centroid_x") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_centroid_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_centroid_y") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_centroid_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_cluster_dbscan") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_cluster_dbscan`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_cluster_kmeans") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_cluster_kmeans`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_convex_hull_area") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_convex_hull_area`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_cpa_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_cpa_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_cpa_time") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_cpa_time`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_cum_length") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_cum_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_cumulative_length") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_cumulative_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_delete_period") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_delete_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_detect_u_turns") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_detect_u_turns`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_dir_seg_n") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_dir_seg_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_dir_stats") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_dir_stats`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_direction_segment_count") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_direction_segment_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_direction_stats") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_direction_stats`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_disjoint_polygon") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_disjoint_polygon`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_disjoint_trajectory") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_disjoint_trajectory`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_displacement") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_displacement`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_downsample") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_downsample`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_duration") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_end_x") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_end_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_end_y") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_end_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_entirely_within") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_entirely_within`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_find_convoys") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_find_convoys`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_find_flocks") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_find_flocks`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_find_meetings") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_find_meetings`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_forecast_position") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_forecast_position`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_forecast_trajectory") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_forecast_trajectory`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_csv") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_from_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_geojson") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_from_geojson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_geojson_feature") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_from_geojson_feature`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_gpx") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_from_gpx`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_hexewkb") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_from_hexewkb`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_mfjson") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_from_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_from_web_mercator") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_from_web_mercator`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_full") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_full`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_full_analysis") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_full_analysis`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_geodetic_length") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_geodetic_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_geodetic_speed") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_geodetic_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_getx") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_getx`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_gety") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_gety`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_height") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_height`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_instant_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_instant_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_instant_from_mfjson") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_instant_from_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_instant_n_x") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_instant_n_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_instant_n_y") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_instant_n_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_instant_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_instant_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_interpolation") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_interpolation`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_intersects_polygon") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_intersects_polygon`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_intersects_trajectory") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_intersects_trajectory`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_is_simple") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_is_simple`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_is_stopped") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_is_stopped`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_kalman_smooth") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_kalman_smooth`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_length") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_lower_inclusive") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_lower_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_make_simple") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_make_simple`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_map_match") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_map_match`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_map_match_hmm") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_map_match_hmm`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_max_speed") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_max_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_merge") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_merge`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_min_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_min_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_min_speed") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_min_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_minus_geometry") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_minus_geometry`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tgeompoint_minus_period") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_minus_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_minus_points") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_minus_points`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tgeompoint_minus_stbox") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_minus_stbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_minus_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_minus_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_movement_count") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_movement_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_movement_n") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_movement_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_movement_sum") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_movement_sum`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_movement_summary") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_movement_summary`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_nearest_approach_between_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_between_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_nearest_approach_between_time") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_between_time`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "tgeompoint_nearest_approach_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_nearest_approach_instant_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_instant_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_nearest_approach_instant_time") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_instant_time`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_nearest_approach_time") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_nearest_approach_time`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_nearest_point_on_trajectory") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_nearest_point_on_trajectory`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_num_instants") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_num_segments") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_num_segments`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_num_u_turns") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_num_u_turns`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_offset_curve") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_offset_curve`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "tgeompoint_overlaps_stbox") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_overlaps_stbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_quality_metrics") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_quality_metrics`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_quality_report") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_quality_report`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_quality_score") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_quality_score`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_remove_repeated_points") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_remove_repeated_points`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_resample_to_count") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_resample_to_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_at_period") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_seqset_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_intersection") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_minus") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_seqset_num_instants") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_seqset_num_sequences") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_num_sequences`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_scale") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_scale`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_sequence_n") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_sequence_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_shift") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_seqset_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_seqset_symdiff") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_seqset_symdiff`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_shortest_line_length") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_shortest_line_length`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tgeompoint_simplify") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_simplify`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_simplify_semantic") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_simplify_semantic`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_simplify_to_n") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_simplify_to_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_simplify_visvalingam") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_simplify_visvalingam`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_sinuosity") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_sinuosity`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_span") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_speed_seg_n") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_speed_seg_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_speed_segment_count") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_speed_segment_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_speed_stats") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_speed_stats`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_speeds") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_speeds`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_speeds_seq") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_speeds_seq`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_srid") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_srid`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_start_x") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_start_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_start_y") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_start_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_stop_duration") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_stop_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_stop_n") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_stop_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_stop_segment_count") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_stop_segment_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_stop_split_count") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_stop_split_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tcontains") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tcontains`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tcovers") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tcovers`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tcrosses_polygon") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tcrosses_polygon`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tdisjoint") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tdisjoint`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tdisjoint_polygon") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tdisjoint_polygon`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tdwithin") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tdwithin`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_temporal_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_temporal_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tequals") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tequals`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_time_bucket") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_time_bucket`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_time_split_count") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_time_split_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_timestamp_n") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_timestamp_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_timestamps") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tintersects") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tintersects`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_tintersects_polygon") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tintersects_polygon`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_to_3d") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_3d`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_to_3d_with_altitudes") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_3d_with_altitudes`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_csv") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_geojson") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_geojson`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_geojson_feature") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_geojson_feature`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_geojson_feature_collection") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_geojson_feature_collection`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_gpx") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_gpx`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_hexewkb") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_hexewkb`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_kml") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_kml`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tgeompoint_to_mfjson") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_to_tgeogpoint") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_tgeogpoint`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_to_web_mercator") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_to_web_mercator`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_tortuosity") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tortuosity`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_tortuosity_idx") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_tortuosity_idx`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_total_distance") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_total_distance`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tgeompoint_total_duration") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_total_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_total_length_set") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_total_length_set`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_toverlaps") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_toverlaps`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_traj_geog_bearing") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_traj_geog_bearing`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_traj_geog_speed") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_traj_geog_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_transform") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_transform`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_ttouches") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_ttouches`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_turn_seq") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_turn_seq`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_twithin_polygon") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_twithin_polygon`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_upper_inclusive") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_upper_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_upsample") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_upsample`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tgeompoint_utm_zone") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_utm_zone`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tgeompoint_v_stats") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_v_stats`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tgeompoint_value_at") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_vmax") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_vmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_vmin") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_vmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_width") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_width`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tgeompoint_within_polygon") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_within_polygon`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_x_at") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_x_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_xmax") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_xmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_xmin") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_xmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_y_at") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_y_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_ymax") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_ymax`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tgeompoint_ymin") {
+        eprintln!("[shim-scalars] skipping `tgeompoint_ymin`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "timeset_gaps") {
+        eprintln!("[shim-scalars] skipping `timeset_gaps`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "timeset_to_span") {
+        eprintln!("[shim-scalars] skipping `timeset_to_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "timestamps") {
+        eprintln!("[shim-scalars] skipping `timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_abs") {
+        eprintln!("[shim-scalars] skipping `tint_abs`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_add") {
+        eprintln!("[shim-scalars] skipping `tint_add`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_add_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_add_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_eq") {
+        eprintln!("[shim-scalars] skipping `tint_always_eq`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_eq_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_always_eq_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_gt") {
+        eprintln!("[shim-scalars] skipping `tint_always_gt`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_gt_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_always_gt_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_lt") {
+        eprintln!("[shim-scalars] skipping `tint_always_lt`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_always_lt_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_always_lt_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_at_max") {
+        eprintln!("[shim-scalars] skipping `tint_at_max`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_at_min") {
+        eprintln!("[shim-scalars] skipping `tint_at_min`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tint_at_period") {
+        eprintln!("[shim-scalars] skipping `tint_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_at_range") {
+        eprintln!("[shim-scalars] skipping `tint_at_range`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_at_tbox") {
+        eprintln!("[shim-scalars] skipping `tint_at_tbox`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_at_value") {
+        eprintln!("[shim-scalars] skipping `tint_at_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_at_values") {
+        eprintln!("[shim-scalars] skipping `tint_at_values`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_bitwise_and") {
+        eprintln!("[shim-scalars] skipping `tint_bitwise_and`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_bitwise_or") {
+        eprintln!("[shim-scalars] skipping `tint_bitwise_or`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_bitwise_xor") {
+        eprintln!("[shim-scalars] skipping `tint_bitwise_xor`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_clamp") {
+        eprintln!("[shim-scalars] skipping `tint_clamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_consecutive_diff") {
+        eprintln!("[shim-scalars] skipping `tint_consecutive_diff`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_count") {
+        eprintln!("[shim-scalars] skipping `tint_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_cube") {
+        eprintln!("[shim-scalars] skipping `tint_cube`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_cumsum") {
+        eprintln!("[shim-scalars] skipping `tint_cumsum`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_delete_period") {
+        eprintln!("[shim-scalars] skipping `tint_delete_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_delete_time") {
+        eprintln!("[shim-scalars] skipping `tint_delete_time`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_detect_anomalies_iqr") {
+        eprintln!("[shim-scalars] skipping `tint_detect_anomalies_iqr`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_detect_anomalies_zscore") {
+        eprintln!("[shim-scalars] skipping `tint_detect_anomalies_zscore`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_diff") {
+        eprintln!("[shim-scalars] skipping `tint_diff`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_div") {
+        eprintln!("[shim-scalars] skipping `tint_div`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_div_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_div_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_downsample") {
+        eprintln!("[shim-scalars] skipping `tint_downsample`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_duration") {
+        eprintln!("[shim-scalars] skipping `tint_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tint_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_end_value") {
+        eprintln!("[shim-scalars] skipping `tint_end_value`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_eq") {
+        eprintln!("[shim-scalars] skipping `tint_ever_eq`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_eq_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_ever_eq_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_gt") {
+        eprintln!("[shim-scalars] skipping `tint_ever_gt`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_gt_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_ever_gt_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_lt") {
+        eprintln!("[shim-scalars] skipping `tint_ever_lt`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tint_ever_lt_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_ever_lt_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tint_exponential_smooth") {
+        eprintln!("[shim-scalars] skipping `tint_exponential_smooth`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_from_csv") {
+        eprintln!("[shim-scalars] skipping `tint_from_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tint_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_from_mfjson") {
+        eprintln!("[shim-scalars] skipping `tint_from_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_gcd") {
+        eprintln!("[shim-scalars] skipping `tint_gcd`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_insert") {
+        eprintln!("[shim-scalars] skipping `tint_insert`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_instant_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tint_instant_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_instant_from_mfjson") {
+        eprintln!("[shim-scalars] skipping `tint_instant_from_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_instant_n") {
+        eprintln!("[shim-scalars] skipping `tint_instant_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_instant_n_value") {
+        eprintln!("[shim-scalars] skipping `tint_instant_n_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tint_instant_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tint_instant_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_integral") {
+        eprintln!("[shim-scalars] skipping `tint_integral`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_interpolation") {
+        eprintln!("[shim-scalars] skipping `tint_interpolation`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_iqr") {
+        eprintln!("[shim-scalars] skipping `tint_iqr`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_kurtosis") {
+        eprintln!("[shim-scalars] skipping `tint_kurtosis`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_lcm") {
+        eprintln!("[shim-scalars] skipping `tint_lcm`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_lift_between") {
+        eprintln!("[shim-scalars] skipping `tint_lift_between`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_eq") {
+        eprintln!("[shim-scalars] skipping `tint_lift_eq`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_ge") {
+        eprintln!("[shim-scalars] skipping `tint_lift_ge`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_gt") {
+        eprintln!("[shim-scalars] skipping `tint_lift_gt`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_le") {
+        eprintln!("[shim-scalars] skipping `tint_lift_le`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_lt") {
+        eprintln!("[shim-scalars] skipping `tint_lift_lt`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_lift_ne") {
+        eprintln!("[shim-scalars] skipping `tint_lift_ne`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tint_lower_inclusive") {
+        eprintln!("[shim-scalars] skipping `tint_lower_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_max") {
+        eprintln!("[shim-scalars] skipping `tint_max`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_max_timestamp") {
+        eprintln!("[shim-scalars] skipping `tint_max_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_max_value_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_max_value_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_max_value_wit") {
+        eprintln!("[shim-scalars] skipping `tint_max_value_wit`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_mean") {
+        eprintln!("[shim-scalars] skipping `tint_mean`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_mean_f64") {
+        eprintln!("[shim-scalars] skipping `tint_mean_f64`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_median") {
+        eprintln!("[shim-scalars] skipping `tint_median`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_merge") {
+        eprintln!("[shim-scalars] skipping `tint_merge`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_min") {
+        eprintln!("[shim-scalars] skipping `tint_min`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_min_timestamp") {
+        eprintln!("[shim-scalars] skipping `tint_min_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_min_value_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_min_value_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_min_value_wit") {
+        eprintln!("[shim-scalars] skipping `tint_min_value_wit`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tint_minus_period") {
+        eprintln!("[shim-scalars] skipping `tint_minus_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_minus_range") {
+        eprintln!("[shim-scalars] skipping `tint_minus_range`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_minus_tbox") {
+        eprintln!("[shim-scalars] skipping `tint_minus_tbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_minus_timestamp") {
+        eprintln!("[shim-scalars] skipping `tint_minus_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_minus_value") {
+        eprintln!("[shim-scalars] skipping `tint_minus_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_minus_values") {
+        eprintln!("[shim-scalars] skipping `tint_minus_values`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_mod") {
+        eprintln!("[shim-scalars] skipping `tint_mod`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_mod_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_mod_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_moving_average") {
+        eprintln!("[shim-scalars] skipping `tint_moving_average`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_mul") {
+        eprintln!("[shim-scalars] skipping `tint_mul`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_mul_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_mul_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_negate") {
+        eprintln!("[shim-scalars] skipping `tint_negate`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_num_anomalies") {
+        eprintln!("[shim-scalars] skipping `tint_num_anomalies`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_num_instants") {
+        eprintln!("[shim-scalars] skipping `tint_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_num_instants_wit") {
+        eprintln!("[shim-scalars] skipping `tint_num_instants_wit`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_num_segments") {
+        eprintln!("[shim-scalars] skipping `tint_num_segments`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_percentile") {
+        eprintln!("[shim-scalars] skipping `tint_percentile`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_pow") {
+        eprintln!("[shim-scalars] skipping `tint_pow`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_range") {
+        eprintln!("[shim-scalars] skipping `tint_range`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_range_value") {
+        eprintln!("[shim-scalars] skipping `tint_range_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_resample_to_count") {
+        eprintln!("[shim-scalars] skipping `tint_resample_to_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_rolling_mean") {
+        eprintln!("[shim-scalars] skipping `tint_rolling_mean`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_rolling_stddev") {
+        eprintln!("[shim-scalars] skipping `tint_rolling_stddev`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_rolling_variance") {
+        eprintln!("[shim-scalars] skipping `tint_rolling_variance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_at_period") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_seqset_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_intersection") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_minus") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_seqset_num_instants") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_seqset_num_sequences") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_num_sequences`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_scale") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_scale`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_sequence_n") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_sequence_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_shift") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_seqset_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_seqset_symdiff") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_symdiff`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_seqset_value_at") {
+        eprintln!("[shim-scalars] skipping `tint_seqset_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_sequence_to_tfloat") {
+        eprintln!("[shim-scalars] skipping `tint_sequence_to_tfloat`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_shift") {
+        eprintln!("[shim-scalars] skipping `tint_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_sign") {
+        eprintln!("[shim-scalars] skipping `tint_sign`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_skewness") {
+        eprintln!("[shim-scalars] skipping `tint_skewness`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_span") {
+        eprintln!("[shim-scalars] skipping `tint_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_square") {
+        eprintln!("[shim-scalars] skipping `tint_square`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tint_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_start_value") {
+        eprintln!("[shim-scalars] skipping `tint_start_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_statistics") {
+        eprintln!("[shim-scalars] skipping `tint_statistics`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_stddev") {
+        eprintln!("[shim-scalars] skipping `tint_stddev`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_sub") {
+        eprintln!("[shim-scalars] skipping `tint_sub`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_sub_scalar") {
+        eprintln!("[shim-scalars] skipping `tint_sub_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_sum") {
+        eprintln!("[shim-scalars] skipping `tint_sum`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_tbox") {
+        eprintln!("[shim-scalars] skipping `tint_tbox`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_tbox_time_span") {
+        eprintln!("[shim-scalars] skipping `tint_tbox_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_tbox_tmax") {
+        eprintln!("[shim-scalars] skipping `tint_tbox_tmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_tbox_tmin") {
+        eprintln!("[shim-scalars] skipping `tint_tbox_tmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_tbox_vmax") {
+        eprintln!("[shim-scalars] skipping `tint_tbox_vmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_tbox_vmin") {
+        eprintln!("[shim-scalars] skipping `tint_tbox_vmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_temporal_avg") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_avg`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_temporal_count") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_count`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_eq") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_eq`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_ge") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_ge`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_gt") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_gt`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_le") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_le`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_lt") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_lt`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_temporal_median") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_median`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tint_temporal_ne") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_ne`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_temporal_stddev") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_stddev`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_temporal_variance") {
+        eprintln!("[shim-scalars] skipping `tint_temporal_variance`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_time_bucket") {
+        eprintln!("[shim-scalars] skipping `tint_time_bucket`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_time_span") {
+        eprintln!("[shim-scalars] skipping `tint_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_time_split_count") {
+        eprintln!("[shim-scalars] skipping `tint_time_split_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_time_split_nth") {
+        eprintln!("[shim-scalars] skipping `tint_time_split_nth`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_timestamp_n") {
+        eprintln!("[shim-scalars] skipping `tint_timestamp_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_timestamps") {
+        eprintln!("[shim-scalars] skipping `tint_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tint_to_csv") {
+        eprintln!("[shim-scalars] skipping `tint_to_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tint_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tint_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tint_to_json") {
+        eprintln!("[shim-scalars] skipping `tint_to_json`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tint_to_mfjson") {
+        eprintln!("[shim-scalars] skipping `tint_to_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_to_tbool") {
+        eprintln!("[shim-scalars] skipping `tint_to_tbool`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_to_tfloat") {
+        eprintln!("[shim-scalars] skipping `tint_to_tfloat`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_tunion_avg") {
+        eprintln!("[shim-scalars] skipping `tint_tunion_avg`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_tunion_max") {
+        eprintln!("[shim-scalars] skipping `tint_tunion_max`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_tunion_min") {
+        eprintln!("[shim-scalars] skipping `tint_tunion_min`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_tunion_sum") {
+        eprintln!("[shim-scalars] skipping `tint_tunion_sum`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_twavg") {
+        eprintln!("[shim-scalars] skipping `tint_twavg`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_twcount") {
+        eprintln!("[shim-scalars] skipping `tint_twcount`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_twmax") {
+        eprintln!("[shim-scalars] skipping `tint_twmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_twmin") {
+        eprintln!("[shim-scalars] skipping `tint_twmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_twstddev") {
+        eprintln!("[shim-scalars] skipping `tint_twstddev`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_twsum") {
+        eprintln!("[shim-scalars] skipping `tint_twsum`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_twvariance") {
+        eprintln!("[shim-scalars] skipping `tint_twvariance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_update") {
+        eprintln!("[shim-scalars] skipping `tint_update`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tint_upper_inclusive") {
+        eprintln!("[shim-scalars] skipping `tint_upper_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_upsample") {
+        eprintln!("[shim-scalars] skipping `tint_upsample`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_value_bucket_count") {
+        eprintln!("[shim-scalars] skipping `tint_value_bucket_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_value_bucket_index") {
+        eprintln!("[shim-scalars] skipping `tint_value_bucket_index`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tint_value_n") {
+        eprintln!("[shim-scalars] skipping `tint_value_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tint_value_split_count") {
+        eprintln!("[shim-scalars] skipping `tint_value_split_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_value_split_nth") {
+        eprintln!("[shim-scalars] skipping `tint_value_split_nth`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_values") {
+        eprintln!("[shim-scalars] skipping `tint_values`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tint_variance") {
+        eprintln!("[shim-scalars] skipping `tint_variance`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_wcount") {
+        eprintln!("[shim-scalars] skipping `tint_wcount`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_eq") {
+        eprintln!("[shim-scalars] skipping `tint_when_eq`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_ge") {
+        eprintln!("[shim-scalars] skipping `tint_when_ge`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_gt") {
+        eprintln!("[shim-scalars] skipping `tint_when_gt`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_le") {
+        eprintln!("[shim-scalars] skipping `tint_when_le`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_lt") {
+        eprintln!("[shim-scalars] skipping `tint_when_lt`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tint_when_ne") {
+        eprintln!("[shim-scalars] skipping `tint_when_ne`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_wmax") {
+        eprintln!("[shim-scalars] skipping `tint_wmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_wmedian") {
+        eprintln!("[shim-scalars] skipping `tint_wmedian`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_wmin") {
+        eprintln!("[shim-scalars] skipping `tint_wmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_wpercentile") {
+        eprintln!("[shim-scalars] skipping `tint_wpercentile`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tint_wsum") {
+        eprintln!("[shim-scalars] skipping `tint_wsum`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tintrange_always_contains") {
+        eprintln!("[shim-scalars] skipping `tintrange_always_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tintrange_ever_contains") {
+        eprintln!("[shim-scalars] skipping `tintrange_ever_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tintrange_from_bounds") {
+        eprintln!("[shim-scalars] skipping `tintrange_from_bounds`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tintrange_lower") {
+        eprintln!("[shim-scalars] skipping `tintrange_lower`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tintrange_upper") {
+        eprintln!("[shim-scalars] skipping `tintrange_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tintrange_width") {
+        eprintln!("[shim-scalars] skipping `tintrange_width`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tmax") {
+        eprintln!("[shim-scalars] skipping `tmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tmin") {
+        eprintln!("[shim-scalars] skipping `tmin`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "tnpoint_at_period") {
+        eprintln!("[shim-scalars] skipping `tnpoint_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_f64_f64_to_blob(conn, "tnpoint_at_position_range") {
+        eprintln!("[shim-scalars] skipping `tnpoint_at_position_range`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_avg_network_speed") {
+        eprintln!("[shim-scalars] skipping `tnpoint_avg_network_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_avg_position") {
+        eprintln!("[shim-scalars] skipping `tnpoint_avg_position`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_cumulative_length") {
+        eprintln!("[shim-scalars] skipping `tnpoint_cumulative_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tnpoint_duration") {
+        eprintln!("[shim-scalars] skipping `tnpoint_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_end_position") {
+        eprintln!("[shim-scalars] skipping `tnpoint_end_position`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tnpoint_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tnpoint_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tnpoint_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tnpoint_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_inst_new") {
+        eprintln!("[shim-scalars] skipping `tnpoint_inst_new`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tnpoint_interpolate") {
+        eprintln!("[shim-scalars] skipping `tnpoint_interpolate`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tnpoint_is_backward") {
+        eprintln!("[shim-scalars] skipping `tnpoint_is_backward`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tnpoint_is_forward") {
+        eprintln!("[shim-scalars] skipping `tnpoint_is_forward`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "tnpoint_is_single_route") {
+        eprintln!("[shim-scalars] skipping `tnpoint_is_single_route`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_length") {
+        eprintln!("[shim-scalars] skipping `tnpoint_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_match_quality") {
+        eprintln!("[shim-scalars] skipping `tnpoint_match_quality`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_max_position") {
+        eprintln!("[shim-scalars] skipping `tnpoint_max_position`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_min_position") {
+        eprintln!("[shim-scalars] skipping `tnpoint_min_position`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_network_length") {
+        eprintln!("[shim-scalars] skipping `tnpoint_network_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_network_speed") {
+        eprintln!("[shim-scalars] skipping `tnpoint_network_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tnpoint_num_instants") {
+        eprintln!("[shim-scalars] skipping `tnpoint_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tnpoint_num_route_changes") {
+        eprintln!("[shim-scalars] skipping `tnpoint_num_route_changes`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tnpoint_num_routes") {
+        eprintln!("[shim-scalars] skipping `tnpoint_num_routes`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tnpoint_position_at") {
+        eprintln!("[shim-scalars] skipping `tnpoint_position_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_positions") {
+        eprintln!("[shim-scalars] skipping `tnpoint_positions`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tnpoint_route") {
+        eprintln!("[shim-scalars] skipping `tnpoint_route`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tnpoint_route_id") {
+        eprintln!("[shim-scalars] skipping `tnpoint_route_id`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_routes") {
+        eprintln!("[shim-scalars] skipping `tnpoint_routes`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tnpoint_scale") {
+        eprintln!("[shim-scalars] skipping `tnpoint_scale`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tnpoint_scale_time") {
+        eprintln!("[shim-scalars] skipping `tnpoint_scale_time`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_seq_from_inst") {
+        eprintln!("[shim-scalars] skipping `tnpoint_seq_from_inst`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tnpoint_shift") {
+        eprintln!("[shim-scalars] skipping `tnpoint_shift`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tnpoint_shift_time") {
+        eprintln!("[shim-scalars] skipping `tnpoint_shift_time`: {e}");
+    }
+    if let Err(e) = register_blob_f64_to_blob(conn, "tnpoint_simplify") {
+        eprintln!("[shim-scalars] skipping `tnpoint_simplify`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_speed") {
+        eprintln!("[shim-scalars] skipping `tnpoint_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tnpoint_start_position") {
+        eprintln!("[shim-scalars] skipping `tnpoint_start_position`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tnpoint_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tnpoint_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_time_span") {
+        eprintln!("[shim-scalars] skipping `tnpoint_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_timestamps") {
+        eprintln!("[shim-scalars] skipping `tnpoint_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tnpoint_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tnpoint_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tnpoint_to_geometry") {
+        eprintln!("[shim-scalars] skipping `tnpoint_to_geometry`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "total_cost") {
+        eprintln!("[shim-scalars] skipping `total_cost`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_angular_acceleration") {
+        eprintln!("[shim-scalars] skipping `tpose_angular_acceleration`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tpose_angular_distance_to_pose") {
+        eprintln!("[shim-scalars] skipping `tpose_angular_distance_to_pose`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_angular_velocity") {
+        eprintln!("[shim-scalars] skipping `tpose_angular_velocity`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_at_period") {
+        eprintln!("[shim-scalars] skipping `tpose_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tpose_avg_orientation") {
+        eprintln!("[shim-scalars] skipping `tpose_avg_orientation`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_compute_heading_from_movement") {
+        eprintln!("[shim-scalars] skipping `tpose_compute_heading_from_movement`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_curvature") {
+        eprintln!("[shim-scalars] skipping `tpose_curvature`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_distance") {
+        eprintln!("[shim-scalars] skipping `tpose_distance`: {e}");
+    }
+    if let Err(e) = register_blob_f64_f64_to_blob(conn, "tpose_distance_to_point") {
+        eprintln!("[shim-scalars] skipping `tpose_distance_to_point`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tpose_distance_to_pose") {
+        eprintln!("[shim-scalars] skipping `tpose_distance_to_pose`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tpose_duration") {
+        eprintln!("[shim-scalars] skipping `tpose_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tpose_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tpose_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tpose_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `tpose_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_get_orientation") {
+        eprintln!("[shim-scalars] skipping `tpose_get_orientation`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_get_x") {
+        eprintln!("[shim-scalars] skipping `tpose_get_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_get_y") {
+        eprintln!("[shim-scalars] skipping `tpose_get_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_heading_degrees") {
+        eprintln!("[shim-scalars] skipping `tpose_heading_degrees`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_inst_new") {
+        eprintln!("[shim-scalars] skipping `tpose_inst_new`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_linear_acceleration") {
+        eprintln!("[shim-scalars] skipping `tpose_linear_acceleration`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_linear_speed") {
+        eprintln!("[shim-scalars] skipping `tpose_linear_speed`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_make") {
+        eprintln!("[shim-scalars] skipping `tpose_make`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_f64(conn, "tpose_nearest_approach") {
+        eprintln!("[shim-scalars] skipping `tpose_nearest_approach`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tpose_num_instants") {
+        eprintln!("[shim-scalars] skipping `tpose_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tpose_path_length") {
+        eprintln!("[shim-scalars] skipping `tpose_path_length`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tpose_pose_at_orientation") {
+        eprintln!("[shim-scalars] skipping `tpose_pose_at_orientation`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tpose_pose_at_x") {
+        eprintln!("[shim-scalars] skipping `tpose_pose_at_x`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_f64(conn, "tpose_pose_at_y") {
+        eprintln!("[shim-scalars] skipping `tpose_pose_at_y`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_scale") {
+        eprintln!("[shim-scalars] skipping `tpose_scale`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_seq_from_inst") {
+        eprintln!("[shim-scalars] skipping `tpose_seq_from_inst`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_shift") {
+        eprintln!("[shim-scalars] skipping `tpose_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tpose_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tpose_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_time_span") {
+        eprintln!("[shim-scalars] skipping `tpose_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_timestamps") {
+        eprintln!("[shim-scalars] skipping `tpose_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tpose_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `tpose_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_to_tgeompoint") {
+        eprintln!("[shim-scalars] skipping `tpose_to_tgeompoint`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "tpose_total_rotation") {
+        eprintln!("[shim-scalars] skipping `tpose_total_rotation`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tpose_value_at") {
+        eprintln!("[shim-scalars] skipping `tpose_value_at`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "traj1_id") {
+        eprintln!("[shim-scalars] skipping `traj1_id`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "traj2_id") {
+        eprintln!("[shim-scalars] skipping `traj2_id`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "trajectory_ids") {
+        eprintln!("[shim-scalars] skipping `trajectory_ids`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tstzset_contains") {
+        eprintln!("[shim-scalars] skipping `tstzset_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tstzset_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `tstzset_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tstzset_from_text") {
+        eprintln!("[shim-scalars] skipping `tstzset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tstzset_intersection") {
+        eprintln!("[shim-scalars] skipping `tstzset_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tstzset_len") {
+        eprintln!("[shim-scalars] skipping `tstzset_len`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tstzset_make") {
+        eprintln!("[shim-scalars] skipping `tstzset_make`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tstzset_minus") {
+        eprintln!("[shim-scalars] skipping `tstzset_minus`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "tstzset_num_timestamps") {
+        eprintln!("[shim-scalars] skipping `tstzset_num_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "tstzset_overlaps") {
+        eprintln!("[shim-scalars] skipping `tstzset_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tstzset_scale") {
+        eprintln!("[shim-scalars] skipping `tstzset_scale`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tstzset_shift") {
+        eprintln!("[shim-scalars] skipping `tstzset_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tstzset_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `tstzset_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tstzset_successor") {
+        eprintln!("[shim-scalars] skipping `tstzset_successor`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tstzset_timestamp_n") {
+        eprintln!("[shim-scalars] skipping `tstzset_timestamp_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "tstzset_timestamps") {
+        eprintln!("[shim-scalars] skipping `tstzset_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tstzset_to_text") {
+        eprintln!("[shim-scalars] skipping `tstzset_to_text`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tstzset_union") {
+        eprintln!("[shim-scalars] skipping `tstzset_union`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "tstzspan_adjacent") {
+        eprintln!("[shim-scalars] skipping `tstzspan_adjacent`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_bool(conn, "tstzspan_contains") {
+        eprintln!("[shim-scalars] skipping `tstzspan_contains`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "tstzspan_contains_span") {
+        eprintln!("[shim-scalars] skipping `tstzspan_contains_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tstzspan_duration") {
+        eprintln!("[shim-scalars] skipping `tstzspan_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tstzspan_end") {
+        eprintln!("[shim-scalars] skipping `tstzspan_end`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tstzspan_expand") {
+        eprintln!("[shim-scalars] skipping `tstzspan_expand`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tstzspan_intersection") {
+        eprintln!("[shim-scalars] skipping `tstzspan_intersection`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tstzspan_midpoint") {
+        eprintln!("[shim-scalars] skipping `tstzspan_midpoint`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tstzspan_minus") {
+        eprintln!("[shim-scalars] skipping `tstzspan_minus`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_bool(conn, "tstzspan_overlaps") {
+        eprintln!("[shim-scalars] skipping `tstzspan_overlaps`: {e}");
+    }
+    if let Err(e) = register_blob_i64_to_blob(conn, "tstzspan_shift") {
+        eprintln!("[shim-scalars] skipping `tstzspan_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "tstzspan_start") {
+        eprintln!("[shim-scalars] skipping `tstzspan_start`: {e}");
+    }
+    if let Err(e) = register_blob_blob_to_blob(conn, "tstzspan_union") {
+        eprintln!("[shim-scalars] skipping `tstzspan_union`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "ttext_at_period") {
+        eprintln!("[shim-scalars] skipping `ttext_at_period`: {e}");
+    }
+    if let Err(e) = register_blob_text_to_blob(conn, "ttext_at_value") {
+        eprintln!("[shim-scalars] skipping `ttext_at_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_btrim") {
+        eprintln!("[shim-scalars] skipping `ttext_btrim`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_char_count") {
+        eprintln!("[shim-scalars] skipping `ttext_char_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_concat_seqs") {
+        eprintln!("[shim-scalars] skipping `ttext_concat_seqs`: {e}");
+    }
+    if let Err(e) = register_blob_text_to_blob(conn, "ttext_concat_str") {
+        eprintln!("[shim-scalars] skipping `ttext_concat_str`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "ttext_contains") {
+        eprintln!("[shim-scalars] skipping `ttext_contains`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "ttext_count") {
+        eprintln!("[shim-scalars] skipping `ttext_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "ttext_duration") {
+        eprintln!("[shim-scalars] skipping `ttext_duration`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "ttext_end_timestamp") {
+        eprintln!("[shim-scalars] skipping `ttext_end_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_end_value") {
+        eprintln!("[shim-scalars] skipping `ttext_end_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "ttext_ends_with") {
+        eprintln!("[shim-scalars] skipping `ttext_ends_with`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "ttext_from_csv") {
+        eprintln!("[shim-scalars] skipping `ttext_from_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `ttext_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_from_mfjson") {
+        eprintln!("[shim-scalars] skipping `ttext_from_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_text_to_blob(conn, "ttext_ilike") {
+        eprintln!("[shim-scalars] skipping `ttext_ilike`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_instant_from_ewkt") {
+        eprintln!("[shim-scalars] skipping `ttext_instant_from_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_instant_n") {
+        eprintln!("[shim-scalars] skipping `ttext_instant_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_instant_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `ttext_instant_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_u32_to_blob(conn, "ttext_left") {
+        eprintln!("[shim-scalars] skipping `ttext_left`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_length") {
+        eprintln!("[shim-scalars] skipping `ttext_length`: {e}");
+    }
+    if let Err(e) = register_blob_text_to_blob(conn, "ttext_like") {
+        eprintln!("[shim-scalars] skipping `ttext_like`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "ttext_longest_length") {
+        eprintln!("[shim-scalars] skipping `ttext_longest_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_lower") {
+        eprintln!("[shim-scalars] skipping `ttext_lower`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "ttext_lower_inclusive") {
+        eprintln!("[shim-scalars] skipping `ttext_lower_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_lpad") {
+        eprintln!("[shim-scalars] skipping `ttext_lpad`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_ltrim") {
+        eprintln!("[shim-scalars] skipping `ttext_ltrim`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_max_value") {
+        eprintln!("[shim-scalars] skipping `ttext_max_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_min_value") {
+        eprintln!("[shim-scalars] skipping `ttext_min_value`: {e}");
+    }
+    if let Err(e) = register_blob_i64_i64_to_blob(conn, "ttext_minus_period") {
+        eprintln!("[shim-scalars] skipping `ttext_minus_period`: {e}");
+    }
+    if let Err(e) = register_blob_text_to_blob(conn, "ttext_minus_value") {
+        eprintln!("[shim-scalars] skipping `ttext_minus_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "ttext_num_instants") {
+        eprintln!("[shim-scalars] skipping `ttext_num_instants`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "ttext_num_instants_scalar") {
+        eprintln!("[shim-scalars] skipping `ttext_num_instants_scalar`: {e}");
+    }
+    if let Err(e) = register_blob_text_to_blob(conn, "ttext_regex_match") {
+        eprintln!("[shim-scalars] skipping `ttext_regex_match`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_repeat") {
+        eprintln!("[shim-scalars] skipping `ttext_repeat`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_replace") {
+        eprintln!("[shim-scalars] skipping `ttext_replace`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_reverse") {
+        eprintln!("[shim-scalars] skipping `ttext_reverse`: {e}");
+    }
+    if let Err(e) = register_blob_u32_to_blob(conn, "ttext_right") {
+        eprintln!("[shim-scalars] skipping `ttext_right`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_rpad") {
+        eprintln!("[shim-scalars] skipping `ttext_rpad`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_rtrim") {
+        eprintln!("[shim-scalars] skipping `ttext_rtrim`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_shift") {
+        eprintln!("[shim-scalars] skipping `ttext_shift`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "ttext_shortest_length") {
+        eprintln!("[shim-scalars] skipping `ttext_shortest_length`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_span") {
+        eprintln!("[shim-scalars] skipping `ttext_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "ttext_start_timestamp") {
+        eprintln!("[shim-scalars] skipping `ttext_start_timestamp`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_start_value") {
+        eprintln!("[shim-scalars] skipping `ttext_start_value`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "ttext_starts_with") {
+        eprintln!("[shim-scalars] skipping `ttext_starts_with`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_substr") {
+        eprintln!("[shim-scalars] skipping `ttext_substr`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_time_span") {
+        eprintln!("[shim-scalars] skipping `ttext_time_span`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "ttext_timestamp_n") {
+        eprintln!("[shim-scalars] skipping `ttext_timestamp_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_timestamps") {
+        eprintln!("[shim-scalars] skipping `ttext_timestamps`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_to_csv") {
+        eprintln!("[shim-scalars] skipping `ttext_to_csv`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_to_ewkt") {
+        eprintln!("[shim-scalars] skipping `ttext_to_ewkt`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_to_json") {
+        eprintln!("[shim-scalars] skipping `ttext_to_json`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_to_mfjson") {
+        eprintln!("[shim-scalars] skipping `ttext_to_mfjson`: {e}");
+    }
+    if let Err(e) = register_blob_to_i64(conn, "ttext_total_char_count") {
+        eprintln!("[shim-scalars] skipping `ttext_total_char_count`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_trim") {
+        eprintln!("[shim-scalars] skipping `ttext_trim`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_upper") {
+        eprintln!("[shim-scalars] skipping `ttext_upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_bool(conn, "ttext_upper_inclusive") {
+        eprintln!("[shim-scalars] skipping `ttext_upper_inclusive`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "ttext_value_n") {
+        eprintln!("[shim-scalars] skipping `ttext_value_n`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "ttext_values") {
+        eprintln!("[shim-scalars] skipping `ttext_values`: {e}");
+    }
+    if let Err(e) = register_blob_text_to_blob(conn, "ttext_when_eq") {
+        eprintln!("[shim-scalars] skipping `ttext_when_eq`: {e}");
+    }
+    if let Err(e) = register_blob_text_to_blob(conn, "ttext_when_ne") {
+        eprintln!("[shim-scalars] skipping `ttext_when_ne`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "upper") {
+        eprintln!("[shim-scalars] skipping `upper`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "utm_epsg_for_point") {
+        eprintln!("[shim-scalars] skipping `utm_epsg_for_point`: {e}");
+    }
+    if let Err(e) = register_blob_to_i32(conn, "utm_zone_for_point") {
+        eprintln!("[shim-scalars] skipping `utm_zone_for_point`: {e}");
+    }
+    if let Err(e) = register_blob_to_blob(conn, "values") {
+        eprintln!("[shim-scalars] skipping `values`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "vmax") {
+        eprintln!("[shim-scalars] skipping `vmax`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "vmin") {
+        eprintln!("[shim-scalars] skipping `vmin`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "web_mercator_to_wgs84_lat") {
+        eprintln!("[shim-scalars] skipping `web_mercator_to_wgs84_lat`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "web_mercator_to_wgs84_lon") {
+        eprintln!("[shim-scalars] skipping `web_mercator_to_wgs84_lon`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "wgs84_to_web_mercator_x") {
+        eprintln!("[shim-scalars] skipping `wgs84_to_web_mercator_x`: {e}");
+    }
+    if let Err(e) = register_blob_to_f64(conn, "wgs84_to_web_mercator_y") {
+        eprintln!("[shim-scalars] skipping `wgs84_to_web_mercator_y`: {e}");
+    }
     // Phase 2: 1444 names registered (23 shapes), 104 scalars deferred to Phase 3+ (47 unique shapes).
     Ok(())
 }
@@ -1507,9 +4395,8 @@ fn duckdb_sys_error(msg: String) -> duckdb::Error {
 }
 
 fn lookup(sql_name: &str) -> Result<Arc<dyn ScalarFunctionDef>> {
-    registry::lookup_scalar(sql_name).ok_or_else(|| duckdb_sys_error(format!(
-        "scalar `{sql_name}` not registered by the shim"
-    )))
+    registry::lookup_scalar(sql_name)
+        .ok_or_else(|| duckdb_sys_error(format!("scalar `{sql_name}` not registered by the shim")))
 }
 
 // Phase 3b (2026-06-24): NULL propagation.
@@ -1565,7 +4452,8 @@ impl VScalar for TextToBlobScalar {
             }
             let mut s_raw = raw[i];
             let s: String = DuckString::new(&mut s_raw).as_str().into_owned();
-            let r = state.execute(&[FunctionValue::String(s)])
+            let r = state
+                .execute(&[FunctionValue::String(s)])
                 .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
@@ -1606,9 +4494,9 @@ impl VScalar for BlobToBlobScalar {
             // BLOBs and VARCHAR share the duckdb_string_t shape;
             // DuckString::as_bytes returns the raw bytes (no UTF-8
             // conversion) — required for WKB round-tripping.
-            let bytes: Vec<u8> = DuckString::new(&mut s_raw)
-                .as_bytes().to_vec();
-            let r = state.execute(&[FunctionValue::Binary(bytes)])
+            let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
+            let r = state
+                .execute(&[FunctionValue::Binary(bytes)])
                 .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
@@ -1648,9 +4536,7 @@ impl VScalar for BlobBlobToBoolScalar {
         {
             let out_slice = unsafe { out.as_mut_slice_with_len::<bool>(n) };
             for i in 0..n {
-                if propagates_null
-                    && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-                {
+                if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
                     nulls.push(i);
                     continue;
                 }
@@ -1658,24 +4544,31 @@ impl VScalar for BlobBlobToBoolScalar {
                 let mut b = r1[i];
                 let ab: Vec<u8> = DuckString::new(&mut a).as_bytes().to_vec();
                 let bb: Vec<u8> = DuckString::new(&mut b).as_bytes().to_vec();
-                let r = state.execute(&[
-                    FunctionValue::Binary(ab),
-                    FunctionValue::Binary(bb),
-                ]).map_err(|e| format!("{e:?}"))?;
+                let r = state
+                    .execute(&[FunctionValue::Binary(ab), FunctionValue::Binary(bb)])
+                    .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::Boolean(b) => b,
-                    FunctionValue::Int8(i)   => i != 0,
-                    FunctionValue::Int32(i)  => i != 0,
-                    FunctionValue::Int64(i)  => i != 0,
-                    FunctionValue::Null      => { nulls.push(i); false },
-                    other => return Err(format!(
-                        "BlobBlobToBoolScalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Int8(i) => i != 0,
+                    FunctionValue::Int32(i) => i != 0,
+                    FunctionValue::Int64(i) => i != 0,
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        false
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobBlobToBoolScalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -1720,24 +4613,32 @@ impl VScalar for BlobToF64Scalar {
                     continue;
                 }
                 let mut s_raw = raw[i];
-                let bytes: Vec<u8> = DuckString::new(&mut s_raw)
-                    .as_bytes().to_vec();
-                let r = state.execute(&[FunctionValue::Binary(bytes)])
+                let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes)])
                     .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::Float64(f) => f,
                     FunctionValue::Float32(f) => f as f64,
-                    FunctionValue::Int32(i)   => i as f64,
-                    FunctionValue::Int64(i)   => i as f64,
-                    FunctionValue::Null       => { nulls.push(i); 0.0 },
-                    other => return Err(format!(
-                        "BlobToF64Scalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Int32(i) => i as f64,
+                    FunctionValue::Int64(i) => i as f64,
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        0.0
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobToF64Scalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -1769,19 +4670,15 @@ impl VScalar for BlobF64ToBlobScalar {
         let mut out = output.flat_vector();
         let propagates_null = state.propagates_null();
         for i in 0..n {
-            if propagates_null
-                && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-            {
+            if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
                 out.set_null(i);
                 continue;
             }
             let mut s_raw = r0[i];
-            let bytes: Vec<u8> = DuckString::new(&mut s_raw)
-                .as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::Float64(r1[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
+            let r = state
+                .execute(&[FunctionValue::Binary(bytes), FunctionValue::Float64(r1[i])])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -1821,18 +4718,21 @@ impl VScalar for BlobToTextScalar {
                 continue;
             }
             let mut s_raw = raw[i];
-            let bytes: Vec<u8> = DuckString::new(&mut s_raw)
-                .as_bytes().to_vec();
-            let r = state.execute(&[FunctionValue::Binary(bytes)])
+            let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
+            let r = state
+                .execute(&[FunctionValue::Binary(bytes)])
                 .map_err(|e| format!("{e:?}"))?;
             match r {
                 FunctionValue::String(s) => out.insert(i, s.as_str()),
                 FunctionValue::Binary(b) => out.insert(i, b.as_slice()),
-                FunctionValue::Null      => out.set_null(i),
-                other => return Err(format!(
-                    "BlobToTextScalar: unexpected variant `{}`",
-                    other.type_name()
-                ).into()),
+                FunctionValue::Null => out.set_null(i),
+                other => {
+                    return Err(format!(
+                        "BlobToTextScalar: unexpected variant `{}`",
+                        other.type_name()
+                    )
+                    .into())
+                }
             }
         }
         Ok(())
@@ -1866,9 +4766,7 @@ impl VScalar for BlobBlobToBlobScalar {
         let mut out = output.flat_vector();
         let propagates_null = state.propagates_null();
         for i in 0..n {
-            if propagates_null
-                && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-            {
+            if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
                 out.set_null(i);
                 continue;
             }
@@ -1876,10 +4774,9 @@ impl VScalar for BlobBlobToBlobScalar {
             let mut b = r1[i];
             let ab: Vec<u8> = DuckString::new(&mut a).as_bytes().to_vec();
             let bb: Vec<u8> = DuckString::new(&mut b).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(ab),
-                FunctionValue::Binary(bb),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[FunctionValue::Binary(ab), FunctionValue::Binary(bb)])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -1919,9 +4816,7 @@ impl VScalar for BlobBlobToF64Scalar {
         {
             let out_slice = unsafe { out.as_mut_slice_with_len::<f64>(n) };
             for i in 0..n {
-                if propagates_null
-                    && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-                {
+                if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
                     nulls.push(i);
                     continue;
                 }
@@ -1929,24 +4824,31 @@ impl VScalar for BlobBlobToF64Scalar {
                 let mut b = r1[i];
                 let ab: Vec<u8> = DuckString::new(&mut a).as_bytes().to_vec();
                 let bb: Vec<u8> = DuckString::new(&mut b).as_bytes().to_vec();
-                let r = state.execute(&[
-                    FunctionValue::Binary(ab),
-                    FunctionValue::Binary(bb),
-                ]).map_err(|e| format!("{e:?}"))?;
+                let r = state
+                    .execute(&[FunctionValue::Binary(ab), FunctionValue::Binary(bb)])
+                    .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::Float64(f) => f,
                     FunctionValue::Float32(f) => f as f64,
-                    FunctionValue::Int32(i)   => i as f64,
-                    FunctionValue::Int64(i)   => i as f64,
-                    FunctionValue::Null       => { nulls.push(i); 0.0 },
-                    other => return Err(format!(
-                        "BlobBlobToF64Scalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Int32(i) => i as f64,
+                    FunctionValue::Int64(i) => i as f64,
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        0.0
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobBlobToF64Scalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -1988,22 +4890,31 @@ impl VScalar for BlobToU32Scalar {
                 }
                 let mut s_raw = raw[i];
                 let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-                let r = state.execute(&[FunctionValue::Binary(bytes)])
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes)])
                     .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::UInt32(u) => u,
                     FunctionValue::UInt64(u) => u as u32,
-                    FunctionValue::Int32(i)  => i as u32,
-                    FunctionValue::Int64(i)  => i as u32,
-                    FunctionValue::Null      => { nulls.push(i); 0 },
-                    other => return Err(format!(
-                        "BlobToU32Scalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Int32(i) => i as u32,
+                    FunctionValue::Int64(i) => i as u32,
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        0
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobToU32Scalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2042,21 +4953,30 @@ impl VScalar for BlobToI32Scalar {
                 }
                 let mut s_raw = raw[i];
                 let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-                let r = state.execute(&[FunctionValue::Binary(bytes)])
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes)])
                     .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
-                    FunctionValue::Int32(v)  => v,
-                    FunctionValue::Int64(v)  => v as i32,
+                    FunctionValue::Int32(v) => v,
+                    FunctionValue::Int64(v) => v as i32,
                     FunctionValue::UInt32(v) => v as i32,
-                    FunctionValue::Null      => { nulls.push(i); 0 },
-                    other => return Err(format!(
-                        "BlobToI32Scalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        0
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobToI32Scalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2088,18 +5008,15 @@ impl VScalar for BlobU32ToBlobScalar {
         let mut out = output.flat_vector();
         let propagates_null = state.propagates_null();
         for i in 0..n {
-            if propagates_null
-                && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-            {
+            if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
                 out.set_null(i);
                 continue;
             }
             let mut s_raw = r0[i];
             let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::UInt32(r1[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[FunctionValue::Binary(bytes), FunctionValue::UInt32(r1[i])])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -2136,18 +5053,15 @@ impl VScalar for BlobI32ToBlobScalar {
         let mut out = output.flat_vector();
         let propagates_null = state.propagates_null();
         for i in 0..n {
-            if propagates_null
-                && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-            {
+            if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
                 out.set_null(i);
                 continue;
             }
             let mut s_raw = r0[i];
             let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::Int32(r1[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[FunctionValue::Binary(bytes), FunctionValue::Int32(r1[i])])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -2201,25 +5115,35 @@ impl VScalar for BlobBlobF64ToBoolScalar {
                 let mut b = r1[i];
                 let ab: Vec<u8> = DuckString::new(&mut a).as_bytes().to_vec();
                 let bb: Vec<u8> = DuckString::new(&mut b).as_bytes().to_vec();
-                let r = state.execute(&[
-                    FunctionValue::Binary(ab),
-                    FunctionValue::Binary(bb),
-                    FunctionValue::Float64(r2[i]),
-                ]).map_err(|e| format!("{e:?}"))?;
+                let r = state
+                    .execute(&[
+                        FunctionValue::Binary(ab),
+                        FunctionValue::Binary(bb),
+                        FunctionValue::Float64(r2[i]),
+                    ])
+                    .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::Boolean(b) => b,
-                    FunctionValue::Int8(v)   => v != 0,
-                    FunctionValue::Int32(v)  => v != 0,
-                    FunctionValue::Int64(v)  => v != 0,
-                    FunctionValue::Null      => { nulls.push(i); false },
-                    other => return Err(format!(
-                        "BlobBlobF64ToBoolScalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Int8(v) => v != 0,
+                    FunctionValue::Int32(v) => v != 0,
+                    FunctionValue::Int64(v) => v != 0,
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        false
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobBlobF64ToBoolScalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2255,9 +5179,7 @@ impl VScalar for BlobTextToBlobScalar {
         let mut out = output.flat_vector();
         let propagates_null = state.propagates_null();
         for i in 0..n {
-            if propagates_null
-                && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-            {
+            if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
                 out.set_null(i);
                 continue;
             }
@@ -2266,10 +5188,9 @@ impl VScalar for BlobTextToBlobScalar {
             let bytes: Vec<u8> = DuckString::new(&mut a).as_bytes().to_vec();
             // Second arg is VARCHAR — read as String via as_str.
             let text: String = DuckString::new(&mut b).as_str().into_owned();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::String(text),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[FunctionValue::Binary(bytes), FunctionValue::String(text)])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -2313,22 +5234,31 @@ impl VScalar for BlobToBoolScalar {
                 }
                 let mut s_raw = raw[i];
                 let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-                let r = state.execute(&[FunctionValue::Binary(bytes)])
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes)])
                     .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::Boolean(b) => b,
-                    FunctionValue::Int8(v)   => v != 0,
-                    FunctionValue::Int32(v)  => v != 0,
-                    FunctionValue::Int64(v)  => v != 0,
-                    FunctionValue::Null      => { nulls.push(i); false },
-                    other => return Err(format!(
-                        "BlobToBoolScalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Int8(v) => v != 0,
+                    FunctionValue::Int32(v) => v != 0,
+                    FunctionValue::Int64(v) => v != 0,
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        false
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobToBoolScalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2372,11 +5302,13 @@ impl VScalar for BlobF64F64ToBlobScalar {
             }
             let mut s_raw = r0[i];
             let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::Float64(r1[i]),
-                FunctionValue::Float64(r2[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[
+                    FunctionValue::Binary(bytes),
+                    FunctionValue::Float64(r1[i]),
+                    FunctionValue::Float64(r2[i]),
+                ])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -2414,26 +5346,26 @@ impl VScalar for BlobU32ToTextScalar {
         let mut out = output.flat_vector();
         let propagates_null = state.propagates_null();
         for i in 0..n {
-            if propagates_null
-                && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-            {
+            if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
                 out.set_null(i);
                 continue;
             }
             let mut s_raw = r0[i];
             let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::UInt32(r1[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[FunctionValue::Binary(bytes), FunctionValue::UInt32(r1[i])])
+                .map_err(|e| format!("{e:?}"))?;
             match r {
                 FunctionValue::String(s) => out.insert(i, s.as_str()),
                 FunctionValue::Binary(b) => out.insert(i, b.as_slice()),
-                FunctionValue::Null      => out.set_null(i),
-                other => return Err(format!(
-                    "BlobU32ToTextScalar: unexpected variant `{}`",
-                    other.type_name()
-                ).into()),
+                FunctionValue::Null => out.set_null(i),
+                other => {
+                    return Err(format!(
+                        "BlobU32ToTextScalar: unexpected variant `{}`",
+                        other.type_name()
+                    )
+                    .into())
+                }
             }
         }
         Ok(())
@@ -2482,11 +5414,13 @@ impl VScalar for BlobU32U32ToBlobScalar {
             }
             let mut s_raw = r0[i];
             let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::UInt32(r1[i]),
-                FunctionValue::UInt32(r2[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[
+                    FunctionValue::Binary(bytes),
+                    FunctionValue::UInt32(r1[i]),
+                    FunctionValue::UInt32(r2[i]),
+                ])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -2542,13 +5476,15 @@ impl VScalar for Blob4F64ToBlobScalar {
             }
             let mut s_raw = r0[i];
             let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::Float64(r1[i]),
-                FunctionValue::Float64(r2[i]),
-                FunctionValue::Float64(r3[i]),
-                FunctionValue::Float64(r4[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[
+                    FunctionValue::Binary(bytes),
+                    FunctionValue::Float64(r1[i]),
+                    FunctionValue::Float64(r2[i]),
+                    FunctionValue::Float64(r3[i]),
+                    FunctionValue::Float64(r4[i]),
+                ])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -2592,16 +5528,20 @@ impl VScalar for TextToTextScalar {
             }
             let mut s_raw = raw[i];
             let s: String = DuckString::new(&mut s_raw).as_str().into_owned();
-            let r = state.execute(&[FunctionValue::String(s)])
+            let r = state
+                .execute(&[FunctionValue::String(s)])
                 .map_err(|e| format!("{e:?}"))?;
             match r {
                 FunctionValue::String(s) => out.insert(i, s.as_str()),
                 FunctionValue::Binary(b) => out.insert(i, b.as_slice()),
-                FunctionValue::Null      => out.set_null(i),
-                other => return Err(format!(
-                    "TextToTextScalar: unexpected variant `{}`",
-                    other.type_name()
-                ).into()),
+                FunctionValue::Null => out.set_null(i),
+                other => {
+                    return Err(format!(
+                        "TextToTextScalar: unexpected variant `{}`",
+                        other.type_name()
+                    )
+                    .into())
+                }
             }
         }
         Ok(())
@@ -2623,12 +5563,15 @@ fn insert_blob_result<S>(
     match r {
         FunctionValue::Binary(b) => out.insert(idx, b.as_slice()),
         FunctionValue::String(s) => out.insert(idx, s.as_bytes()),
-        FunctionValue::Null      => out.set_null(idx),
-        other => return Err(format!(
-            "{}: unexpected blob-output variant `{}`",
-            std::any::type_name::<S>().split("::").last().unwrap_or("?"),
-            other.type_name()
-        ).into()),
+        FunctionValue::Null => out.set_null(idx),
+        other => {
+            return Err(format!(
+                "{}: unexpected blob-output variant `{}`",
+                std::any::type_name::<S>().split("::").last().unwrap_or("?"),
+                other.type_name()
+            )
+            .into())
+        }
     }
     Ok(())
 }
@@ -2658,26 +5601,36 @@ impl VScalar for BlobToI64Scalar {
             let out_slice = unsafe { out.as_mut_slice_with_len::<i64>(n) };
             for i in 0..n {
                 if propagates_null && v0.row_is_null(i as u64) {
-                    nulls.push(i); continue;
+                    nulls.push(i);
+                    continue;
                 }
                 let mut s_raw = raw[i];
                 let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-                let r = state.execute(&[FunctionValue::Binary(bytes)])
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes)])
                     .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
-                    FunctionValue::Int64(v)  => v,
-                    FunctionValue::Int32(v)  => v as i64,
+                    FunctionValue::Int64(v) => v,
+                    FunctionValue::Int32(v) => v as i64,
                     FunctionValue::UInt64(v) => v as i64,
                     FunctionValue::UInt32(v) => v as i64,
-                    FunctionValue::Null      => { nulls.push(i); 0 },
-                    other => return Err(format!(
-                        "BlobToI64Scalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        0
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobToI64Scalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2711,26 +5664,36 @@ impl VScalar for BlobToU64Scalar {
             let out_slice = unsafe { out.as_mut_slice_with_len::<u64>(n) };
             for i in 0..n {
                 if propagates_null && v0.row_is_null(i as u64) {
-                    nulls.push(i); continue;
+                    nulls.push(i);
+                    continue;
                 }
                 let mut s_raw = raw[i];
                 let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-                let r = state.execute(&[FunctionValue::Binary(bytes)])
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes)])
                     .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::UInt64(v) => v,
                     FunctionValue::UInt32(v) => v as u64,
-                    FunctionValue::Int64(v)  => v as u64,
-                    FunctionValue::Int32(v)  => v as u64,
-                    FunctionValue::Null      => { nulls.push(i); 0 },
-                    other => return Err(format!(
-                        "BlobToU64Scalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Int64(v) => v as u64,
+                    FunctionValue::Int32(v) => v as u64,
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        0
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobToU64Scalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2762,17 +5725,15 @@ impl VScalar for BlobI64ToBlobScalar {
         let mut out = output.flat_vector();
         let propagates_null = state.propagates_null();
         for i in 0..n {
-            if propagates_null
-                && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-            {
-                out.set_null(i); continue;
+            if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
+                out.set_null(i);
+                continue;
             }
             let mut s_raw = r0[i];
             let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::Int64(r1[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[FunctionValue::Binary(bytes), FunctionValue::Int64(r1[i])])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -2812,28 +5773,34 @@ impl VScalar for BlobI64ToBoolScalar {
         {
             let out_slice = unsafe { out.as_mut_slice_with_len::<bool>(n) };
             for i in 0..n {
-                if propagates_null
-                    && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-                {
-                    nulls.push(i); continue;
+                if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
+                    nulls.push(i);
+                    continue;
                 }
                 let mut s_raw = r0[i];
                 let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-                let r = state.execute(&[
-                    FunctionValue::Binary(bytes),
-                    FunctionValue::Int64(r1[i]),
-                ]).map_err(|e| format!("{e:?}"))?;
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes), FunctionValue::Int64(r1[i])])
+                    .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::Boolean(b) => b,
-                    FunctionValue::Null       => { nulls.push(i); false },
-                    other => return Err(format!(
-                        "BlobI64ToBoolScalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        false
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobI64ToBoolScalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2871,30 +5838,36 @@ impl VScalar for BlobI64ToF64Scalar {
         {
             let out_slice = unsafe { out.as_mut_slice_with_len::<f64>(n) };
             for i in 0..n {
-                if propagates_null
-                    && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-                {
-                    nulls.push(i); continue;
+                if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
+                    nulls.push(i);
+                    continue;
                 }
                 let mut s_raw = r0[i];
                 let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-                let r = state.execute(&[
-                    FunctionValue::Binary(bytes),
-                    FunctionValue::Int64(r1[i]),
-                ]).map_err(|e| format!("{e:?}"))?;
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes), FunctionValue::Int64(r1[i])])
+                    .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::Float64(v) => v,
                     FunctionValue::Float32(v) => v as f64,
-                    FunctionValue::Int64(v)   => v as f64,
-                    FunctionValue::Null       => { nulls.push(i); 0.0 },
-                    other => return Err(format!(
-                        "BlobI64ToF64Scalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Int64(v) => v as f64,
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        0.0
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobI64ToF64Scalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2932,28 +5905,34 @@ impl VScalar for BlobF64ToBoolScalar {
         {
             let out_slice = unsafe { out.as_mut_slice_with_len::<bool>(n) };
             for i in 0..n {
-                if propagates_null
-                    && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-                {
-                    nulls.push(i); continue;
+                if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
+                    nulls.push(i);
+                    continue;
                 }
                 let mut s_raw = r0[i];
                 let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-                let r = state.execute(&[
-                    FunctionValue::Binary(bytes),
-                    FunctionValue::Float64(r1[i]),
-                ]).map_err(|e| format!("{e:?}"))?;
+                let r = state
+                    .execute(&[FunctionValue::Binary(bytes), FunctionValue::Float64(r1[i])])
+                    .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
                     FunctionValue::Boolean(b) => b,
-                    FunctionValue::Null       => { nulls.push(i); false },
-                    other => return Err(format!(
-                        "BlobF64ToBoolScalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        false
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobF64ToBoolScalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -2991,32 +5970,38 @@ impl VScalar for BlobBlobToI64Scalar {
         {
             let out_slice = unsafe { out.as_mut_slice_with_len::<i64>(n) };
             for i in 0..n {
-                if propagates_null
-                    && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64))
-                {
-                    nulls.push(i); continue;
+                if propagates_null && (v0.row_is_null(i as u64) || v1.row_is_null(i as u64)) {
+                    nulls.push(i);
+                    continue;
                 }
                 let mut s0 = r0[i];
                 let mut s1 = r1[i];
                 let b0: Vec<u8> = DuckString::new(&mut s0).as_bytes().to_vec();
                 let b1: Vec<u8> = DuckString::new(&mut s1).as_bytes().to_vec();
-                let r = state.execute(&[
-                    FunctionValue::Binary(b0),
-                    FunctionValue::Binary(b1),
-                ]).map_err(|e| format!("{e:?}"))?;
+                let r = state
+                    .execute(&[FunctionValue::Binary(b0), FunctionValue::Binary(b1)])
+                    .map_err(|e| format!("{e:?}"))?;
                 out_slice[i] = match r {
-                    FunctionValue::Int64(v)  => v,
-                    FunctionValue::Int32(v)  => v as i64,
+                    FunctionValue::Int64(v) => v,
+                    FunctionValue::Int32(v) => v as i64,
                     FunctionValue::UInt64(v) => v as i64,
-                    FunctionValue::Null      => { nulls.push(i); 0 },
-                    other => return Err(format!(
-                        "BlobBlobToI64Scalar: unexpected variant `{}`",
-                        other.type_name()
-                    ).into()),
+                    FunctionValue::Null => {
+                        nulls.push(i);
+                        0
+                    }
+                    other => {
+                        return Err(format!(
+                            "BlobBlobToI64Scalar: unexpected variant `{}`",
+                            other.type_name()
+                        )
+                        .into())
+                    }
                 };
             }
         }
-        for i in nulls { out.set_null(i); }
+        for i in nulls {
+            out.set_null(i);
+        }
         Ok(())
     }
     fn signatures() -> Vec<ScalarFunctionSignature> {
@@ -3058,15 +6043,18 @@ impl VScalar for BlobI64I64ToBlobScalar {
                     || v1.row_is_null(i as u64)
                     || v2.row_is_null(i as u64))
             {
-                out.set_null(i); continue;
+                out.set_null(i);
+                continue;
             }
             let mut s_raw = r0[i];
             let bytes: Vec<u8> = DuckString::new(&mut s_raw).as_bytes().to_vec();
-            let r = state.execute(&[
-                FunctionValue::Binary(bytes),
-                FunctionValue::Int64(r1[i]),
-                FunctionValue::Int64(r2[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[
+                    FunctionValue::Binary(bytes),
+                    FunctionValue::Int64(r1[i]),
+                    FunctionValue::Int64(r2[i]),
+                ])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -3123,16 +6111,19 @@ impl VScalar for F4I2ToBlobScalar {
                     || v4.row_is_null(i as u64)
                     || v5.row_is_null(i as u64))
             {
-                out.set_null(i); continue;
+                out.set_null(i);
+                continue;
             }
-            let r = state.execute(&[
-                FunctionValue::Float64(r0[i]),
-                FunctionValue::Float64(r1[i]),
-                FunctionValue::Float64(r2[i]),
-                FunctionValue::Float64(r3[i]),
-                FunctionValue::Int64(r4[i]),
-                FunctionValue::Int64(r5[i]),
-            ]).map_err(|e| format!("{e:?}"))?;
+            let r = state
+                .execute(&[
+                    FunctionValue::Float64(r0[i]),
+                    FunctionValue::Float64(r1[i]),
+                    FunctionValue::Float64(r2[i]),
+                    FunctionValue::Float64(r3[i]),
+                    FunctionValue::Int64(r4[i]),
+                    FunctionValue::Int64(r5[i]),
+                ])
+                .map_err(|e| format!("{e:?}"))?;
             insert_blob_result::<Self>(&mut out, i, r)?;
         }
         Ok(())
@@ -3155,16 +6146,16 @@ impl VScalar for F4I2ToBlobScalar {
 // Deferred shapes (Phase 3 target):
 //      8  [binary,int64,int64] -> int32
 //      8  [binary,float64] -> int32
-//      5  [binary,int32] -> boolean
 //      5  [binary,float64,int64] -> int32
-//      4  [binary,float64,float64,float64] -> boolean
-//      4  [binary,binary,uint32] -> binary
-//      4  [binary,int64] -> int32
+//      5  [binary,int32] -> boolean
 //      4  [binary,float64,float64] -> float64
+//      4  [binary,int64] -> int32
+//      4  [binary,binary,uint32] -> binary
+//      4  [binary,float64,float64,float64] -> boolean
+//      3  [binary,float64,int64] -> binary
+//      3  [binary,uint32] -> int64
 //      3  [int64,int64,boolean,boolean] -> binary
 //      3  [binary,text] -> boolean
-//      3  [binary,uint32] -> int64
-//      3  [binary,float64,int64] -> binary
 //      2  [binary,float64,float64,float64] -> binary
-//      2  [binary,float64,float64] -> boolean
-//      2  [int64,float64] -> binary
+//      2  [binary,int64,int64] -> float64
+//      2  [binary,binary,float64,uint32] -> float64

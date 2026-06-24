@@ -6,5 +6,4 @@
 //! DuckDB exposes window functions as a special aggregate
 //! variant with extra hooks for partition + frame state.
 
-
 // TODO: wire window-capable aggregates.

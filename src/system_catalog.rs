@@ -4,5 +4,4 @@
 //! System-catalog tables as DuckDB table functions with a
 //! static schema (one TableFunction per virtual table).
 
-
 // TODO: emit one register_table_function per catalog entry.

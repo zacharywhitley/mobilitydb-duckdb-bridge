@@ -33,12 +33,10 @@
 //! layer, which already handles them.
 
 use libduckdb_sys::{
-    self as ffi, DuckDBSuccess, duckdb_function_info,
-    duckdb_connection, duckdb_data_chunk_get_size,
-    duckdb_string_t, duckdb_vector, duckdb_vector_get_data,
-    duckdb_vector_get_validity, duckdb_validity_row_is_valid,
-    duckdb_validity_set_row_invalid, duckdb_vector_ensure_validity_writable,
-    duckdb_vector_assign_string_element_len, idx_t,
+    self as ffi, duckdb_connection, duckdb_data_chunk_get_size, duckdb_function_info,
+    duckdb_string_t, duckdb_validity_row_is_valid, duckdb_validity_set_row_invalid, duckdb_vector,
+    duckdb_vector_assign_string_element_len, duckdb_vector_ensure_validity_writable,
+    duckdb_vector_get_data, duckdb_vector_get_validity, idx_t, DuckDBSuccess,
 };
 use std::ffi::CString;
 use std::os::raw::c_char;

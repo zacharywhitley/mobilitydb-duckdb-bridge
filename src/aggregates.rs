@@ -30,13 +30,13 @@ use std::os::raw::{c_char, c_void};
 use std::sync::Arc;
 
 use libduckdb_sys::{
-    self as ffi, DuckDBSuccess, duckdb_aggregate_function_add_parameter,
-    duckdb_aggregate_function_get_extra_info, duckdb_aggregate_function_set_error,
-    duckdb_aggregate_function_set_extra_info, duckdb_aggregate_function_set_functions,
-    duckdb_aggregate_function_set_name, duckdb_aggregate_function_set_return_type,
-    duckdb_aggregate_state, duckdb_connection, duckdb_create_aggregate_function,
-    duckdb_data_chunk, duckdb_destroy_aggregate_function, duckdb_function_info,
-    duckdb_register_aggregate_function, duckdb_string_t, duckdb_vector, idx_t,
+    self as ffi, duckdb_aggregate_function_add_parameter, duckdb_aggregate_function_get_extra_info,
+    duckdb_aggregate_function_set_error, duckdb_aggregate_function_set_extra_info,
+    duckdb_aggregate_function_set_functions, duckdb_aggregate_function_set_name,
+    duckdb_aggregate_function_set_return_type, duckdb_aggregate_state, duckdb_connection,
+    duckdb_create_aggregate_function, duckdb_data_chunk, duckdb_destroy_aggregate_function,
+    duckdb_function_info, duckdb_register_aggregate_function, duckdb_string_t, duckdb_vector,
+    idx_t, DuckDBSuccess,
 };
 
 use datafission_functions::traits::{Accumulator, AggregateFunctionDef};
@@ -156,27 +156,25 @@ unsafe fn register_aggregate(conn: duckdb_connection, sql_name: &str) {
     let mut blob_to_destroy = blob;
     ffi::duckdb_destroy_logical_type(&mut blob_to_destroy);
 
-        // Wire the callbacks (state_size + state_init + update +
-        // combine + finalize). state_destroy goes through the
-        // separate set_destructor API — see drop_state below.
-        duckdb_aggregate_function_set_functions(
-            agg,
-            Some(state_size),
-            Some(state_init),
-            Some(update_callback),
-            Some(combine_callback),
-            Some(finalize_callback),
-        );
+    // Wire the callbacks (state_size + state_init + update +
+    // combine + finalize). state_destroy goes through the
+    // separate set_destructor API — see drop_state below.
+    duckdb_aggregate_function_set_functions(
+        agg,
+        Some(state_size),
+        Some(state_init),
+        Some(update_callback),
+        Some(combine_callback),
+        Some(finalize_callback),
+    );
     ffi::duckdb_aggregate_function_set_destructor(agg, Some(state_destroy));
 
     // Park the per-registration state. The Box is leaked here
     // and reclaimed when DuckDB calls the destructor.
-    let extra = Box::into_raw(Box::new(AggExtraInfo { def: Arc::clone(&def) }));
-    duckdb_aggregate_function_set_extra_info(
-        agg,
-        extra as *mut c_void,
-        Some(drop_extra_info),
-    );
+    let extra = Box::into_raw(Box::new(AggExtraInfo {
+        def: Arc::clone(&def),
+    }));
+    duckdb_aggregate_function_set_extra_info(agg, extra as *mut c_void, Some(drop_extra_info));
 
     let rc = duckdb_register_aggregate_function(conn, agg);
     duckdb_destroy_aggregate_function(&mut { agg });
@@ -224,10 +222,14 @@ unsafe extern "C" fn state_init(info: duckdb_function_info, state: duckdb_aggreg
 }
 
 unsafe extern "C" fn state_destroy(states: *mut duckdb_aggregate_state, count: idx_t) {
-    if states.is_null() { return; }
+    if states.is_null() {
+        return;
+    }
     for i in 0..count as usize {
         let state_ptr: duckdb_aggregate_state = std::ptr::read(states.add(i));
-        if state_ptr.is_null() { continue; }
+        if state_ptr.is_null() {
+            continue;
+        }
         let slot = state_ptr as *mut AccBoxPtr;
         let thin = std::ptr::read(slot);
         if !thin.is_null() {
@@ -244,7 +246,7 @@ unsafe extern "C" fn update_callback(
     match std::panic::catch_unwind(|| update_inner(info, input, states)) {
         Ok(Ok(())) => {}
         Ok(Err(msg)) => set_error(info, &msg),
-        Err(_)      => set_error(info, "panic in aggregate update"),
+        Err(_) => set_error(info, "panic in aggregate update"),
     }
 }
 
@@ -297,7 +299,9 @@ unsafe extern "C" fn combine_callback(
         for i in 0..count as usize {
             let src = read_state(source, i);
             let tgt = read_state(target, i);
-            if src.is_null() || tgt.is_null() { continue; }
+            if src.is_null() || tgt.is_null() {
+                continue;
+            }
             let src_acc: &dyn Accumulator = &**src;
             let tgt_acc = &mut **tgt;
             tgt_acc.merge(src_acc).map_err(|e| format!("{e:?}"))?;
@@ -307,7 +311,7 @@ unsafe extern "C" fn combine_callback(
     match result {
         Ok(Ok(())) => {}
         Ok(Err(msg)) => set_error(info, &msg),
-        Err(_)      => set_error(info, "panic in aggregate combine"),
+        Err(_) => set_error(info, "panic in aggregate combine"),
     }
 }
 
@@ -321,7 +325,7 @@ unsafe extern "C" fn finalize_callback(
     match std::panic::catch_unwind(|| finalize_inner(info, source, result, count, offset)) {
         Ok(Ok(())) => {}
         Ok(Err(msg)) => set_error(info, &msg),
-        Err(_)      => set_error(info, "panic in aggregate finalize"),
+        Err(_) => set_error(info, "panic in aggregate finalize"),
     }
 }
 
@@ -345,10 +349,12 @@ unsafe fn finalize_inner(
             FunctionValue::Binary(b) => vector_assign_bytes(result, dst, &b),
             FunctionValue::String(s) => vector_assign_bytes(result, dst, s.as_bytes()),
             FunctionValue::Null => vector_set_null(result, dst),
-            other => return Err(format!(
-                "aggregate finalize: unexpected result variant `{}`",
-                other.type_name()
-            )),
+            other => {
+                return Err(format!(
+                    "aggregate finalize: unexpected result variant `{}`",
+                    other.type_name()
+                ))
+            }
         }
     }
     Ok(())
@@ -376,7 +382,9 @@ unsafe fn vector_set_null(result: duckdb_vector, dst: usize) {
 }
 
 unsafe extern "C" fn drop_extra_info(ptr: *mut c_void) {
-    if ptr.is_null() { return; }
+    if ptr.is_null() {
+        return;
+    }
     drop(Box::from_raw(ptr as *mut AggExtraInfo));
 }
 

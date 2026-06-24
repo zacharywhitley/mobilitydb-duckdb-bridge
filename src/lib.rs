@@ -14,17 +14,17 @@
 //! indexes) are scaffold-only — see per-module TODOs and
 //! AGENTS.md for the phased plan.
 
+pub mod aggregates;
+pub mod casts;
+pub mod operators;
+pub mod preprocessors;
 pub mod registry;
 pub mod scalars;
-pub mod aggregates;
-pub mod table_functions;
-pub mod window_functions;
-pub mod types;
-pub mod operators;
-pub mod casts;
-pub mod preprocessors;
-pub mod system_catalog;
 pub mod spatial_indexes;
+pub mod system_catalog;
+pub mod table_functions;
+pub mod types;
+pub mod window_functions;
 
 use std::error::Error;
 use std::ffi::CString;
@@ -55,7 +55,7 @@ pub unsafe extern "C" fn mobilitydb_duckdb_bridge_init_c_api(
     access: *const ffi::duckdb_extension_access,
 ) -> bool {
     match entrypoint_inner(info, access) {
-        Ok(v)  => v,
+        Ok(v) => v,
         Err(e) => {
             if let Some(set_error_fn) = (*access).set_error {
                 if let Ok(cs) = CString::new(e.to_string()) {
@@ -81,7 +81,8 @@ unsafe fn entrypoint_inner(
     }
 
     // Step 2 — get the database handle DuckDB just opened.
-    let get_database = (*access).get_database
+    let get_database = (*access)
+        .get_database
         .ok_or("get_database function pointer is null in duckdb_extension_access")?;
     let db_ptr = get_database(info);
     if db_ptr.is_null() {
@@ -112,8 +113,7 @@ unsafe fn entrypoint_inner(
     casts::register_all(raw_con);
 
     // Step 5 — load the wasm shim.
-    registry::load_shim()
-        .map_err(|e| -> Box<dyn Error> { format!("shim load: {e:#}").into() })?;
+    registry::load_shim().map_err(|e| -> Box<dyn Error> { format!("shim load: {e:#}").into() })?;
 
     // Step 6 — scalars route through duckdb-rs's `VScalar`
     // trait, which needs a `Connection`. Wrap the raw connection
