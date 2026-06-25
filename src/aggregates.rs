@@ -58,71 +58,71 @@ struct AggExtraInfo {
 /// `conn` must be a valid `duckdb_connection` for the duration
 /// of this call.
 pub unsafe fn register_all(conn: duckdb_connection) {
-    register_aggregate(conn, "tbool_and_all_agg");
-    register_aggregate(conn, "tbool_any");
-    register_aggregate(conn, "tbool_count_false_agg");
-    register_aggregate(conn, "tbool_count_true_agg");
-    register_aggregate(conn, "tbool_every");
-    register_aggregate(conn, "tbool_or_all_agg");
-    register_aggregate(conn, "tbool_temporal_and");
-    register_aggregate(conn, "tand"); // alias of tbool_temporal_and
-    register_aggregate(conn, "tbool_temporal_or");
-    register_aggregate(conn, "tor"); // alias of tbool_temporal_or
-    register_aggregate(conn, "tcbuffer_temporal_count");
-    register_aggregate(conn, "tfloat_avg");
-    register_aggregate(conn, "tfloat_avg_agg");
-    register_aggregate(conn, "tfloat_count_agg");
-    register_aggregate(conn, "tfloat_max_agg");
-    register_aggregate(conn, "tfloat_max_value_agg");
-    register_aggregate(conn, "tfloat_median_agg");
-    register_aggregate(conn, "tfloat_min_agg");
-    register_aggregate(conn, "tfloat_min_value_agg");
-    register_aggregate(conn, "tfloat_range_agg");
-    register_aggregate(conn, "tfloat_stddev");
-    register_aggregate(conn, "tfloat_stddev_agg");
-    register_aggregate(conn, "tfloat_sum");
-    register_aggregate(conn, "tfloat_temporal_avg");
-    register_aggregate(conn, "tavg"); // alias of tfloat_temporal_avg
-    register_aggregate(conn, "tfloat_temporal_count");
-    register_aggregate(conn, "tcount"); // alias of tfloat_temporal_count
-    register_aggregate(conn, "tfloat_temporal_max");
-    register_aggregate(conn, "tmax"); // alias of tfloat_temporal_max
-    register_aggregate(conn, "tfloat_temporal_min");
-    register_aggregate(conn, "tmin"); // alias of tfloat_temporal_min
-    register_aggregate(conn, "tfloat_temporal_sum");
-    register_aggregate(conn, "tsum"); // alias of tfloat_temporal_sum
-    register_aggregate(conn, "tfloat_total");
-    register_aggregate(conn, "tfloat_variance_agg");
-    register_aggregate(conn, "tgeogpoint_temporal_count");
-    register_aggregate(conn, "tgeompoint_centroid_agg");
-    register_aggregate(conn, "tgeompoint_num_convoys");
-    register_aggregate(conn, "tgeompoint_num_flocks");
-    register_aggregate(conn, "tgeompoint_num_meetings");
-    register_aggregate(conn, "tgeompoint_st_extent");
-    register_aggregate(conn, "tgeompoint_temporal_centroid");
-    register_aggregate(conn, "tgeompoint_temporal_count");
-    register_aggregate(conn, "tint_count_agg");
-    register_aggregate(conn, "tint_max_agg");
-    register_aggregate(conn, "tint_max_value_agg");
-    register_aggregate(conn, "tint_min_agg");
-    register_aggregate(conn, "tint_min_value_agg");
-    register_aggregate(conn, "tint_range_agg");
-    register_aggregate(conn, "tint_sum");
-    register_aggregate(conn, "tint_sum_agg");
-    register_aggregate(conn, "tint_temporal_max");
-    register_aggregate(conn, "tint_temporal_min");
-    register_aggregate(conn, "tint_temporal_sum");
-    register_aggregate(conn, "tnpoint_temporal_count");
-    register_aggregate(conn, "tpose_temporal_count");
-    register_aggregate(conn, "ttext_concat_agg");
-    register_aggregate(conn, "ttext_count_agg");
-    register_aggregate(conn, "ttext_max_agg");
-    register_aggregate(conn, "ttext_min_agg");
-    register_aggregate(conn, "ttext_string_agg");
+    register_aggregate(conn, "tbool_and_all_agg", "boolean");
+    register_aggregate(conn, "tbool_any", "boolean");
+    register_aggregate(conn, "tbool_count_false_agg", "boolean");
+    register_aggregate(conn, "tbool_count_true_agg", "boolean");
+    register_aggregate(conn, "tbool_every", "boolean");
+    register_aggregate(conn, "tbool_or_all_agg", "boolean");
+    register_aggregate(conn, "tbool_temporal_and", "binary");
+    register_aggregate(conn, "tand", "binary"); // alias of tbool_temporal_and
+    register_aggregate(conn, "tbool_temporal_or", "binary");
+    register_aggregate(conn, "tor", "binary"); // alias of tbool_temporal_or
+    register_aggregate(conn, "tcbuffer_temporal_count", "binary");
+    register_aggregate(conn, "tfloat_avg", "float64");
+    register_aggregate(conn, "tfloat_avg_agg", "float64");
+    register_aggregate(conn, "tfloat_count_agg", "float64");
+    register_aggregate(conn, "tfloat_max_agg", "float64");
+    register_aggregate(conn, "tfloat_max_value_agg", "float64");
+    register_aggregate(conn, "tfloat_median_agg", "float64");
+    register_aggregate(conn, "tfloat_min_agg", "float64");
+    register_aggregate(conn, "tfloat_min_value_agg", "float64");
+    register_aggregate(conn, "tfloat_range_agg", "float64");
+    register_aggregate(conn, "tfloat_stddev", "float64");
+    register_aggregate(conn, "tfloat_stddev_agg", "float64");
+    register_aggregate(conn, "tfloat_sum", "float64");
+    register_aggregate(conn, "tfloat_temporal_avg", "binary");
+    register_aggregate(conn, "tavg", "binary"); // alias of tfloat_temporal_avg
+    register_aggregate(conn, "tfloat_temporal_count", "binary");
+    register_aggregate(conn, "tcount", "binary"); // alias of tfloat_temporal_count
+    register_aggregate(conn, "tfloat_temporal_max", "binary");
+    register_aggregate(conn, "tmax", "binary"); // alias of tfloat_temporal_max
+    register_aggregate(conn, "tfloat_temporal_min", "binary");
+    register_aggregate(conn, "tmin", "binary"); // alias of tfloat_temporal_min
+    register_aggregate(conn, "tfloat_temporal_sum", "binary");
+    register_aggregate(conn, "tsum", "binary"); // alias of tfloat_temporal_sum
+    register_aggregate(conn, "tfloat_total", "float64");
+    register_aggregate(conn, "tfloat_variance_agg", "float64");
+    register_aggregate(conn, "tgeogpoint_temporal_count", "binary");
+    register_aggregate(conn, "tgeompoint_centroid_agg", "binary");
+    register_aggregate(conn, "tgeompoint_num_convoys", "binary");
+    register_aggregate(conn, "tgeompoint_num_flocks", "binary");
+    register_aggregate(conn, "tgeompoint_num_meetings", "binary");
+    register_aggregate(conn, "tgeompoint_st_extent", "binary");
+    register_aggregate(conn, "tgeompoint_temporal_centroid", "binary");
+    register_aggregate(conn, "tgeompoint_temporal_count", "binary");
+    register_aggregate(conn, "tint_count_agg", "int64");
+    register_aggregate(conn, "tint_max_agg", "int64");
+    register_aggregate(conn, "tint_max_value_agg", "int64");
+    register_aggregate(conn, "tint_min_agg", "int64");
+    register_aggregate(conn, "tint_min_value_agg", "int64");
+    register_aggregate(conn, "tint_range_agg", "int64");
+    register_aggregate(conn, "tint_sum", "int64");
+    register_aggregate(conn, "tint_sum_agg", "int64");
+    register_aggregate(conn, "tint_temporal_max", "binary");
+    register_aggregate(conn, "tint_temporal_min", "binary");
+    register_aggregate(conn, "tint_temporal_sum", "binary");
+    register_aggregate(conn, "tnpoint_temporal_count", "binary");
+    register_aggregate(conn, "tpose_temporal_count", "binary");
+    register_aggregate(conn, "ttext_concat_agg", "text");
+    register_aggregate(conn, "ttext_count_agg", "text");
+    register_aggregate(conn, "ttext_max_agg", "text");
+    register_aggregate(conn, "ttext_min_agg", "text");
+    register_aggregate(conn, "ttext_string_agg", "text");
     // Phase 3c: 54 canonical + 7 alias names registered.
 }
 
-unsafe fn register_aggregate(conn: duckdb_connection, sql_name: &str) {
+unsafe fn register_aggregate(conn: duckdb_connection, sql_name: &str, input_ty: &str) {
     let def = match registry::lookup_aggregate(sql_name) {
         Some(d) => d,
         None => {
@@ -142,19 +142,35 @@ unsafe fn register_aggregate(conn: duckdb_connection, sql_name: &str) {
     };
     duckdb_aggregate_function_set_name(agg, name_cs.as_ptr());
 
-    // PostGIS aggregates are unary (ST_Union, ST_Extent,
-    // ST_Collect — all take one geometry blob). For multi-arg
-    // future aggregates, walk def.param_types() and call
-    // add_parameter per type. Today's flat BLOB signature is
-    // shape-correct for every shim aggregate observed.
-    let blob = ffi::duckdb_create_logical_type(ffi::DUCKDB_TYPE_DUCKDB_TYPE_BLOB);
-    duckdb_aggregate_function_add_parameter(agg, blob);
-    duckdb_aggregate_function_set_return_type(agg, blob);
+    // Input type from the shim's recorded param signature; most
+    // postgis aggregates are unary blob (ST_Union, ST_Extent, ...)
+    // but the mobilitydb F64 aggregates (tfloat_max_agg / etc.)
+    // take a scalar f64. Return type stays BLOB by default — the
+    // dispatch path converts every scalar result to bytes; users
+    // who want the typed value can wrap with `tfloat_to_text` or
+    // similar.
+    let in_id = match input_ty {
+        "float64" => ffi::DUCKDB_TYPE_DUCKDB_TYPE_DOUBLE,
+        "float32" => ffi::DUCKDB_TYPE_DUCKDB_TYPE_FLOAT,
+        "int64" => ffi::DUCKDB_TYPE_DUCKDB_TYPE_BIGINT,
+        "int32" => ffi::DUCKDB_TYPE_DUCKDB_TYPE_INTEGER,
+        "uint64" => ffi::DUCKDB_TYPE_DUCKDB_TYPE_UBIGINT,
+        "uint32" => ffi::DUCKDB_TYPE_DUCKDB_TYPE_UINTEGER,
+        "boolean" => ffi::DUCKDB_TYPE_DUCKDB_TYPE_BOOLEAN,
+        "text" => ffi::DUCKDB_TYPE_DUCKDB_TYPE_VARCHAR,
+        _ => ffi::DUCKDB_TYPE_DUCKDB_TYPE_BLOB,
+    };
+    let in_lt = ffi::duckdb_create_logical_type(in_id);
+    duckdb_aggregate_function_add_parameter(agg, in_lt);
+    let ret_lt = ffi::duckdb_create_logical_type(ffi::DUCKDB_TYPE_DUCKDB_TYPE_BLOB);
+    duckdb_aggregate_function_set_return_type(agg, ret_lt);
     // Both add_parameter and set_return_type take the type by
     // value and DuckDB clones it internally, so we still own
-    // `blob` and have to destroy it after use.
-    let mut blob_to_destroy = blob;
-    ffi::duckdb_destroy_logical_type(&mut blob_to_destroy);
+    // the handles and must destroy them after use.
+    let mut in_to_destroy = in_lt;
+    ffi::duckdb_destroy_logical_type(&mut in_to_destroy);
+    let mut ret_to_destroy = ret_lt;
+    ffi::duckdb_destroy_logical_type(&mut ret_to_destroy);
 
     // Wire the callbacks (state_size + state_init + update +
     // combine + finalize). state_destroy goes through the
@@ -251,27 +267,81 @@ unsafe extern "C" fn update_callback(
 }
 
 unsafe fn update_inner(
-    _info: duckdb_function_info,
+    info: duckdb_function_info,
     input: duckdb_data_chunk,
     states: *mut duckdb_aggregate_state,
 ) -> std::result::Result<(), String> {
+    use datafission_functions::DataType;
     let n = ffi::duckdb_data_chunk_get_size(input) as usize;
     let v0 = ffi::duckdb_data_chunk_get_vector(input, 0);
-    let data = ffi::duckdb_vector_get_data(v0) as *const duckdb_string_t;
     let validity = ffi::duckdb_vector_get_validity(v0);
 
-    for i in 0..n {
-        if !validity.is_null() && !ffi::duckdb_validity_row_is_valid(validity, i as idx_t) {
-            // SQL aggregates skip NULLs unless they're COUNT(*) —
-            // PostGIS aggregates all skip NULL.
-            continue;
+    // Dispatch on the recorded input type. The aggregate's
+    // ExtraInfo wraps `Arc<dyn AggregateFunctionDef>`; we read
+    // its first parameter type to decide how to interpret the
+    // vector's raw memory.
+    let extra = extra_info_typed(info);
+    let in_ty = extra
+        .def
+        .param_types()
+        .first()
+        .and_then(|sig| sig.first().cloned())
+        .unwrap_or(DataType::Binary);
+
+    macro_rules! prim_loop {
+        ($ty:ty, $variant:ident) => {{
+            let data = ffi::duckdb_vector_get_data(v0) as *const $ty;
+            for i in 0..n {
+                if !validity.is_null() && !ffi::duckdb_validity_row_is_valid(validity, i as idx_t) {
+                    continue;
+                }
+                let val = std::ptr::read(data.add(i));
+                let acc_ptr = read_state(states, i);
+                let acc = &mut *acc_ptr;
+                acc.accumulate(&FunctionValue::$variant(val))
+                    .map_err(|e| format!("{e:?}"))?;
+            }
+        }};
+    }
+
+    match in_ty {
+        DataType::Float64 => prim_loop!(f64, Float64),
+        DataType::Float32 => prim_loop!(f32, Float32),
+        DataType::Int64 => prim_loop!(i64, Int64),
+        DataType::Int32 => prim_loop!(i32, Int32),
+        DataType::UInt64 => prim_loop!(u64, UInt64),
+        DataType::UInt32 => prim_loop!(u32, UInt32),
+        DataType::Boolean => prim_loop!(bool, Boolean),
+        DataType::Text => {
+            let data = ffi::duckdb_vector_get_data(v0) as *const duckdb_string_t;
+            for i in 0..n {
+                if !validity.is_null() && !ffi::duckdb_validity_row_is_valid(validity, i as idx_t) {
+                    continue;
+                }
+                let mut s_raw: duckdb_string_t = std::ptr::read(data.add(i));
+                let bytes = read_string_t_bytes(&mut s_raw);
+                let s = String::from_utf8_lossy(&bytes).into_owned();
+                let acc_ptr = read_state(states, i);
+                let acc = &mut *acc_ptr;
+                acc.accumulate(&FunctionValue::String(s))
+                    .map_err(|e| format!("{e:?}"))?;
+            }
         }
-        let mut s_raw: duckdb_string_t = std::ptr::read(data.add(i));
-        let bytes = read_string_t_bytes(&mut s_raw);
-        let acc_ptr = read_state(states, i);
-        let acc = &mut *acc_ptr;
-        acc.accumulate(&FunctionValue::Binary(bytes))
-            .map_err(|e| format!("{e:?}"))?;
+        _ => {
+            // Default: Binary/Blob — original path.
+            let data = ffi::duckdb_vector_get_data(v0) as *const duckdb_string_t;
+            for i in 0..n {
+                if !validity.is_null() && !ffi::duckdb_validity_row_is_valid(validity, i as idx_t) {
+                    continue;
+                }
+                let mut s_raw: duckdb_string_t = std::ptr::read(data.add(i));
+                let bytes = read_string_t_bytes(&mut s_raw);
+                let acc_ptr = read_state(states, i);
+                let acc = &mut *acc_ptr;
+                acc.accumulate(&FunctionValue::Binary(bytes))
+                    .map_err(|e| format!("{e:?}"))?;
+            }
+        }
     }
     Ok(())
 }
@@ -345,9 +415,21 @@ unsafe fn finalize_inner(
         }
         let acc = &**acc_ptr;
         let value = acc.finalize().map_err(|e| format!("{e:?}"))?;
+        // Output type is BLOB by construction (aggregates_rs sets the
+        // return type to LogicalTypeId::Blob unconditionally). Encode
+        // primitives as their little-endian bytes — callers that want
+        // the typed value can apply `octet_length()` to confirm width
+        // or unhex back to a primitive via DuckDB's bit ops.
         match value {
             FunctionValue::Binary(b) => vector_assign_bytes(result, dst, &b),
             FunctionValue::String(s) => vector_assign_bytes(result, dst, s.as_bytes()),
+            FunctionValue::Float64(v) => vector_assign_bytes(result, dst, &v.to_le_bytes()),
+            FunctionValue::Float32(v) => vector_assign_bytes(result, dst, &v.to_le_bytes()),
+            FunctionValue::Int64(v) => vector_assign_bytes(result, dst, &v.to_le_bytes()),
+            FunctionValue::Int32(v) => vector_assign_bytes(result, dst, &v.to_le_bytes()),
+            FunctionValue::UInt64(v) => vector_assign_bytes(result, dst, &v.to_le_bytes()),
+            FunctionValue::UInt32(v) => vector_assign_bytes(result, dst, &v.to_le_bytes()),
+            FunctionValue::Boolean(v) => vector_assign_bytes(result, dst, &[v as u8]),
             FunctionValue::Null => vector_set_null(result, dst),
             other => {
                 return Err(format!(
