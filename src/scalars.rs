@@ -4247,6 +4247,9 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_i64_to_blob(conn, "tstzspan_expand") {
         eprintln!("[shim-scalars] skipping `tstzspan_expand`: {e}");
     }
+    if let Err(e) = register_text_to_blob(conn, "tstzspan_from_text") {
+        eprintln!("[shim-scalars] skipping `tstzspan_from_text`: {e}");
+    }
     if let Err(e) = register_blob_blob_to_blob(conn, "tstzspan_intersection") {
         eprintln!("[shim-scalars] skipping `tstzspan_intersection`: {e}");
     }
@@ -4271,8 +4274,17 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_i64(conn, "tstzspan_start") {
         eprintln!("[shim-scalars] skipping `tstzspan_start`: {e}");
     }
+    if let Err(e) = register_blob_to_text(conn, "tstzspan_to_text") {
+        eprintln!("[shim-scalars] skipping `tstzspan_to_text`: {e}");
+    }
     if let Err(e) = register_blob_blob_to_blob(conn, "tstzspan_union") {
         eprintln!("[shim-scalars] skipping `tstzspan_union`: {e}");
+    }
+    if let Err(e) = register_text_to_blob(conn, "tstzspanset_from_text") {
+        eprintln!("[shim-scalars] skipping `tstzspanset_from_text`: {e}");
+    }
+    if let Err(e) = register_blob_to_text(conn, "tstzspanset_to_text") {
+        eprintln!("[shim-scalars] skipping `tstzspanset_to_text`: {e}");
     }
     if let Err(e) = register_blob_text_to_bool(conn, "ttext_always_eq") {
         eprintln!("[shim-scalars] skipping `ttext_always_eq`: {e}");
@@ -4502,7 +4514,7 @@ pub fn register_all(conn: &Connection) -> Result<()> {
     if let Err(e) = register_blob_to_f64(conn, "wgs84_to_web_mercator_y") {
         eprintln!("[shim-scalars] skipping `wgs84_to_web_mercator_y`: {e}");
     }
-    // Phase 2: 1482 names registered (69 shapes), 0 scalars deferred to Phase 3+ (0 unique shapes).
+    // Phase 2: 1486 names registered (69 shapes), 0 scalars deferred to Phase 3+ (0 unique shapes).
     Ok(())
 }
 
