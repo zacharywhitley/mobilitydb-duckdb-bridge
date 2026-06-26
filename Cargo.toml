@@ -16,6 +16,15 @@ crate-type = ["cdylib", "rlib"]
 datafission-df-plugin-loader = { path = "../datafission/crates/df-plugin-loader" }
 datafission-df-plugin-api    = { path = "../datafission/crates/df-plugin-api" }
 datafission-functions        = { path = "../datafission/crates/functions" }
+# Spatial-index build + query. The shim load in `registry.rs`
+# installs the wasm-backed SpatialIndexBuilder into this crate's
+# process registry (RuntimeWasmExtension::register ->
+# register_spatial_builder), so `build_spatial_index(name, items)`
+# routes to the REAL shim R-tree / STRtree. Its async build/query
+# surface is driven from the sync DuckDB callbacks via a
+# current-thread tokio runtime.
+datafission-index            = { path = "../datafission/crates/index" }
+tokio                        = { version = "1", features = ["rt"] }
 
 # Stock duckdb-rs from crates.io. We use it for the typed
 # `Connection` + `VScalar` trait (scalar dispatch). The
