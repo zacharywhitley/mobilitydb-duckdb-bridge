@@ -555,6 +555,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "date_set_from_text",
+        &[(&[DataType::Text], DataType::Text)],
+    );
+    register_scalar(
+        conn,
         "date_set_intersection",
         &[(&[DataType::Text, DataType::Text], DataType::Int64)],
     );
@@ -957,6 +962,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "float_set_from_text",
+        &[(&[DataType::Text], DataType::Text)],
+    );
+    register_scalar(
+        conn,
         "float_set_intersection",
         &[(&[DataType::Text, DataType::Text], DataType::Float64)],
     );
@@ -1334,6 +1344,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
         conn,
         "int_set_contains",
         &[(&[DataType::Text, DataType::Int64], DataType::Boolean)],
+    );
+    register_scalar(
+        conn,
+        "int_set_from_text",
+        &[(&[DataType::Text], DataType::Text)],
     );
     register_scalar(
         conn,
@@ -1839,6 +1854,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "parse_geojson_linestring",
+        &[(&[DataType::Text], DataType::Text)],
+    );
+    register_scalar(
+        conn,
         "parse_geojson_point",
         &[(&[DataType::Text], DataType::Text)],
     );
@@ -1904,6 +1924,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
         conn,
         "parse_mfjson_ttext_sequence",
         &[(&[DataType::Text], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "parse_wkb_point",
+        &[(&[DataType::Binary], DataType::Text)],
     );
     register_scalar(
         conn,
@@ -2242,6 +2267,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "tbool_and_all",
+        &[(&[DataType::Text], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
         "tbool_at_false",
         &[(&[DataType::Binary], DataType::Binary)],
     );
@@ -2353,6 +2383,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "tbool_or_all",
+        &[(&[DataType::Text], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
         "tbool_sequence_from_ewkt",
         &[(&[DataType::Text], DataType::Binary)],
     );
@@ -2390,6 +2425,16 @@ pub unsafe fn register_all(conn: duckdb_connection) {
         conn,
         "tbool_value_at",
         &[(&[DataType::Binary, DataType::Int64], DataType::Boolean)],
+    );
+    register_scalar(
+        conn,
+        "tbool_when_false",
+        &[(&[DataType::Binary], DataType::Int64)],
+    );
+    register_scalar(
+        conn,
+        "tbool_when_true",
+        &[(&[DataType::Binary], DataType::Int64)],
     );
     register_scalar(
         conn,
@@ -2590,6 +2635,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "text_set_from_text",
+        &[(&[DataType::Text], DataType::Text)],
+    );
+    register_scalar(
+        conn,
         "text_set_to_text",
         &[(&[DataType::Text], DataType::Text)],
     );
@@ -2733,6 +2783,16 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "tfloat_batch_from_parquet",
+        &[(&[DataType::Binary], DataType::Text)],
+    );
+    register_scalar(
+        conn,
+        "tfloat_batch_to_parquet",
+        &[(&[DataType::Text, DataType::Int64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
         "tfloat_coefficient_of_variation",
         &[(&[DataType::Binary], DataType::Float64)],
     );
@@ -2806,6 +2866,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
         conn,
         "tfloat_detect_periodicity",
         &[(&[DataType::Binary, DataType::Int64], DataType::Int64)],
+    );
+    register_scalar(
+        conn,
+        "tfloat_detect_trend",
+        &[(&[DataType::Binary], DataType::Int64)],
     );
     register_scalar(
         conn,
@@ -2971,6 +3036,36 @@ pub unsafe fn register_all(conn: duckdb_connection) {
             &[DataType::Binary, DataType::Float64, DataType::Float64],
             DataType::Binary,
         )],
+    );
+    register_scalar(
+        conn,
+        "tfloat_lift_eq",
+        &[(&[DataType::Binary, DataType::Float64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tfloat_lift_ge",
+        &[(&[DataType::Binary, DataType::Float64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tfloat_lift_gt",
+        &[(&[DataType::Binary, DataType::Float64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tfloat_lift_le",
+        &[(&[DataType::Binary, DataType::Float64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tfloat_lift_lt",
+        &[(&[DataType::Binary, DataType::Float64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tfloat_lift_ne",
+        &[(&[DataType::Binary, DataType::Float64], DataType::Binary)],
     );
     register_scalar(
         conn,
@@ -3294,8 +3389,18 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "tfloat_to_linear",
+        &[(&[DataType::Binary], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
         "tfloat_to_parquet",
         &[(&[DataType::Binary, DataType::Int64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tfloat_to_stepwise",
+        &[(&[DataType::Binary], DataType::Binary)],
     );
     register_scalar(
         conn,
@@ -3844,6 +3949,16 @@ pub unsafe fn register_all(conn: duckdb_connection) {
         conn,
         "tgeompoint_azimuth",
         &[(&[DataType::Binary], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tgeompoint_batch_from_parquet",
+        &[(&[DataType::Binary], DataType::Text)],
+    );
+    register_scalar(
+        conn,
+        "tgeompoint_batch_to_parquet",
+        &[(&[DataType::Text, DataType::Int64], DataType::Binary)],
     );
     register_scalar(
         conn,
@@ -4404,6 +4519,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "tint_instant_to_tfloat",
+        &[(&[DataType::Binary], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
         "tint_integral",
         &[(&[DataType::Binary], DataType::Int64)],
     );
@@ -4419,6 +4539,36 @@ pub unsafe fn register_all(conn: duckdb_connection) {
             &[DataType::Binary, DataType::Int64, DataType::Int64],
             DataType::Binary,
         )],
+    );
+    register_scalar(
+        conn,
+        "tint_lift_eq",
+        &[(&[DataType::Binary, DataType::Int64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tint_lift_ge",
+        &[(&[DataType::Binary, DataType::Int64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tint_lift_gt",
+        &[(&[DataType::Binary, DataType::Int64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tint_lift_le",
+        &[(&[DataType::Binary, DataType::Int64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tint_lift_lt",
+        &[(&[DataType::Binary, DataType::Int64], DataType::Binary)],
+    );
+    register_scalar(
+        conn,
+        "tint_lift_ne",
+        &[(&[DataType::Binary, DataType::Int64], DataType::Binary)],
     );
     register_scalar(
         conn,
@@ -5199,6 +5349,11 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     );
     register_scalar(
         conn,
+        "tstz_set_from_text",
+        &[(&[DataType::Text], DataType::Text)],
+    );
+    register_scalar(
+        conn,
         "tstz_set_to_text",
         &[(&[DataType::Text], DataType::Text)],
     );
@@ -5619,7 +5774,7 @@ pub unsafe fn register_all(conn: duckdb_connection) {
             DataType::Float64,
         )],
     );
-    // Generic dispatch: 1000 canonical + 0 alias scalars (1000 parameter-list overloads), all registered with their REAL param + return types.
+    // Generic dispatch: 1031 canonical + 0 alias scalars (1031 parameter-list overloads), all registered with their REAL param + return types.
 }
 
 /// Register one scalar (by canonical name or alias) as a function
