@@ -154,9 +154,19 @@ pub unsafe fn register_all(con: duckdb_connection) {
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/stbox-ops/tbox");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/stbox3d-ops/stbox3d");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/stindex-ops/stindex-entry");
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tbigint-math-ops/tbigint-value-bucket",
+    );
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tbigint-ops/tbigint-instant");
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tbigint-ops/tbigint-sequence",
+    );
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/tbool-ops/tbool-instant");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/tbool-ops/tbool-sequence");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/tcbuffer-ops/cbuffer");
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tcbuffer-ops/cbuffer-bbox");
     register_identity_cast(
         con,
         "mobilitydb:temporal@0.1.0/tcbuffer-ops/tcbuffer-instant",
@@ -178,6 +188,20 @@ pub unsafe fn register_all(con: duckdb_connection) {
         con,
         "mobilitydb:temporal@0.1.0/tgeogpoint-ops/tgeogpoint-sequence",
     );
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tgeography-ops/geography");
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tgeography-ops/tgeography-instant",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tgeography-ops/tgeography-sequence",
+    );
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tgeometry-ops/geometry");
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tgeometry-ops/tgeometry-instant",
+    );
     register_identity_cast(
         con,
         "mobilitydb:temporal@0.1.0/tgeometry-ops/tgeometry-point-instant",
@@ -185,6 +209,10 @@ pub unsafe fn register_all(con: duckdb_connection) {
     register_identity_cast(
         con,
         "mobilitydb:temporal@0.1.0/tgeometry-ops/tgeometry-point-sequence",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tgeometry-ops/tgeometry-sequence",
     );
     register_identity_cast(
         con,
@@ -218,6 +246,29 @@ pub unsafe fn register_all(con: duckdb_connection) {
     register_identity_cast(
         con,
         "mobilitydb:temporal@0.1.0/time-split-ops/tint-time-bucket",
+    );
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tjsonb-ops/jsonb-value");
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tjsonb-ops/tjsonb-instant");
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tjsonb-ops/tjsonb-sequence");
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tnpoint-complete-ops/route-change-event",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tnpoint-complete-ops/route-distance",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tnpoint-complete-ops/route-duration",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tnpoint-complete-ops/tnpoint-route-segment",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/tnpoint-complete-ops/tnpoint-stop-event",
     );
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/tnpoint-ops/npoint");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/tnpoint-ops/nsegment");
