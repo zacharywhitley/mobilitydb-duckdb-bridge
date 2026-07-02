@@ -127,6 +127,17 @@ pub unsafe fn register_all(con: duckdb_connection) {
         con,
         "mobilitydb:temporal@0.1.0/sequence-json-ops/sequence-json-row",
     );
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/sequences-ops/tbool-segment");
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/sequences-ops/tfloat-segment",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/sequences-ops/tgeompoint-segment",
+    );
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/sequences-ops/tint-segment");
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/sequences-ops/ttext-segment");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/spans-ops/date-span");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/spans-ops/float-span");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/spans-ops/int-span");
@@ -239,6 +250,8 @@ pub unsafe fn register_all(con: duckdb_connection) {
         con,
         "mobilitydb:temporal@0.1.0/tgeompoint3d-ops/tgeompoint3d-sequence",
     );
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tile-ops/index-stbox");
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/tile-ops/index-tbox");
     register_identity_cast(
         con,
         "mobilitydb:temporal@0.1.0/time-split-ops/tfloat-time-bucket",
@@ -312,6 +325,21 @@ pub unsafe fn register_all(con: duckdb_connection) {
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/types/time-period");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/types/tint-instant");
     register_identity_cast(con, "mobilitydb:temporal@0.1.0/types/tint-sequence");
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/unnest-ops/tbool-unnest-row");
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/unnest-ops/tfloat-unnest-row",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/unnest-ops/tgeogpoint-unnest-row",
+    );
+    register_identity_cast(
+        con,
+        "mobilitydb:temporal@0.1.0/unnest-ops/tgeompoint-unnest-row",
+    );
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/unnest-ops/tint-unnest-row");
+    register_identity_cast(con, "mobilitydb:temporal@0.1.0/unnest-ops/ttext-unnest-row");
     register_identity_cast(
         con,
         "mobilitydb:temporal@0.1.0/value-split-ops/tfloat-value-bucket",

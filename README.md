@@ -8,7 +8,7 @@ Produced by [`ducklink-shim-codegen`](https://github.com/zacharywhitley/ducklink
 
 | Extension | Version | Scalars | Aggregates | UDTFs | Windows | Types | Operators | Casts | Preprocessors | Catalog | Indexes |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| mobilitydb | 0.1.0 | 2038 | 31 | 43 | 0 | 103 | 32 | 36 | 1 | 0 | 0 |
+| mobilitydb | 0.1.0 | 2103 | 31 | 43 | 0 | 116 | 32 | 36 | 1 | 0 | 0 |
 
 ## Build
 
