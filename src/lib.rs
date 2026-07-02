@@ -144,4 +144,4 @@ unsafe fn entrypoint_inner(
 }
 // Extensions loaded by this bridge:
 //
-//   - mobilitydb v0.1.0  (2107 scalars, 51 agg, 43 udtf, 0 window, 116 types, 32 ops, 36 casts, 1 preps, 0 catalog, 0 indexes)
+//   - mobilitydb v0.1.0  (2130 scalars, 60 agg, 43 udtf, 0 window, 116 types, 32 ops, 36 casts, 1 preps, 0 catalog, 0 indexes)

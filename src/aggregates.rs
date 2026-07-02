@@ -59,8 +59,11 @@ struct AggExtraInfo {
 /// of this call.
 pub unsafe fn register_all(conn: duckdb_connection) {
     register_aggregate(conn, "date_span_aggregate_union", "binary");
+    register_aggregate(conn, "date_spanset_aggregate_union", "binary");
     register_aggregate(conn, "float_span_aggregate_union", "binary");
+    register_aggregate(conn, "float_spanset_aggregate_union", "binary");
     register_aggregate(conn, "int_span_aggregate_union", "binary");
+    register_aggregate(conn, "int_spanset_aggregate_union", "binary");
     register_aggregate(conn, "tbigint_count_aggregate", "binary");
     register_aggregate(conn, "tbigint_max_value_aggregate", "binary");
     register_aggregate(conn, "tbigint_merge_agg", "binary");
@@ -72,6 +75,7 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     register_aggregate(conn, "tand", "binary"); // alias of tbool_temporal_and
     register_aggregate(conn, "tbool_temporal_or", "binary");
     register_aggregate(conn, "tor", "binary"); // alias of tbool_temporal_or
+    register_aggregate(conn, "tcbuffer_merge_agg", "binary");
     register_aggregate(conn, "tcbuffer_temporal_count", "binary");
     register_aggregate(conn, "tfloat_merge_agg", "binary");
     register_aggregate(conn, "tfloat_temporal_avg", "binary");
@@ -89,6 +93,9 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     register_aggregate(conn, "tfloat_variance_aggregate", "binary");
     register_aggregate(conn, "tgeogpoint_merge_agg", "binary");
     register_aggregate(conn, "tgeogpoint_temporal_count", "binary");
+    register_aggregate(conn, "tgeography_merge_agg", "binary");
+    register_aggregate(conn, "tgeometry_merge_agg", "binary");
+    register_aggregate(conn, "tgeompoint3d_merge_agg", "binary");
     register_aggregate(conn, "tgeompoint_centroid_agg", "binary");
     register_aggregate(conn, "tgeompoint_merge_agg", "binary");
     register_aggregate(conn, "tgeompoint_st_extent", "binary");
@@ -111,12 +118,14 @@ pub unsafe fn register_all(conn: duckdb_connection) {
     register_aggregate(conn, "tint_temporal_sum", "binary");
     register_aggregate(conn, "tnpoint_merge_agg", "binary");
     register_aggregate(conn, "tnpoint_temporal_count", "binary");
+    register_aggregate(conn, "tpose_merge_agg", "binary");
     register_aggregate(conn, "tpose_temporal_count", "binary");
     register_aggregate(conn, "tstz_span_aggregate_union", "binary");
+    register_aggregate(conn, "tstz_spanset_aggregate_union", "binary");
     register_aggregate(conn, "ttext_concat_agg", "binary");
     register_aggregate(conn, "ttext_concat_aggregate", "binary");
     register_aggregate(conn, "ttext_merge_agg", "binary");
-    // Phase 3c: 51 canonical + 7 alias names registered.
+    // Phase 3c: 60 canonical + 7 alias names registered.
 }
 
 unsafe fn register_aggregate(conn: duckdb_connection, sql_name: &str, input_ty: &str) {
